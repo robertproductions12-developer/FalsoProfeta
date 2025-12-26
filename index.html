@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- FIREBASE SDKS -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -53,12 +52,7 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        #video-intro {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover; z-index: -1;
-            opacity: 0.4;
-        }
+        #video-intro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; }
 
         .btn {
             background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
@@ -103,6 +97,8 @@
             display: flex; align-items: center; gap: 10px; justify-content: center;
         }
 
+        .turn-active { border: 2px solid var(--gold); background: rgba(226, 176, 74, 0.1); }
+
         #timer { font-size: 60px; font-weight: 900; color: var(--gold); }
         
         .clue-box {
@@ -113,6 +109,7 @@
             font-weight: bold;
             font-size: 12px;
             margin-top: 5px;
+            min-height: 30px;
         }
 
         footer { position: fixed; bottom: 15px; width: 100%; text-align: center; font-size: 9px; opacity: 0.4; }
@@ -133,7 +130,7 @@
         </div>
     </div>
 
-    <!-- 2. MENU PRINCIPAL -->
+    <!-- 2. MENU -->
     <div id="screen-menu" class="screen">
         <h1 style="color: var(--gold); font-size: 2.2rem; margin-bottom: 20px;">EL FALSO PROFETA</h1>
         <div class="glass-card">
@@ -143,19 +140,18 @@
         </div>
     </div>
 
-    <!-- 3. CREAR SALA (LOBBY HOST) -->
+    <!-- 3. LOBBY HOST -->
     <div id="screen-create-room" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO DE SALA</h2>
-            <div id="room-code-display" style="font-size: 35px; font-weight: 900; color: white; letter-spacing: 5px; margin: 15px 0;">------</div>
-            <p style="font-size: 11px; margin-bottom: 15px; opacity: 0.7;">Jugadores conectados:</p>
+            <div id="room-code-display" style="font-size: 35px; font-weight: 900; letter-spacing: 5px; margin: 15px 0;">------</div>
+            <p style="font-size: 11px; margin-bottom: 10px;">Jugadores conectados:</p>
             <div id="lobby-players-host" style="margin-bottom: 20px;"></div>
             <button class="btn btn-gold" onclick="hostStartGame()">INICIAR PARTIDA</button>
-            <button class="btn" onclick="showScreen('screen-menu')">SALIR</button>
         </div>
     </div>
 
-    <!-- 4. UNIRSE A SALA -->
+    <!-- 4. UNIRSE -->
     <div id="screen-join-room" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">UNIRSE</h2>
@@ -165,43 +161,53 @@
         </div>
     </div>
 
-    <!-- 5. ESPERA EN LOBBY (GUEST) -->
+    <!-- 5. LOBBY GUEST -->
     <div id="screen-lobby-guest" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">EN LA SALA</h2>
-            <p style="font-size: 12px; margin: 10px 0;">Esperando al Host...</p>
+            <p style="font-size: 12px; margin: 10px 0;">Esperando al Host para conocer tu rol...</p>
             <div id="lobby-players-guest" style="margin: 20px 0;"></div>
         </div>
     </div>
 
-    <!-- 6. ROL Y PISTA -->
+    <!-- 6. REVELACIÓN DE ROL -->
     <div id="screen-reveal" class="screen">
         <div class="glass-card">
             <h2 id="role-title">TU ROL</h2>
             <div id="secret-word" style="font-size: 24px; color: var(--gold); margin: 20px 0; font-weight: 900;">---</div>
             <p id="secret-quote" style="font-style: italic; font-size: 12px; margin-bottom: 20px; opacity: 0.8;"></p>
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                <p style="font-size: 11px; margin-bottom: 10px;">TU PISTA (MÁX 2 PALABRAS):</p>
-                <input type="text" id="clue-input" placeholder="Ej: Gran Diluvio">
-                <button class="btn btn-gold" onclick="sendClue()">ENVIAR PISTA</button>
-            </div>
+            <button class="btn btn-gold" onclick="confirmRole()">ENTENDIDO</button>
         </div>
     </div>
 
-    <!-- 7. TABLERO DE JUEGO -->
-    <div id="screen-board" class="screen">
-        <div id="timer">05:00</div>
-        <div id="players-clues-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin: 20px 0;"></div>
-        <p style="font-size: 12px; opacity: 0.6;">Debatan... ¿Quién miente?</p>
+    <!-- 7. RONDA DE PISTAS (POR TURNOS) -->
+    <div id="screen-clues" class="screen">
+        <h2 style="color: var(--gold); margin-bottom: 15px;">RONDA DE PISTAS</h2>
+        <div id="turn-indicator" style="font-size: 14px; margin-bottom: 15px; color: var(--gold);">Es el turno de: ...</div>
+        
+        <div id="players-clues-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px;"></div>
+
+        <div id="my-turn-input" style="display: none; width: 100%; max-width: 340px;" class="glass-card">
+            <p style="font-size: 11px; margin-bottom: 10px;">ESCRIBE TU PISTA (MÁX 2 PALABRAS)</p>
+            <input type="text" id="clue-input" placeholder="Ej: Madera, Arca">
+            <button class="btn btn-gold" onclick="sendClue()">ENVIAR PISTA</button>
+        </div>
     </div>
 
-    <!-- 8. VOTACIÓN -->
+    <!-- 8. TABLERO DE DEBATE -->
+    <div id="screen-board" class="screen">
+        <div id="timer">03:00</div>
+        <div id="clues-final-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin: 20px 0;"></div>
+        <p style="font-size: 12px; opacity: 0.6;">DEBATAN: ¿QUIÉN ES EL FALSO PROFETA?</p>
+    </div>
+
+    <!-- 9. VOTACIÓN -->
     <div id="screen-vote" class="screen">
-        <h2 style="color: var(--accent); margin-bottom: 20px;">¿QUIÉN ES EL IMPOSTOR?</h2>
+        <h2 style="color: var(--accent); margin-bottom: 20px;">VOTACIÓN FINAL</h2>
         <div id="vote-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px;"></div>
     </div>
 
-    <!-- 9. RESULTADO -->
+    <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
             <h2 id="result-status">-</h2>
@@ -235,14 +241,12 @@
 
         const phrases = [
             {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"},
-            {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
             {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"},
             {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
             {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"},
             {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
             {w: "Sansón", q: "Su fuerza estaba en su fe (Jueces 16)"},
-            {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"},
-            {w: "Babel", q: "Confundió Jehová el lenguaje (Génesis 11:9)"}
+            {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"}
         ];
 
         function showScreen(id) {
@@ -266,7 +270,8 @@
             await db.collection('rooms').doc(roomId).set({
                 hostId: currentUser.uid,
                 status: 'waiting',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                turnIndex: 0,
+                playerOrder: []
             });
             document.getElementById('room-code-display').innerText = roomId;
             joinRoomLogic(roomId);
@@ -295,11 +300,12 @@
         }
 
         function listenToRoom(roomId) {
-            // Escuchar cambios en la sala (estados)
             roomUnsub = db.collection('rooms').doc(roomId).onSnapshot(doc => {
                 const data = doc.data();
                 if (!data) return;
+                
                 if (data.status === 'playing') setupPlayerRole(data);
+                if (data.status === 'clues') handleCluesTurn(data);
                 if (data.status === 'timer') {
                     showScreen('screen-board');
                     startLocalTimer(data.endTime);
@@ -308,19 +314,17 @@
                 if (data.status === 'result') showResults(data);
             });
 
-            // Escuchar cambios en los jugadores (lista y pistas)
             playersUnsub = db.collection('rooms').doc(roomId).collection('players').onSnapshot(snap => {
                 let html = "";
                 snap.forEach(pDoc => {
-                    const p = pDoc.data();
-                    html += `<div class="player-badge"><i class="fas fa-user"></i> ${p.name}</div>`;
+                    html += `<div class="player-badge"><i class="fas fa-user"></i> ${pDoc.data().name}</div>`;
                 });
                 document.getElementById('lobby-players-host').innerHTML = html;
                 document.getElementById('lobby-players-guest').innerHTML = html;
                 
-                if (document.getElementById('screen-board').classList.contains('active')) {
-                    renderCluesGrid(snap);
-                }
+                // Actualizar pistas en pantallas 7 y 8
+                renderCluesGrid(snap, 'players-clues-grid');
+                renderCluesGrid(snap, 'clues-final-grid');
             });
         }
 
@@ -336,47 +340,84 @@
                 status: 'playing',
                 impostorId: impId,
                 phrase: phrase.w,
-                quote: phrase.q
+                quote: phrase.q,
+                playerOrder: ids
             });
 
             snap.forEach(pDoc => {
-                pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'believer' });
+                pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'disciple' });
             });
         }
 
         async function setupPlayerRole(roomData) {
             const pDoc = await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).get();
-            const isImp = pDoc.data().role === 'impostor';
+            const role = pDoc.data().role;
+            const isImp = role === 'impostor';
             
-            document.getElementById('role-title').innerText = isImp ? "ERES EL FALSO PROFETA" : "ERES CREYENTE";
-            document.getElementById('secret-word').innerText = isImp ? "¡INFÍLTRATE!" : roomData.phrase;
-            document.getElementById('secret-quote').innerText = isImp ? "No conoces la palabra. Escucha las pistas y miente." : roomData.quote;
+            document.getElementById('role-title').innerText = isImp ? "ERES EL FALSO PROFETA" : "ERES UN DISCÍPULO";
+            document.getElementById('secret-word').innerText = isImp ? "¡MÁNTENTE OCULTO!" : roomData.phrase;
+            document.getElementById('secret-quote').innerText = isImp ? "No conoces la palabra. Escucha pistas y finge." : roomData.quote;
             showScreen('screen-reveal');
+        }
+
+        function confirmRole() {
+            if (isHost) {
+                db.collection('rooms').doc(currentRoomId).update({ status: 'clues' });
+            } else {
+                showScreen('screen-clues');
+            }
+        }
+
+        function handleCluesTurn(roomData) {
+            showScreen('screen-clues');
+            const currentTurnUid = roomData.playerOrder[roomData.turnIndex];
+            
+            db.collection('rooms').doc(currentRoomId).collection('players').doc(currentTurnUid).get().then(doc => {
+                document.getElementById('turn-indicator').innerText = `Es el turno de: ${doc.data().name}`;
+            });
+
+            if (currentTurnUid === currentUser.uid) {
+                document.getElementById('my-turn-input').style.display = 'block';
+            } else {
+                document.getElementById('my-turn-input').style.display = 'none';
+            }
         }
 
         async function sendClue() {
             const val = document.getElementById('clue-input').value.trim();
-            if (!val || val.split(/\s+/).length > 2) return alert("Máximo 2 palabras");
+            const words = val.split(/\s+/);
+            if (!val || words.length > 2) return alert("Escribe máximo 2 palabras");
 
             await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ clue: val });
             
-            if (isHost) {
-                const endTime = Date.now() + (5 * 60 * 1000);
-                db.collection('rooms').doc(currentRoomId).update({ status: 'timer', endTime: endTime });
+            const roomSnap = await db.collection('rooms').doc(currentRoomId).get();
+            const nextIndex = roomSnap.data().turnIndex + 1;
+
+            if (nextIndex >= roomSnap.data().playerOrder.length) {
+                // Todos terminaron, inicia debate (3 minutos)
+                const endTime = Date.now() + (3 * 60 * 1000);
+                await db.collection('rooms').doc(currentRoomId).update({
+                    status: 'timer',
+                    endTime: endTime
+                });
+            } else {
+                await db.collection('rooms').doc(currentRoomId).update({
+                    turnIndex: nextIndex
+                });
             }
         }
 
-        function renderCluesGrid(snap) {
+        function renderCluesGrid(snap, containerId) {
             let html = "";
             snap.forEach(doc => {
                 const p = doc.data();
                 html += `
-                    <div class="glass-card" style="padding:10px;">
+                    <div class="glass-card" style="padding:10px; border-color: ${p.clue ? 'var(--gold)' : 'rgba(255,255,255,0.1)'}">
                         <div style="font-size:10px; opacity:0.6;">${p.name}</div>
                         <div class="clue-box">${p.clue || '...'}</div>
                     </div>`;
             });
-            document.getElementById('players-clues-grid').innerHTML = html;
+            document.getElementById(containerId).innerHTML = html;
         }
 
         function startLocalTimer(endTime) {
@@ -416,15 +457,15 @@
                     let winnerId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
                     db.collection('rooms').doc(currentRoomId).update({
                         status: 'result',
-                        winner: winnerId === rSnap.data().impostorId ? 'BELIEVERS' : 'IMPOSTOR',
+                        winner: winnerId === rSnap.data().impostorId ? 'DISCIPLES' : 'IMPOSTOR',
                         impostorName: pSnap.docs.find(d => d.id === rSnap.data().impostorId).data().name
                     });
-                }, 4000);
+                }, 5000);
             }
         }
 
         function showResults(data) {
-            document.getElementById('result-status').innerText = data.winner === 'BELIEVERS' ? "¡LO DESCUBRIERON!" : "¡EL PROFETA LOS ENGAÑÓ!";
+            document.getElementById('result-status').innerText = data.winner === 'DISCIPLES' ? "¡GANAN LOS DISCÍPULOS!" : "¡GANÓ EL FALSO PROFETA!";
             document.getElementById('reveal-impostor-name').innerText = data.impostorName;
             showScreen('screen-result');
         }
