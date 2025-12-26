@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>El Falso Profeta - Edición Final</title>
+    <title>El Falso Profeta Online</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- FIREBASE SDKS -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --gold: #e2b04a;
@@ -28,13 +34,10 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* --- ANIMACIONES --- */
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
-
-        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
         .screen {
             display: none;
@@ -51,15 +54,13 @@
 
         .active { display: flex; animation: fadeInScale 0.6s var(--transition); }
 
-        /* --- VIDEO FONDO --- */
         #video-intro {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             object-fit: cover; z-index: -1;
-            opacity: 0.5;
+            opacity: 0.4;
         }
 
-        /* --- BOTONES PROFESIONALES --- */
         .btn {
             position: relative;
             background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
@@ -75,23 +76,14 @@
             width: 100%;
             max-width: 280px;
             margin: 8px 0;
-            overflow: hidden;
             transition: var(--transition);
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
 
-        .btn::after {
-            content: ''; position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: translateX(-100%);
-        }
-        .btn:hover::after { animation: shimmer 2s infinite; }
         .btn:active { transform: scale(0.95); }
         .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; border: none; }
-        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-accent { background: var(--accent); border: none; }
 
-        /* --- ELEMENTOS DE UI --- */
         .glass-card {
             background: var(--card);
             backdrop-filter: blur(30px);
@@ -102,42 +94,33 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.8);
         }
 
-        .photo-upload {
-            width: 90px; height: 90px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-            border: 2px dashed var(--gold);
-            margin: 0 auto 15px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden;
-        }
-        .photo-upload img { width: 100%; height: 100%; object-fit: cover; }
-
-        input[type="text"] {
+        input[type="text"], input[type="email"], input[type="password"] {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             padding: 14px; border-radius: 12px;
-            color: white; width: 100%; margin-bottom: 15px;
-            text-align: center; font-family: inherit; font-size: 16px;
+            color: white; width: 100%; margin-bottom: 12px;
+            text-align: center; font-size: 16px;
         }
 
-        .player-avatar-large {
-            width: 130px; height: 130px;
-            border-radius: 50%;
-            border: 4px solid var(--gold);
-            margin: 0 auto 20px;
-            object-fit: cover;
-            box-shadow: 0 0 30px rgba(226, 176, 74, 0.4);
+        .player-badge {
+            background: rgba(255,255,255,0.05);
+            padding: 10px; border-radius: 10px; margin: 5px;
+            display: flex; align-items: center; gap: 10px;
         }
 
-        /* REDES SOCIALES */
-        .social-btn { width: 100%; padding: 15px; border-radius: 12px; margin: 8px 0; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: bold; font-size: 14px; transition: 0.3s; }
-        .yt { background: #FF0000; }
-        .ig { background: linear-gradient(45deg, #f09433 0%, #dc2743 50%, #bc1888 100%); }
-        .tk { background: #000000; border: 1px solid rgba(255,255,255,0.3); }
+        #timer { font-size: 60px; font-weight: 900; color: var(--gold); margin: 10px 0; }
+        
+        .clue-box {
+            background: var(--gold);
+            color: black;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 12px;
+        }
 
-        #timer { font-size: 80px; font-weight: 900; color: var(--gold); margin: 10px 0; font-variant-numeric: tabular-nums; }
-        footer { position: fixed; bottom: 15px; width: 100%; text-align: center; font-size: 9px; letter-spacing: 3px; opacity: 0.4; }
+        footer { position: fixed; bottom: 15px; width: 100%; text-align: center; font-size: 9px; opacity: 0.4; }
     </style>
 </head>
 <body>
@@ -146,263 +129,371 @@
         <source src="logo_animado.mp4" type="video/mp4">
     </video>
 
-    <!-- PANTALLA 1: VIDEO INTRO -->
-    <div id="screen-intro" class="screen active" onclick="showScreen('screen-menu')">
-        <h1 style="font-size: 3.5rem; font-weight: 900; color: var(--gold); line-height: 0.9;">EL FALSO<br>PROFETA</h1>
-        <p style="margin-top: 20px; letter-spacing: 6px; font-size: 11px; opacity: 0.8;">TOCA PARA ENTRAR</p>
-        <div style="margin-top: 80px;" class="btn btn-gold">COMENZAR</div>
+    <!-- 1. LOGIN -->
+    <div id="screen-login" class="screen active">
+        <div class="glass-card">
+            <h2 style="color:var(--gold); margin-bottom: 20px;">BIENVENIDO</h2>
+            <input type="text" id="login-name" placeholder="Tu nombre o Nick">
+            <button class="btn btn-gold" onclick="loginAnonymously()">ENTRAR AL TEMPLO</button>
+        </div>
     </div>
 
-    <!-- PANTALLA 2: MENU PRINCIPAL -->
+    <!-- 2. MENU PRINCIPAL -->
     <div id="screen-menu" class="screen">
+        <h1 style="color: var(--gold); font-size: 2.5rem; margin-bottom: 20px;">EL FALSO PROFETA</h1>
         <div class="glass-card">
-            <h2 style="margin-bottom: 25px; color: var(--gold); letter-spacing: 3px;">MENÚ</h2>
-            <button class="btn btn-gold" onclick="showScreen('screen-players')">AGREGAR JUGADORES</button>
-            <button class="btn" onclick="startGame()">ENTRAR AL JUEGO</button>
-            <button class="btn" onclick="showScreen('screen-social')">REDES SOCIALES</button>
-            <button class="btn" onclick="showScreen('screen-rules')">REGLAS</button>
-            <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 15px 0;"></div>
-            <!-- BOTÓN SOLICITADO: VOLVER AL VIDEO -->
-            <button class="btn btn-outline" onclick="showScreen('screen-intro')">
-                <i class="fas fa-undo"></i> SALIR AL INICIO
-            </button>
+            <button class="btn btn-gold" onclick="showScreen('screen-create-room')">CREAR SALA ONLINE</button>
+            <button class="btn" onclick="showScreen('screen-join-room')">UNIRSE A SALA</button>
+            <button class="btn btn-accent" onclick="logout()">CERRAR SESIÓN</button>
         </div>
     </div>
 
-    <!-- PANTALLA 3: AGREGAR JUGADORES -->
-    <div id="screen-players" class="screen">
+    <!-- 3. CREAR SALA -->
+    <div id="screen-create-room" class="screen">
         <div class="glass-card">
-            <div class="photo-upload" onclick="document.getElementById('file-input').click()">
-                <img id="preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E">
-            </div>
-            <input type="file" id="file-input" hidden accept="image/*" onchange="handleImage(this)">
-            <input type="text" id="player-input" placeholder="Nombre del jugador...">
-            <button class="btn btn-gold" onclick="addPlayer()">AÑADIR JUGADOR</button>
-            <div id="player-count" style="margin-top: 15px; font-size: 12px; opacity: 0.6;">0 Jugadores en lista</div>
+            <h2 style="color:var(--gold)">NUEVA SALA</h2>
+            <p style="font-size: 12px; margin: 15px 0;">Comparte este código con tus amigos:</p>
+            <div id="room-code-display" style="font-size: 32px; font-weight: 900; letter-spacing: 5px; margin-bottom: 20px;">------</div>
+            <div id="lobby-players-host" style="text-align: left; margin-bottom: 20px;"></div>
+            <button class="btn btn-gold" id="btn-start-game" onclick="hostStartGame()">INICIAR PARTIDA</button>
+            <button class="btn" onclick="showScreen('screen-menu')">CANCELAR</button>
         </div>
-        <button class="btn" onclick="showScreen('screen-menu')" style="margin-top: 20px;">VOLVER AL MENÚ</button>
     </div>
 
-    <!-- PANTALLA 4: REVELACIÓN -->
+    <!-- 4. UNIRSE A SALA -->
+    <div id="screen-join-room" class="screen">
+        <div class="glass-card">
+            <h2 style="color:var(--gold)">UNIRSE</h2>
+            <input type="text" id="join-code-input" placeholder="CÓDIGO DE SALA" style="text-transform: uppercase;">
+            <button class="btn btn-gold" onclick="joinRoom()">ENTRAR</button>
+            <button class="btn" onclick="showScreen('screen-menu')">VOLVER</button>
+        </div>
+    </div>
+
+    <!-- 5. ESPERA EN LOBBY (Invitados) -->
+    <div id="screen-lobby-guest" class="screen">
+        <div class="glass-card">
+            <h2 style="color:var(--gold)">EN LA SALA</h2>
+            <p>Esperando que el profeta mayor inicie...</p>
+            <div id="lobby-players-guest" style="text-align: left; margin: 20px 0;"></div>
+        </div>
+    </div>
+
+    <!-- 6. REVELACIÓN Y PISTA -->
     <div id="screen-reveal" class="screen">
-        <div id="card-container" style="width: 100%; display: flex; justify-content: center;"></div>
+        <div class="glass-card">
+            <h2 id="role-title">TU ROL</h2>
+            <div id="secret-word" style="font-size: 24px; color: var(--gold); margin: 20px 0; font-weight: 900;">---</div>
+            <p id="secret-quote" style="font-style: italic; font-size: 13px; margin-bottom: 20px; opacity: 0.8;"></p>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <p style="font-size: 11px; margin-bottom: 10px;">ESCRIBE TU PISTA (MÁX 2 PALABRAS)</p>
+                <input type="text" id="clue-input" placeholder="Ej: Madera, Diluvio">
+                <button class="btn btn-gold" onclick="sendClue()">ENVIAR PISTA</button>
+            </div>
+        </div>
     </div>
 
-    <!-- PANTALLA 5: TIMER -->
-    <div id="screen-timer" class="screen">
-        <p style="letter-spacing: 4px; opacity: 0.6;">EL TIEMPO CORRE</p>
+    <!-- 7. TABLA DE JUEGO Y TIEMPO -->
+    <div id="screen-board" class="screen">
         <div id="timer">05:00</div>
-        <button class="btn btn-gold" onclick="endTimer()">TERMINAR Y VOTAR</button>
+        <div id="players-clues-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 500px; margin-bottom: 20px;">
+            <!-- Dinámico -->
+        </div>
+        <p style="font-size: 12px; opacity: 0.7;">Debatan... ¿Quién es el Falso Profeta?</p>
     </div>
 
-    <!-- PANTALLA 6: VOTACIÓN -->
+    <!-- 8. VOTACIÓN -->
     <div id="screen-vote" class="screen">
-        <h2 style="margin-bottom: 25px; color: var(--accent);">VOTACIÓN FINAL</h2>
+        <h2 style="color: var(--accent); margin-bottom: 20px;">VOTACIÓN</h2>
         <div id="vote-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 400px;"></div>
     </div>
 
-    <!-- PANTALLA 7: RESULTADO -->
+    <!-- 9. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
-            <img id="result-photo" class="player-avatar-large" src="">
-            <p style="opacity: 0.6; font-size: 11px; letter-spacing: 2px;">EL FALSO PROFETA ERA</p>
-            <h2 id="reveal-name" style="font-size: 2.2rem; color: var(--gold); margin: 10px 0;">-</h2>
-            <button class="btn btn-gold" onclick="startGame()">OTRA PARTIDA</button>
-            <button class="btn" onclick="showScreen('screen-menu')">MENÚ PRINCIPAL</button>
+            <h2 id="result-status" style="margin-bottom: 10px;">-</h2>
+            <p style="font-size: 11px; opacity: 0.6;">EL FALSO PROFETA ERA:</p>
+            <h1 id="reveal-impostor-name" style="color: var(--gold); margin: 10px 0;">-</h1>
+            <button class="btn btn-gold" onclick="showScreen('screen-menu')">VOLVER AL MENÚ</button>
         </div>
     </div>
 
-    <!-- PANTALLA 8: REDES SOCIALES -->
-    <div id="screen-social" class="screen">
-        <div class="glass-card">
-            <h2 style="margin-bottom: 25px; color: var(--gold);">SÍGUENOS</h2>
-            <a href="https://www.youtube.com/channel/UCjKTs1EPUXqaZ9_tBjwFQhQ" class="social-btn yt" target="_blank"><i class="fab fa-youtube"></i> YOUTUBE</a>
-            <a href="https://www.instagram.com/robert_paraco?igsh=MWx1NXdpZDIxdHdsMg==" class="social-btn ig" target="_blank"><i class="fab fa-instagram"></i> INSTAGRAM</a>
-            <a href="https://www.tiktok.com/@robert_paraco?_r=1&_t=ZM-92YDqsdjjAZ" class="social-btn tk" target="_blank"><i class="fab fa-tiktok"></i> TIKTOK</a>
-        </div>
-        <button class="btn" onclick="showScreen('screen-menu')" style="margin-top: 20px;">REGRESAR</button>
-    </div>
-
-    <!-- REGLAS -->
-    <div id="screen-rules" class="screen">
-        <div class="glass-card" style="text-align: left; font-size: 14px; line-height: 1.6;">
-            <h2 style="text-align: center; color: var(--gold); margin-bottom: 20px;">REGLAS</h2>
-            <p>1. Todos verán una palabra bíblica.</p>
-            <p>2. Un jugador será el <b>Falso Profeta</b> y verá una indicación distinta.</p>
-            <p>3. Debatan durante 5 minutos para descubrir quién miente.</p>
-        </div>
-        <button class="btn btn-gold" onclick="showScreen('screen-menu')" style="margin-top: 20px;">ENTENDIDO</button>
-    </div>
-
-    <footer>DISEÑADO POR - ROBERT PARACO</footer>
+    <footer>EL FALSO PROFETA ONLINE - ROBERT PARACO</footer>
 
     <script>
-        // LISTA DE LAS 100 FRASES BÍBLICAS
+        // CONFIGURACIÓN FIREBASE (REEMPLAZA ESTO)
+        const firebaseConfig = {
+             apiKey: "AIzaSyCc0dMjTppOlnGV_NuXCFUGhx7882qbZlE",
+             authDomain: "falsoprofeta-6e682.firebaseapp.com",
+             projectId: "falsoprofeta-6e682",
+             storageBucket: "falsoprofeta-6e682.firebasestorage.app",
+             messagingSenderId: "480777785862",
+             appId: "1:480777785862:web:8c5886c6e9a2d132356987"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // VARIABLES DE ESTADO
+        let currentUser = null;
+        let currentRoomId = null;
+        let isHost = false;
+        let roomUnsubscribe = null;
+
         const phrases = [
-            // Personajes (40)
-            {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
-            {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"}, {w: "Abraham", q: "Sal de tu tierra (Génesis 12:1)"},
-            {w: "Isaac", q: "Dios proveerá (Génesis 22:8)"}, {w: "Jacob", q: "He visto a Dios cara a cara (Génesis 32:30)"},
-            {w: "José", q: "Dios lo encaminó a bien (Génesis 50:20)"}, {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
-            {w: "Aarón", q: "Será tu portavoz (Éxodo 4:16)"}, {w: "Josué", q: "Esfuérzate y sé valiente (Josué 1:9)"},
-            {w: "Débora", q: "Se levantó como madre en Israel (Jueces 5:7)"}, {w: "Gedeón", q: "Jehová está contigo (Jueces 6:12)"},
-            {w: "Sansón", q: "Comenzó a salvar a Israel (Jueces 13:5)"}, {w: "Rut", q: "Tu Dios será mi Dios (Rut 1:16)"},
-            {w: "Samuel", q: "Habla, porque tu siervo oye (1 Samuel 3:10)"}, {w: "Saúl", q: "Otro corazón le fue dado (1 Samuel 10:9)"},
-            {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"}, {w: "Salomón", q: "Dame sabiduría (1 Reyes 3:9)"},
-            {w: "Elías", q: "Vive Jehová (1 Reyes 17:1)"}, {w: "Eliseo", q: "Una doble porción de tu espíritu (2 Reyes 2:9)"},
-            {w: "Isaías", q: "Heme aquí, envíame a mí (Isaías 6:8)"}, {w: "Jeremías", q: "Antes que nacieses te conocí (Jeremías 1:5)"},
-            {w: "Ezequiel", q: "Hijo de hombre, ponte en pie (Ezequiel 2:1)"}, {w: "Daniel", q: "Dios cerró la boca de los leones (Daniel 6:22)"},
-            {w: "Ester", q: "Para esta hora has llegado (Ester 4:14)"}, {w: "Nehemías", q: "El gozo de Jehová es mi fuerza (Nehemías 8:10)"},
-            {w: "Job", q: "Yo sé que mi Redentor vive (Job 19:25)"}, {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
-            {w: "Zacarías", q: "No con ejército ni con fuerza (Zacarías 4:6)"}, {w: "Juan el Bautista", q: "Preparad el camino del Señor (Mateo 3:3)"},
-            {w: "María", q: "He aquí la sierva del Señor (Lucas 1:38)"}, {w: "José", q: "No temas recibir a María (Mateo 1:20)"},
-            {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"}, {w: "Juan", q: "El discípulo amado (Juan 13:23)"},
-            {w: "Marta", q: "Yo sé que resucitará (Juan 11:24)"}, {w: "María Magdalena", q: "He visto al Señor (Juan 20:18)"},
-            {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Bernabé", q: "Hijo de consolación (Hechos 4:36)"},
-            {w: "Timoteo", q: "Ninguno tenga en poco tu juventud (1 Timoteo 4:12)"}, {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"},
-            // Historias (20)
-            {w: "La creación", q: "Y vio Dios que era bueno (Génesis 1:31)"}, {w: "El diluvio", q: "Entró Noé en el arca (Génesis 7:7)"},
-            {w: "Torre de Babel", q: "Confundió Jehová el lenguaje (Génesis 11:9)"}, {w: "Sacrificio Isaac", q: "Jehová proveerá (Génesis 22:14)"},
-            {w: "José vendido", q: "Lo vendieron por plata (Génesis 37:28)"}, {w: "El éxodo", q: "Deja ir a mi pueblo (Éxodo 5:1)"},
-            {w: "El mar Rojo", q: "Las aguas se abrieron (Éxodo 14:21)"}, {w: "El maná", q: "Pan del cielo (Éxodo 16:4)"},
-            {w: "10 Mandamientos", q: "Escritos por el dedo de Dios (Éxodo 31:18)"}, {w: "Caída de Jericó", q: "El muro se derrumbó (Josué 6:20)"},
-            {w: "David y Goliat", q: "Jehová te entregará (1 Samuel 17:46)"}, {w: "Templo Salomón", q: "La gloria de Jehová llenó la casa (1 Reyes 8:11)"},
-            {w: "Elías en Carmelo", q: "Jehová es Dios (1 Reyes 18:39)"}, {w: "Jonás y el pez", q: "Jehová habló al pez (Jonás 2:10)"},
-            {w: "Horno de fuego", q: "No fueron quemados (Daniel 3:27)"}, {w: "Foso de leones", q: "Dios envió su ángel (Daniel 6:22)"},
-            {w: "Nacimiento Jesús", q: "Os ha nacido un Salvador (Lucas 2:11)"}, {w: "La cruz", q: "Consumado es (Juan 19:30)"},
-            {w: "Resurrección", q: "No está aquí, resucitó (Mateo 28:6)"}, {w: "Pentecostés", q: "Fueron llenos del Espíritu (Hechos 2:4)"},
-            // Lugares (20)
-            {w: "Edén", q: "Plantó Jehová Dios un huerto (Génesis 2:8)"}, {w: "Ararat", q: "Reposó el arca (Génesis 8:4)"},
-            {w: "Betel", q: "Casa de Dios (Génesis 28:19)"}, {w: "Egipto", q: "Lugar de esclavitud (Éxodo 1:14)"},
-            {w: "Sinaí", q: "Jehová descendió (Éxodo 19:20)"}, {w: "Jericó", q: "Ciudad fortificada (Josué 6:1)"},
-            {w: "Jerusalén", q: "Ciudad del gran Rey (Salmos 48:2)"}, {w: "Belén", q: "De ti me saldrá el Salvador (Miqueas 5:2)"},
-            {w: "Nazaret", q: "Será llamado nazareno (Mateo 2:23)"}, {w: "Galilea", q: "El pueblo vio gran luz (Mateo 4:16)"},
-            {w: "Capernaum", q: "Ciudad de Jesús (Mateo 9:1)"}, {w: "Samaria", q: "Campo de misión (Juan 4:4)"},
-            {w: "Getsemaní", q: "Oró con gran agonía (Lucas 22:44)"}, {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"},
-            {w: "Monte Olivos", q: "Ascendió al cielo (Hechos 1:9)"}, {w: "Damasco", q: "Camino de conversión (Hechos 9:3)"},
-            {w: "Antioquía", q: "Llamados cristianos (Hechos 11:26)"}, {w: "Éfeso", q: "Gran puerta abierta (1 Corintios 16:9)"},
-            {w: "Corinto", q: "Tengo mucho pueblo (Hechos 18:10)"}, {w: "Patmos", q: "Por causa de la palabra (Apocalipsis 1:9)"},
-            // Parábolas (20)
-            {w: "El sembrador", q: "El que oye la palabra (Mateo 13:23)"}, {w: "Trigo y cizaña", q: "Dejad crecer juntos (Mateo 13:30)"},
-            {w: "Grano mostaza", q: "La más pequeña (Mateo 13:32)"}, {w: "La levadura", q: "Leudó toda la masa (Mateo 13:33)"},
-            {w: "Tesoro escondido", q: "Vende todo lo que tiene (Mateo 13:44)"}, {w: "Perla gran precio", q: "Una perla preciosa (Mateo 13:46)"},
-            {w: "La red", q: "Separan a los malos (Mateo 13:49)"}, {w: "La oveja perdida", q: "Hasta hallarla (Lucas 15:4)"},
-            {w: "Moneda perdida", q: "Se goza cuando la halla (Lucas 15:9)"}, {w: "Hijo pródigo", q: "Estaba muerto y revivió (Lucas 15:24)"},
-            {w: "Buen samaritano", q: "Tuvo compasión (Lucas 10:33)"}, {w: "Amigo importuno", q: "Por su insistencia (Lucas 11:8)"},
-            {w: "Rico insensato", q: "Esta noche vienen por tu alma (Lucas 12:20)"}, {w: "Higuera estéril", q: "Dale otra oportunidad (Lucas 13:8)"},
-            {w: "Los invitados", q: "Muchos son llamados (Mateo 22:14)"}, {w: "Los talentos", q: "Bien, buen siervo fiel (Mateo 25:21)"},
-            {w: "Diez vírgenes", q: "Velad (Mateo 25:13)"}, {w: "Juicio final", q: "A uno de estos pequeños (Mateo 25:40)"},
-            {w: "Fariseo/Publicano", q: "Descendió justificado (Lucas 18:14)"}, {w: "Constructor sabio", q: "Sobre la roca (Mateo 7:24)"}
+            {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"},
+            {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"},
+            {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
+            {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"},
+            {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"}
+            // Agrega más del código anterior aquí...
         ];
 
-        let players = [];
-        let currentPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
-        let currentPlayerIndex = 0;
-        let falsoProfetaIndex = -1;
-        let selectedPhrase = null;
-        let timerInterval;
-
+        // --- LÓGICA DE NAVEGACIÓN ---
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'screen-timer') startTimer();
         }
 
-        function handleImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    currentPhoto = e.target.result;
-                    document.getElementById('preview-img').src = currentPhoto;
+        // --- AUTENTICACIÓN ---
+        function loginAnonymously() {
+            const name = document.getElementById('login-name').value.trim();
+            if (!name) return alert("Escribe tu nombre");
+            
+            auth.signInAnonymously().then(cred => {
+                currentUser = { uid: cred.user.uid, name: name };
+                showScreen('screen-menu');
+            });
+        }
+
+        function logout() {
+            auth.signOut().then(() => location.reload());
+        }
+
+        // --- GESTIÓN DE SALAS ---
+        async function createRoom() {
+            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            currentRoomId = roomId;
+            isHost = true;
+
+            await db.collection('rooms').doc(roomId).set({
+                hostId: currentUser.uid,
+                status: 'waiting',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                playersCount: 1
+            });
+
+            joinRoomLogic(roomId);
+            document.getElementById('room-code-display').innerText = roomId;
+            showScreen('screen-create-room');
+        }
+
+        async function joinRoom() {
+            const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+            if (!code) return;
+            
+            const doc = await db.collection('rooms').doc(code).get();
+            if (!doc.exists) return alert("La sala no existe");
+            
+            currentRoomId = code;
+            isHost = false;
+            joinRoomLogic(code);
+        }
+
+        function joinRoomLogic(roomId) {
+            db.collection('rooms').doc(roomId).collection('players').doc(currentUser.uid).set({
+                name: currentUser.name,
+                uid: currentUser.uid,
+                clue: "",
+                vote: "",
+                role: ""
+            });
+            listenToRoom(roomId);
+        }
+
+        function listenToRoom(roomId) {
+            if (roomUnsubscribe) roomUnsubscribe();
+            
+            roomUnsubscribe = db.collection('rooms').doc(roomId).onSnapshot(doc => {
+                const data = doc.data();
+                if (!data) return;
+
+                // Actualizar Lista de Jugadores
+                updatePlayerList(roomId);
+
+                // Manejar cambios de estado del juego
+                if (data.status === 'playing') {
+                    setupPlayerRole(roomId);
+                } else if (data.status === 'timer') {
+                    showScreen('screen-board');
+                    startLocalTimer(data.endTime);
+                } else if (data.status === 'voting') {
+                    setupVoting(roomId);
+                } else if (data.status === 'result') {
+                    showResults(data);
                 }
-                reader.readAsDataURL(input.files[0]);
-            }
+            });
         }
 
-        function addPlayer() {
-            const nameInput = document.getElementById('player-input');
-            if (nameInput.value.trim()) {
-                players.push({ name: nameInput.value.trim(), photo: currentPhoto });
-                nameInput.value = '';
-                currentPhoto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
-                document.getElementById('preview-img').src = currentPhoto;
-                document.getElementById('player-count').innerText = `${players.length} Jugadores en lista`;
-            }
+        function updatePlayerList(roomId) {
+            db.collection('rooms').doc(roomId).collection('players').get().then(snap => {
+                let html = "";
+                snap.forEach(p => {
+                    html += `<div class="player-badge"><i class="fas fa-user"></i> ${p.data().name}</div>`;
+                });
+                const container = isHost ? 'lobby-players-host' : 'lobby-players-guest';
+                document.getElementById(container).innerHTML = html;
+                if (!isHost) showScreen('screen-lobby-guest');
+                
+                // Si estamos en pantalla de tablero, actualizar pistas
+                if (document.getElementById('screen-board').classList.contains('active')) {
+                    renderCluesGrid(snap);
+                }
+            });
         }
 
-        function startGame() {
-            if (players.length < 3) return alert("Mínimo 3 jugadores necesarios");
-            currentPlayerIndex = 0;
-            falsoProfetaIndex = Math.floor(Math.random() * players.length);
-            selectedPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            renderRevealCard();
+        // --- FLUJO DE JUEGO ---
+        async function hostStartGame() {
+            const snap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+            if (snap.size < 3) return alert("Mínimo 3 jugadores");
+
+            const playersIds = snap.docs.map(d => d.id);
+            const impostorId = playersIds[Math.floor(Math.random() * playersIds.size)];
+            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+            await db.collection('rooms').doc(currentRoomId).update({
+                status: 'playing',
+                impostorId: impostorId,
+                phrase: phrase.w,
+                quote: phrase.q
+            });
+
+            // Asignar roles individualmente
+            snap.forEach(pDoc => {
+                const role = pDoc.id === impostorId ? 'impostor' : 'believer';
+                pDoc.ref.update({ role: role });
+            });
+        }
+
+        async function setupPlayerRole(roomId) {
+            const roomDoc = await db.collection('rooms').doc(roomId).get();
+            const playerDoc = await db.collection('rooms').doc(roomId).collection('players').doc(currentUser.uid).get();
+            const data = roomDoc.data();
+            const pData = playerDoc.data();
+
+            const isImpostor = pData.role === 'impostor';
+            document.getElementById('role-title').innerText = isImpostor ? "ERES EL FALSO PROFETA" : "ERES UN CREYENTE";
+            document.getElementById('secret-word').innerText = isImpostor ? "¡MÁNTENTE OCULTO!" : data.phrase;
+            document.getElementById('secret-quote').innerText = isImpostor ? "Debes fingir que conoces la palabra bíblica." : data.quote;
+            
             showScreen('screen-reveal');
         }
 
-        function renderRevealCard() {
-            const p = players[currentPlayerIndex];
-            const isFalso = currentPlayerIndex === falsoProfetaIndex;
-            document.getElementById('card-container').innerHTML = `
-                <div class="glass-card">
-                    <img src="${p.photo}" class="player-avatar-large">
-                    <h2>${p.name}</h2>
-                    <div id="tap-area" style="margin:20px 0; padding:25px; border:2px dashed var(--gold); border-radius:15px; cursor:pointer;" onclick="revealSecret(this)">
-                        <p id="label">TOCA PARA VER TU SECRETO</p>
-                        <div id="word" style="display:none; font-size:1.8rem; font-weight:900; color:var(--gold);">
-                            ${isFalso ? 'ERES EL FALSO PROFETA' : selectedPhrase.w}
-                        </div>
-                        <p id="quote" style="display:none; font-size:11px; margin-top:10px; opacity:0.8; font-style:italic;">
-                            ${isFalso ? 'Tu misión es no ser descubierto.' : selectedPhrase.q}
-                        </p>
+        async function sendClue() {
+            const clue = document.getElementById('clue-input').value.trim();
+            const words = clue.split(/\s+/);
+            if (!clue || words.length > 2) return alert("Máximo 2 palabras");
+
+            await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({
+                clue: clue
+            });
+
+            if (isHost) {
+                const endTime = Date.now() + (5 * 60 * 1000);
+                db.collection('rooms').doc(currentRoomId).update({ 
+                    status: 'timer',
+                    endTime: endTime
+                });
+            }
+        }
+
+        function renderCluesGrid(snap) {
+            let html = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                html += `
+                    <div class="glass-card" style="padding: 10px;">
+                        <div style="font-size:10px; opacity:0.6;">${p.name}</div>
+                        <div class="clue-box">${p.clue || 'Escribiendo...'}</div>
                     </div>
-                    <button class="btn btn-gold" id="next-btn" style="display:none; width:100%;" onclick="nextTurn()">HE VISTO</button>
-                </div>
-            `;
+                `;
+            });
+            document.getElementById('players-clues-grid').innerHTML = html;
         }
 
-        function revealSecret() {
-            document.getElementById('label').style.display = 'none';
-            document.getElementById('word').style.display = 'block';
-            document.getElementById('quote').style.display = 'block';
-            document.getElementById('next-btn').style.display = 'block';
-        }
-
-        function nextTurn() {
-            currentPlayerIndex++;
-            if (currentPlayerIndex < players.length) renderRevealCard();
-            else showScreen('screen-timer');
-        }
-
-        function startTimer() {
-            let time = 300;
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let m = Math.floor(time / 60);
-                let s = time % 60;
-                document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if(time <= 0) endTimer();
-                time--;
+        function startLocalTimer(endTime) {
+            const timerDiv = document.getElementById('timer');
+            const interval = setInterval(() => {
+                const now = Date.now();
+                const diff = endTime - now;
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    if (isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
+                }
+                const m = Math.floor(diff / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                timerDiv.innerText = `${m}:${s < 10 ? '0'+s : s}`;
             }, 1000);
         }
 
-        function endTimer() {
-            clearInterval(timerInterval);
-            const list = document.getElementById('vote-list');
-            list.innerHTML = players.map((p, i) => `
-                <div class="btn" style="max-width:none; padding:10px; flex-direction:column;" onclick="revealResult(${i})">
-                    <img src="${p.photo}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-                    <span style="font-size:10px;">${p.name}</span>
-                </div>
-            `).join('');
+        async function setupVoting(roomId) {
+            const snap = await db.collection('rooms').doc(roomId).collection('players').get();
+            let html = "";
+            snap.forEach(doc => {
+                const p = doc.data();
+                if (p.uid !== currentUser.uid) {
+                    html += `
+                        <button class="btn" onclick="castVote('${p.uid}')">
+                            ${p.name}
+                        </button>
+                    `;
+                }
+            });
+            document.getElementById('vote-list').innerHTML = html;
             showScreen('screen-vote');
         }
 
-        function revealResult() {
-            const fp = players[falsoProfetaIndex];
-            document.getElementById('reveal-name').innerText = fp.name;
-            document.getElementById('result-photo').src = fp.photo;
+        async function castVote(targetUid) {
+            await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({
+                vote: targetUid
+            });
+            
+            if (isHost) {
+                // El host espera unos segundos y cierra la votación (simplicidad)
+                setTimeout(async () => {
+                    const roomData = (await db.collection('rooms').doc(currentRoomId).get()).data();
+                    const playersSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+                    
+                    let votes = {};
+                    playersSnap.forEach(p => {
+                        const v = p.data().vote;
+                        if(v) votes[v] = (votes[v] || 0) + 1;
+                    });
+
+                    let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+                    const isImpostorCaught = mostVotedId === roomData.impostorId;
+                    
+                    db.collection('rooms').doc(currentRoomId).update({
+                        status: 'result',
+                        winner: isImpostorCaught ? 'BELIEVERS' : 'IMPOSTOR',
+                        impostorName: playersSnap.docs.find(d => d.id === roomData.impostorId).data().name
+                    });
+                }, 5000);
+            }
+        }
+
+        function showResults(data) {
+            document.getElementById('result-status').innerText = data.winner === 'BELIEVERS' ? "¡PROFETAS GANAN!" : "¡EL FALSO PROFETA GANÓ!";
+            document.getElementById('reveal-impostor-name').innerText = data.impostorName;
             showScreen('screen-result');
         }
+
+        // Iniciar Pantalla de Login al cargar
+        window.onload = () => {
+            showScreen('screen-login');
+        };
     </script>
 </body>
 </html>
