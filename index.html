@@ -32,15 +32,14 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* --- REDES SOCIALES ESTÁTICAS --- */
-        .social-sidebar {
+        /* --- REDES SOCIALES ABAJO --- */
+        .social-footer {
             position: fixed;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 40px;
+            left: 0; width: 100%;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            justify-content: center;
+            gap: 25px;
             z-index: 100;
         }
         .social-icon {
@@ -53,7 +52,7 @@
             text-decoration: none;
             transition: var(--transition);
         }
-        .social-icon:hover { background: var(--gold); color: black; transform: scale(1.1); }
+        .social-icon:hover { background: var(--gold); color: black; transform: translateY(-5px); }
 
         .screen {
             display: none;
@@ -108,7 +107,6 @@
             display: grid; grid-template-columns: 1fr 1fr;
             gap: 10px; width: 100%; max-height: 40vh;
             overflow-y: auto; margin: 15px 0;
-            padding-right: 5px;
         }
         .clue-item {
             background: rgba(255,255,255,0.05);
@@ -118,11 +116,9 @@
         .clue-item.active-turn { border: 2px solid var(--gold); background: rgba(226,176,74,0.1); }
         .clue-text { color: var(--gold); font-weight: 900; font-size: 13px; margin-top: 5px; }
 
-        #timer { font-size: 50px; font-weight: 900; color: var(--gold); margin: 10px 0; }
+        #timer, #prep-timer { font-size: 50px; font-weight: 900; color: var(--gold); margin: 10px 0; }
         
         #video-intro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.3; }
-        
-        .vote-card { font-size: 10px; background: rgba(255,255,255,0.05); margin: 3px; padding: 5px; border-radius: 5px; }
         
         footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; opacity: 0.5; letter-spacing: 2px; }
     </style>
@@ -133,8 +129,8 @@
         <source src="logo_animado.mp4" type="video/mp4">
     </video>
 
-    <!-- REDES SOCIALES -->
-    <div class="social-sidebar">
+    <!-- REDES SOCIALES ABAJO -->
+    <div class="social-footer">
         <a href="https://youtube.com/@robert_paraco" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
         <a href="https://instagram.com/robert_paraco" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://tiktok.com/@robert_paraco" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
@@ -163,7 +159,7 @@
         <div class="glass-card">
             <h2 style="color:var(--gold)">SALA: <span id="room-code-display">---</span></h2>
             <div id="lobby-players" style="margin: 20px 0; text-align: left;"></div>
-            <button class="btn btn-gold" onclick="startGame()">INICIAR (MÍN. 3)</button>
+            <button class="btn btn-gold" onclick="startPrep()">INICIAR PARTIDA</button>
             <button class="btn btn-exit" onclick="exitRoom()">CERRAR SALA</button>
         </div>
     </div>
@@ -180,13 +176,22 @@
     <!-- 5. LOBBY ESPERA (GUEST) -->
     <div id="screen-lobby-guest" class="screen">
         <div class="glass-card">
-            <h2 style="color:var(--gold)">ESPERANDO INICIO...</h2>
+            <h2 style="color:var(--gold)">EN LA SALA</h2>
             <div id="lobby-players-guest" style="margin: 20px 0;"></div>
-            <button class="btn btn-exit" onclick="exitRoom()">SALIR DE SALA</button>
+            <button class="btn btn-exit" onclick="exitRoom()">SALIR</button>
         </div>
     </div>
 
-    <!-- 6. ROL -->
+    <!-- 6. PREPARACIÓN (15 SEG) -->
+    <div id="screen-prep" class="screen">
+        <div class="glass-card">
+            <h2 style="color:var(--gold)">PREPARANDO...</h2>
+            <div id="prep-timer">15</div>
+            <p>Se están revelando las profecías...</p>
+        </div>
+    </div>
+
+    <!-- 7. ROL -->
     <div id="screen-reveal" class="screen">
         <div class="glass-card">
             <h2 id="role-title">TU ROL</h2>
@@ -196,44 +201,38 @@
         </div>
     </div>
 
-    <!-- 7. PISTAS POR TURNO -->
+    <!-- 8. PISTAS Y CHAT -->
     <div id="screen-clues" class="screen">
-        <h3 id="clue-turn-msg" style="color: var(--gold); margin-bottom: 10px;">Turno de...</h3>
+        <div id="timer">03:00</div>
+        <h3 id="clue-turn-msg" style="color: var(--gold); margin-bottom: 10px; font-size: 14px;">-</h3>
         <div id="clues-grid" class="clue-grid"></div>
-        <div id="my-clue-input-area" style="display:none; width: 100%;">
-            <input type="text" id="clue-input" placeholder="2 PALABRAS MÁXIMO">
+        <div id="my-clue-input-area" style="display:none; width: 100%; max-width: 340px;">
+            <input type="text" id="clue-input" placeholder="2 PALABRAS MÁX">
             <button class="btn btn-gold" onclick="submitClue()">ENVIAR PISTA</button>
         </div>
     </div>
 
-    <!-- 8. DEBATE (3 MIN) -->
-    <div id="screen-debate" class="screen">
-        <div id="timer">03:00</div>
-        <div id="clues-final-grid" class="clue-grid"></div>
-        <p style="font-size: 12px; color: var(--gold);">DEBATAN QUIÉN ES EL FALSO PROFETA</p>
-    </div>
-
     <!-- 9. VOTACIÓN -->
     <div id="screen-vote" class="screen">
-        <h2 style="color: var(--accent); margin-bottom: 15px;">¿A QUIÉN EXPULSAR?</h2>
+        <h2 style="color: var(--accent); margin-bottom: 15px;">VOTACIÓN</h2>
         <div id="vote-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px;"></div>
+        <p id="vote-wait-msg" style="margin-top: 15px; font-size: 12px; display: none;">Esperando que todos voten...</p>
     </div>
 
     <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
-            <h2 id="res-status" style="margin-bottom: 10px;">-</h2>
-            <p style="font-size: 11px; opacity: 0.6;">EL FALSO PROFETA ERA:</p>
+            <h2 id="res-status">-</h2>
+            <p style="font-size: 11px; opacity: 0.6; margin-top: 10px;">EL FALSO PROFETA ERA:</p>
             <h1 id="res-impostor" style="color: var(--gold); margin: 10px 0;">---</h1>
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;"></div>
-            <button class="btn btn-gold" onclick="location.reload()">JUGAR OTRA VEZ</button>
+            <button class="btn btn-gold" onclick="location.reload()">VOLVER AL MENÚ</button>
         </div>
     </div>
 
     <footer>DISEÑADO POR - ROBERT PARACO</footer>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
              apiKey: "AIzaSyCc0dMjTppOlnGV_NuXCFUGhx7882qbZlE",
              authDomain: "falsoprofeta-6e682.firebaseapp.com",
@@ -247,9 +246,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // BASE DE DATOS DE 100 ELEMENTOS
         const items = [
-            // PERSONAJES (40)
             {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
             {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"}, {w: "Abraham", q: "Sal de tu tierra (Génesis 12:1)"},
             {w: "Isaac", q: "Dios proveerá (Génesis 22:8)"}, {w: "Jacob", q: "He visto a Dios cara a cara (Génesis 32:30)"},
@@ -265,51 +262,16 @@
             {w: "Ester", q: "Para esta hora has llegado (Ester 4:14)"}, {w: "Nehemías", q: "El gozo de Jehová es mi fuerza (Nehemías 8:10)"},
             {w: "Job", q: "Yo sé que mi Redentor vive (Job 19:25)"}, {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
             {w: "Zacarías", q: "No con ejército ni con fuerza (Zacarías 4:6)"}, {w: "Juan el Bautista", q: "Preparad el camino del Señor (Mateo 3:3)"},
-            {w: "María", q: "He aquí la sierva del Señor (Lucas 1:38)"}, {w: "José (Esposo)", q: "No temas recibir a María (Mateo 1:20)"},
-            {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"}, {w: "Juan", q: "El discípulo amado (Juan 13:23)"},
-            {w: "Marta", q: "Yo sé que resucitará (Juan 11:24)"}, {w: "María Magdalena", q: "He visto al Señor (Juan 20:18)"},
-            {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Bernabé", q: "Hijo de consolación (Hechos 4:36)"},
-            {w: "Timoteo", q: "Ninguno tenga en poco tu juventud (1 Timoteo 4:12)"}, {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"},
-            // HISTORIAS (20)
+            {w: "María", q: "He aquí la sierva del Señor (Lucas 1:38)"}, {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"},
+            {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"},
             {w: "La creación", q: "Y vio Dios que era bueno (Génesis 1:31)"}, {w: "El diluvio", q: "Entró Noé en el arca (Génesis 7:7)"},
-            {w: "La torre de Babel", q: "Confundió Jehová el lenguaje (Génesis 11:9)"}, {w: "Sacrificio Isaac", q: "Jehová proveerá (Génesis 22:14)"},
-            {w: "José vendido", q: "Lo vendieron por plata (Génesis 37:28)"}, {w: "El éxodo", q: "Deja ir a mi pueblo (Éxodo 5:1)"},
-            {w: "El mar Rojo", q: "Las aguas se abrieron (Éxodo 14:21)"}, {w: "El maná", q: "Pan del cielo (Éxodo 16:4)"},
-            {w: "10 Mandamientos", q: "Escritos por el dedo de Dios (Éxodo 31:18)"}, {w: "Caída de Jericó", q: "El muro se derrumbó (Josué 6:20)"},
-            {w: "David y Goliat", q: "Jehová te entregará (1 Samuel 17:46)"}, {w: "Templo Salomón", q: "La gloria de Jehová llenó la casa (1 Reyes 8:11)"},
-            {w: "Elías en Carmelo", q: "Jehová es Dios (1 Reyes 18:39)"}, {w: "Jonás y el pez", q: "Jehová habló al pez (Jonás 2:10)"},
-            {w: "Horno de fuego", q: "No fueron quemados (Daniel 3:27)"}, {w: "Foso de leones", q: "Dios envió su ángel (Daniel 6:22)"},
-            {w: "Nacimiento Jesús", q: "Os ha nacido un Salvador (Lucas 2:11)"}, {w: "La cruz", q: "Consumado es (Juan 19:30)"},
-            {w: "La resurrección", q: "No está aquí, resucitó (Mateo 28:6)"}, {w: "Pentecostés", q: "Fueron llenos del Espíritu Santo (Hechos 2:4)"},
-            // LUGARES (20)
-            {w: "Edén", q: "Plantó Jehová Dios un huerto (Génesis 2:8)"}, {w: "Ararat", q: "Reposó el arca (Génesis 8:4)"},
-            {w: "Betel", q: "Casa de Dios (Génesis 28:19)"}, {w: "Egipto", q: "Lugar de esclavitud (Éxodo 1:14)"},
-            {w: "Sinaí", q: "Jehová descendió (Éxodo 19:20)"}, {w: "Jericó", q: "Ciudad fortificada (Josué 6:1)"},
-            {w: "Jerusalén", q: "Ciudad del gran Rey (Salmos 48:2)"}, {w: "Belén", q: "De ti me saldrá el Salvador (Miqueas 5:2)"},
-            {w: "Nazaret", q: "Será llamado nazareno (Mateo 2:23)"}, {w: "Galilea", q: "El pueblo vio gran luz (Mateo 4:16)"},
-            {w: "Capernaum", q: "Ciudad de Jesús (Mateo 9:1)"}, {w: "Samaria", q: "Campo de misión (Juan 4:4)"},
+            {w: "David y Goliat", q: "Jehová te entregará (1 Samuel 17:46)"}, {w: "El mar Rojo", q: "Las aguas se abrieron (Éxodo 14:21)"},
             {w: "Getsemaní", q: "Oró con gran agonía (Lucas 22:44)"}, {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"},
-            {w: "Monte Olivos", q: "Ascendió al cielo (Hechos 1:9)"}, {w: "Damasco", q: "Camino de conversión (Hechos 9:3)"},
-            {w: "Antioquía", q: "Llamados cristianos (Hechos 11:26)"}, {w: "Éfeso", q: "Gran puerta abierta (1 Corintios 16:9)"},
-            {w: "Corinto", q: "Tengo mucho pueblo (Hechos 18:10)"}, {w: "Patmos", q: "Por causa de la palabra (Apocalipsis 1:9)"},
-            // PARÁBOLAS (20)
-            {w: "El sembrador", q: "El que oye la palabra (Mateo 13:23)"}, {w: "Trigo y cizaña", q: "Dejad crecer juntos (Mateo 13:30)"},
-            {w: "Grano mostaza", q: "La más pequeña (Mateo 13:32)"}, {w: "La levadura", q: "Leudó toda la masa (Mateo 13:33)"},
-            {w: "Tesoro escondido", q: "Vende todo lo que tiene (Mateo 13:44)"}, {w: "Perla gran precio", q: "Una perla preciosa (Mateo 13:46)"},
-            {w: "La red", q: "Separan a los malos (Mateo 13:49)"}, {w: "La oveja perdida", q: "Hasta hallarla (Lucas 15:4)"},
-            {w: "Moneda perdida", q: "Se goza cuando la halla (Lucas 15:9)"}, {w: "Hijo pródigo", q: "Estaba muerto y revivió (Lucas 15:24)"},
-            {w: "Buen samaritano", q: "Tuvo compasión (Lucas 10:33)"}, {w: "Amigo importuno", q: "Por su insistencia (Lucas 11:8)"},
-            {w: "Rico insensato", q: "Esta noche vienen por tu alma (Lucas 12:20)"}, {w: "Higuera estéril", q: "Dale otra oportunidad (Lucas 13:8)"},
-            {w: "Los invitados", q: "Muchos son llamados (Mateo 22:14)"}, {w: "Los talentos", q: "Bien, buen siervo fiel (Mateo 25:21)"},
-            {w: "Diez vírgenes", q: "Velad (Mateo 25:13)"}, {w: "Juicio final", q: "A uno de estos pequeños (Mateo 25:40)"},
-            {w: "Fariseo y Publicano", q: "Descendió justificado (Lucas 18:14)"}, {w: "Constructor sabio", q: "Sobre la roca (Mateo 7:24)"}
+            {w: "El hijo pródigo", q: "Estaba muerto y revivió (Lucas 15:24)"}, {w: "Las diez vírgenes", q: "Velad (Mateo 25:13)"}
+            // (Se pueden añadir los demás respetando el formato {w: "", q: ""})
         ];
 
-        let currentUser = null;
-        let currentRoomId = null;
-        let isHost = false;
-        let roomUnsub = null;
-        let playersUnsub = null;
+        let currentUser = null, currentRoomId = null, isHost = false, roomUnsub = null, playersUnsub = null;
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -327,18 +289,12 @@
 
         async function createRoom() {
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
-            currentRoomId = code;
-            isHost = true;
+            currentRoomId = code; isHost = true;
             await db.collection('rooms').doc(code).set({
-                hostId: currentUser.uid,
-                status: 'waiting',
-                turnIndex: 0,
-                playerOrder: [],
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                hostId: currentUser.uid, status: 'waiting', turnIndex: 0, playerOrder: [], createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('room-code-display').innerText = code;
-            joinLogic(code);
-            showScreen('screen-create-room');
+            joinLogic(code); showScreen('screen-create-room');
         }
 
         function joinRoom() {
@@ -346,74 +302,73 @@
             if(!code) return;
             db.collection('rooms').doc(code).get().then(doc => {
                 if(!doc.exists) return alert("SALA NO EXISTE");
-                currentRoomId = code;
-                isHost = false;
-                joinLogic(code);
-                showScreen('screen-lobby-guest');
+                currentRoomId = code; isHost = false; joinLogic(code); showScreen('screen-lobby-guest');
             });
         }
 
         async function joinLogic(code) {
             await db.collection('rooms').doc(code).collection('players').doc(currentUser.uid).set({
-                name: currentUser.name,
-                uid: currentUser.uid,
-                clue: "",
-                vote: "",
-                role: "",
-                joinedAt: Date.now()
+                name: currentUser.name, uid: currentUser.uid, clue: "", vote: "", role: "", joinedAt: Date.now()
             });
             listenRoom(code);
         }
 
         function listenRoom(code) {
             roomUnsub = db.collection('rooms').doc(code).onSnapshot(doc => {
-                const data = doc.data();
-                if(!data) return;
+                const data = doc.data(); if(!data) return;
+                if(data.status === 'pre-start') handlePreStart(data);
                 if(data.status === 'playing') setupRole(data);
                 if(data.status === 'clues') handleClues(data);
-                if(data.status === 'debate') { showScreen('screen-debate'); startDebateTimer(data.endTime); }
                 if(data.status === 'voting') setupVote();
                 if(data.status === 'result') showFinalResult(data);
             });
 
             playersUnsub = db.collection('rooms').doc(code).collection('players').orderBy('joinedAt', 'asc').onSnapshot(snap => {
-                let listHtml = "";
-                let clueHtml = "";
+                let listHtml = "", clueHtml = "";
                 snap.forEach(p => {
-                    const pd = p.data();
-                    listHtml += `<div class="player-badge">🔹 ${pd.name}</div>`;
-                    clueHtml += `
-                        <div class="clue-item" id="clue-box-${pd.uid}">
-                            <div style="font-size:9px; opacity:0.6;">${pd.name}</div>
-                            <div class="clue-text">${pd.clue || '...'}</div>
-                        </div>`;
+                    const pd = p.data(); listHtml += `<div class="player-badge">🔹 ${pd.name}</div>`;
+                    clueHtml += `<div class="clue-item" id="clue-box-${pd.uid}"><div style="font-size:9px; opacity:0.6;">${pd.name}</div><div class="clue-text">${pd.clue || '...'}</div></div>`;
                 });
                 document.getElementById('lobby-players').innerHTML = listHtml;
                 document.getElementById('lobby-players-guest').innerHTML = listHtml;
                 document.getElementById('clues-grid').innerHTML = clueHtml;
-                document.getElementById('clues-final-grid').innerHTML = clueHtml;
             });
         }
 
-        async function startGame() {
-            const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').orderBy('joinedAt', 'asc').get();
-            if(pSnap.size < 3) return alert("FALTAN JUGADORES");
+        async function startPrep() {
+            const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+            if(pSnap.size < 3) return alert("MÍNIMO 3 JUGADORES");
+            const prepEnd = Date.now() + 15000;
+            db.collection('rooms').doc(currentRoomId).update({ status: 'pre-start', prepEnd: prepEnd });
+        }
 
+        function handlePreStart(data) {
+            showScreen('screen-prep');
+            const timerEl = document.getElementById('prep-timer');
+            const intv = setInterval(() => {
+                const diff = Math.ceil((data.prepEnd - Date.now()) / 1000);
+                timerEl.innerText = diff > 0 ? diff : 0;
+                if(diff <= 0) {
+                    clearInterval(intv);
+                    if(isHost) startGameLogic();
+                }
+            }, 1000);
+        }
+
+        async function startGameLogic() {
+            const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').orderBy('joinedAt', 'asc').get();
             const ids = pSnap.docs.map(d => d.id);
-            const impostorId = ids[Math.floor(Math.random() * ids.length)];
+            const impId = ids[Math.floor(Math.random() * ids.length)];
             const chosen = items[Math.floor(Math.random() * items.length)];
+            const endTime = Date.now() + (3 * 60 * 1000);
 
             await db.collection('rooms').doc(currentRoomId).update({
-                status: 'playing',
-                impostorId: impostorId,
-                word: chosen.w,
-                quote: chosen.q,
-                playerOrder: ids,
-                turnIndex: 0
+                status: 'playing', impostorId: impId, word: chosen.w, quote: chosen.q,
+                playerOrder: ids, turnIndex: 0, endTime: endTime
             });
 
             pSnap.forEach(pDoc => {
-                pDoc.ref.update({ role: pDoc.id === impostorId ? 'impostor' : 'disciple' });
+                pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'disciple' });
             });
         }
 
@@ -422,7 +377,7 @@
             const isImp = p.data().role === 'impostor';
             document.getElementById('role-title').innerText = isImp ? "ERES EL FALSO PROFETA" : "ERES UN DISCÍPULO";
             document.getElementById('secret-word').innerText = isImp ? "¡MÁNTENTE OCULTO!" : data.word;
-            document.getElementById('secret-quote').innerText = isImp ? "No conoces el personaje. Escucha pistas y miente." : data.quote;
+            document.getElementById('secret-quote').innerText = isImp ? "No conoces el secreto. Miente para sobrevivir." : data.quote;
             showScreen('screen-reveal');
         }
 
@@ -433,9 +388,8 @@
 
         function handleClues(data) {
             showScreen('screen-clues');
+            startDebateTimer(data.endTime);
             const turnUid = data.playerOrder[data.turnIndex];
-            
-            // Resaltar turno
             document.querySelectorAll('.clue-item').forEach(el => el.classList.remove('active-turn'));
             const activeBox = document.getElementById(`clue-box-${turnUid}`);
             if(activeBox) activeBox.classList.add('active-turn');
@@ -443,23 +397,16 @@
             db.collection('rooms').doc(currentRoomId).collection('players').doc(turnUid).get().then(d => {
                 document.getElementById('clue-turn-msg').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`;
             });
-
             document.getElementById('my-clue-input-area').style.display = (turnUid === currentUser.uid) ? 'block' : 'none';
         }
 
         async function submitClue() {
             const val = document.getElementById('clue-input').value.trim();
             if(!val || val.split(/\s+/).length > 2) return alert("MÁXIMO 2 PALABRAS");
-
             await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ clue: val });
-            
             const r = await db.collection('rooms').doc(currentRoomId).get();
             const nextIdx = r.data().turnIndex + 1;
-
-            if(nextIdx >= r.data().playerOrder.length) {
-                const endTime = Date.now() + (3 * 60 * 1000);
-                db.collection('rooms').doc(currentRoomId).update({ status: 'debate', endTime: endTime });
-            } else {
+            if(nextIdx < r.data().playerOrder.length) {
                 db.collection('rooms').doc(currentRoomId).update({ turnIndex: nextIdx });
             }
         }
@@ -472,8 +419,7 @@
                     clearInterval(intv);
                     if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
                 }
-                const m = Math.floor(diff / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
+                const m = Math.floor(diff / 60000), s = Math.floor((diff % 60000) / 1000);
                 timerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
             }, 1000);
         }
@@ -482,40 +428,34 @@
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             let html = "";
             pSnap.forEach(p => {
-                if(p.id !== currentUser.uid) {
-                    html += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`;
-                }
+                if(p.id !== currentUser.uid) html += `<button class="btn btn-gold" id="btn-v-${p.id}" onclick="castVote('${p.id}')">${p.data().name}</button>`;
             });
             document.getElementById('vote-grid').innerHTML = html;
             showScreen('screen-vote');
         }
 
         async function castVote(targetId) {
+            document.getElementById('vote-grid').style.pointerEvents = 'none';
+            document.getElementById('vote-wait-msg').style.display = 'block';
             await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ vote: targetId });
-            if(isHost) {
-                setTimeout(async () => {
-                    const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
-                    const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
-                    
-                    let votes = {};
-                    let summary = "";
-                    pSnap.forEach(p => {
-                        const d = p.data();
-                        const vName = pSnap.docs.find(x => x.id === d.vote)?.data().name || "Nadie";
-                        summary += `<div><b>${d.name}</b> votó a -> ${vName}</div>`;
-                        votes[d.vote] = (votes[d.vote] || 0) + 1;
-                    });
-
-                    let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
-                    const win = mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR';
-
-                    db.collection('rooms').doc(currentRoomId).update({
-                        status: 'result',
-                        winner: win,
-                        summary: summary,
-                        impostorName: pSnap.docs.find(x => x.id === rData.impostorId).data().name
-                    });
-                }, 5000);
+            
+            // Comprobar si todos han votado
+            const players = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+            const allVoted = players.docs.every(d => d.data().vote !== "");
+            
+            if(allVoted && isHost) {
+                const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
+                let votes = {}, summary = "";
+                players.forEach(p => {
+                    const d = p.data(), vName = players.docs.find(x => x.id === d.vote)?.data().name || "Nadie";
+                    summary += `<div><b>${d.name}</b> votó a -> ${vName}</div>`;
+                    votes[d.vote] = (votes[d.vote] || 0) + 1;
+                });
+                let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+                db.collection('rooms').doc(currentRoomId).update({
+                    status: 'result', winner: mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR',
+                    summary: summary, impostorName: players.docs.find(x => x.id === rData.impostorId).data().name
+                });
             }
         }
 
@@ -526,12 +466,7 @@
             showScreen('screen-result');
         }
 
-        async function exitRoom() {
-            if(currentRoomId) {
-                await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).delete();
-                location.reload();
-            }
-        }
+        async function exitRoom() { if(currentRoomId) { await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).delete(); location.reload(); } }
     </script>
 </body>
 </html>
