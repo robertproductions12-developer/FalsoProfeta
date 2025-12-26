@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>El Falso Profeta Online</title>
+    <title>El Falso Profeta - Edición Online</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -16,9 +16,9 @@
             --gold: #e2b04a;
             --gold-dark: #b8860b;
             --bg: #050505;
-            --card: rgba(15, 15, 15, 0.9);
+            --card: rgba(15, 15, 15, 0.95);
             --accent: #ff3e3e;
-            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.4s ease;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -32,87 +32,99 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
+        /* --- REDES SOCIALES ESTÁTICAS --- */
+        .social-sidebar {
+            position: fixed;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        .social-icon {
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(226, 176, 74, 0.3);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .social-icon:hover { background: var(--gold); color: black; transform: scale(1.1); }
+
         .screen {
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%; width: 100%;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
             position: absolute;
-            top: 0; left: 0;
-            z-index: 10;
         }
-
-        .active { display: flex; animation: fadeInScale 0.6s var(--transition); }
-
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.9) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        #video-intro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; }
-
-        .btn {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-            border: 1px solid rgba(226, 176, 74, 0.3);
-            color: white;
-            padding: 16px 25px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            width: 100%;
-            max-width: 280px;
-            margin: 8px 0;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-
-        .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #000; border: none; }
-        .btn-accent { background: var(--accent); border: none; }
+        .active { display: flex; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .glass-card {
             background: var(--card);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 28px;
-            padding: 30px 20px;
-            width: 100%; max-width: 340px;
+            border-radius: 25px;
+            padding: 25px;
+            width: 100%; max-width: 360px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
+        .btn {
+            background: linear-gradient(135deg, #222 0%, #000 100%);
+            border: 1px solid var(--gold-dark);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: black; border: none; }
+        .btn-exit { background: #330000; border: 1px solid var(--accent); color: var(--accent); }
+
         input[type="text"] {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.07);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 14px; border-radius: 12px;
-            color: white; width: 100%; margin-bottom: 12px;
+            padding: 15px; border-radius: 12px;
+            color: white; width: 100%; margin-bottom: 10px;
             text-align: center; font-size: 16px;
         }
 
-        .player-badge {
+        .clue-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; width: 100%; max-height: 40vh;
+            overflow-y: auto; margin: 15px 0;
+            padding-right: 5px;
+        }
+        .clue-item {
             background: rgba(255,255,255,0.05);
-            padding: 10px; border-radius: 10px; margin: 5px 0;
-            display: flex; align-items: center; gap: 10px; justify-content: center;
+            padding: 10px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
+        .clue-item.active-turn { border: 2px solid var(--gold); background: rgba(226,176,74,0.1); }
+        .clue-text { color: var(--gold); font-weight: 900; font-size: 13px; margin-top: 5px; }
 
-        .turn-active { border: 2px solid var(--gold); background: rgba(226, 176, 74, 0.1); }
-
-        #timer { font-size: 60px; font-weight: 900; color: var(--gold); }
+        #timer { font-size: 50px; font-weight: 900; color: var(--gold); margin: 10px 0; }
         
-        .clue-box {
-            background: var(--gold);
-            color: black;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 12px;
-            margin-top: 5px;
-            min-height: 30px;
-        }
-
-        footer { position: fixed; bottom: 15px; width: 100%; text-align: center; font-size: 9px; opacity: 0.4; }
+        #video-intro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.3; }
+        
+        .vote-card { font-size: 10px; background: rgba(255,255,255,0.05); margin: 3px; padding: 5px; border-radius: 5px; }
+        
+        footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; opacity: 0.5; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -121,105 +133,107 @@
         <source src="logo_animado.mp4" type="video/mp4">
     </video>
 
+    <!-- REDES SOCIALES -->
+    <div class="social-sidebar">
+        <a href="https://youtube.com/@robert_paraco" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://instagram.com/robert_paraco" class="social-icon" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://tiktok.com/@robert_paraco" class="social-icon" target="_blank"><i class="fab fa-tiktok"></i></a>
+    </div>
+
     <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="glass-card">
-            <h2 style="color:var(--gold); margin-bottom: 20px;">BIENVENIDO</h2>
-            <input type="text" id="login-name" placeholder="Tu nombre o Nick">
-            <button class="btn btn-gold" onclick="loginAnonymously()">ENTRAR AL JUEGO</button>
+            <h1 style="color:var(--gold); font-size: 1.8rem; margin-bottom: 20px;">EL FALSO PROFETA</h1>
+            <input type="text" id="login-name" placeholder="Escribe tu Nombre">
+            <button class="btn btn-gold" onclick="login()">ENTRAR</button>
         </div>
     </div>
 
     <!-- 2. MENU -->
     <div id="screen-menu" class="screen">
-        <h1 style="color: var(--gold); font-size: 2.2rem; margin-bottom: 20px;">EL FALSO PROFETA</h1>
         <div class="glass-card">
-            <button class="btn btn-gold" onclick="createRoom()">CREAR SALA ONLINE</button>
+            <button class="btn btn-gold" onclick="createRoom()">CREAR PARTIDA ONLINE</button>
             <button class="btn" onclick="showScreen('screen-join-room')">UNIRSE A SALA</button>
-            <button class="btn btn-accent" onclick="logout()">CERRAR SESIÓN</button>
+            <button class="btn btn-exit" onclick="location.reload()">SALIR DEL JUEGO</button>
         </div>
     </div>
 
     <!-- 3. LOBBY HOST -->
     <div id="screen-create-room" class="screen">
         <div class="glass-card">
-            <h2 style="color:var(--gold)">CÓDIGO DE SALA</h2>
-            <div id="room-code-display" style="font-size: 35px; font-weight: 900; letter-spacing: 5px; margin: 15px 0;">------</div>
-            <p style="font-size: 11px; margin-bottom: 10px;">Jugadores conectados:</p>
-            <div id="lobby-players-host" style="margin-bottom: 20px;"></div>
-            <button class="btn btn-gold" onclick="hostStartGame()">INICIAR PARTIDA</button>
+            <h2 style="color:var(--gold)">SALA: <span id="room-code-display">---</span></h2>
+            <div id="lobby-players" style="margin: 20px 0; text-align: left;"></div>
+            <button class="btn btn-gold" onclick="startGame()">INICIAR (MÍN. 3)</button>
+            <button class="btn btn-exit" onclick="exitRoom()">CERRAR SALA</button>
         </div>
     </div>
 
     <!-- 4. UNIRSE -->
     <div id="screen-join-room" class="screen">
         <div class="glass-card">
-            <h2 style="color:var(--gold)">UNIRSE</h2>
-            <input type="text" id="join-code-input" placeholder="CÓDIGO" style="text-transform: uppercase;">
-            <button class="btn btn-gold" onclick="joinRoom()">ENTRAR</button>
+            <input type="text" id="join-code-input" placeholder="CÓDIGO DE SALA" style="text-transform: uppercase;">
+            <button class="btn btn-gold" onclick="joinRoom()">UNIRSE</button>
             <button class="btn" onclick="showScreen('screen-menu')">VOLVER</button>
         </div>
     </div>
 
-    <!-- 5. LOBBY GUEST -->
+    <!-- 5. LOBBY ESPERA (GUEST) -->
     <div id="screen-lobby-guest" class="screen">
         <div class="glass-card">
-            <h2 style="color:var(--gold)">EN LA SALA</h2>
-            <p style="font-size: 12px; margin: 10px 0;">Esperando al Host para conocer tu rol...</p>
+            <h2 style="color:var(--gold)">ESPERANDO INICIO...</h2>
             <div id="lobby-players-guest" style="margin: 20px 0;"></div>
+            <button class="btn btn-exit" onclick="exitRoom()">SALIR DE SALA</button>
         </div>
     </div>
 
-    <!-- 6. REVELACIÓN DE ROL -->
+    <!-- 6. ROL -->
     <div id="screen-reveal" class="screen">
         <div class="glass-card">
             <h2 id="role-title">TU ROL</h2>
-            <div id="secret-word" style="font-size: 24px; color: var(--gold); margin: 20px 0; font-weight: 900;">---</div>
-            <p id="secret-quote" style="font-style: italic; font-size: 12px; margin-bottom: 20px; opacity: 0.8;"></p>
-            <button class="btn btn-gold" onclick="confirmRole()">ENTENDIDO</button>
+            <div id="secret-word" style="font-size: 26px; color: var(--gold); margin: 20px 0; font-weight: 900;">---</div>
+            <p id="secret-quote" style="font-style: italic; font-size: 13px; opacity: 0.8;"></p>
+            <button class="btn btn-gold" style="margin-top: 20px;" onclick="confirmRole()">ENTENDIDO</button>
         </div>
     </div>
 
-    <!-- 7. RONDA DE PISTAS (POR TURNOS) -->
+    <!-- 7. PISTAS POR TURNO -->
     <div id="screen-clues" class="screen">
-        <h2 style="color: var(--gold); margin-bottom: 15px;">RONDA DE PISTAS</h2>
-        <div id="turn-indicator" style="font-size: 14px; margin-bottom: 15px; color: var(--gold);">Es el turno de: ...</div>
-        
-        <div id="players-clues-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-bottom: 20px;"></div>
-
-        <div id="my-turn-input" style="display: none; width: 100%; max-width: 340px;" class="glass-card">
-            <p style="font-size: 11px; margin-bottom: 10px;">ESCRIBE TU PISTA (MÁX 2 PALABRAS)</p>
-            <input type="text" id="clue-input" placeholder="Ej: Madera, Arca">
-            <button class="btn btn-gold" onclick="sendClue()">ENVIAR PISTA</button>
+        <h3 id="clue-turn-msg" style="color: var(--gold); margin-bottom: 10px;">Turno de...</h3>
+        <div id="clues-grid" class="clue-grid"></div>
+        <div id="my-clue-input-area" style="display:none; width: 100%;">
+            <input type="text" id="clue-input" placeholder="2 PALABRAS MÁXIMO">
+            <button class="btn btn-gold" onclick="submitClue()">ENVIAR PISTA</button>
         </div>
     </div>
 
-    <!-- 8. TABLERO DE DEBATE -->
-    <div id="screen-board" class="screen">
+    <!-- 8. DEBATE (3 MIN) -->
+    <div id="screen-debate" class="screen">
         <div id="timer">03:00</div>
-        <div id="clues-final-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin: 20px 0;"></div>
-        <p style="font-size: 12px; opacity: 0.6;">DEBATAN: ¿QUIÉN ES EL FALSO PROFETA?</p>
+        <div id="clues-final-grid" class="clue-grid"></div>
+        <p style="font-size: 12px; color: var(--gold);">DEBATAN QUIÉN ES EL FALSO PROFETA</p>
     </div>
 
     <!-- 9. VOTACIÓN -->
     <div id="screen-vote" class="screen">
-        <h2 style="color: var(--accent); margin-bottom: 20px;">VOTACIÓN FINAL</h2>
-        <div id="vote-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px;"></div>
+        <h2 style="color: var(--accent); margin-bottom: 15px;">¿A QUIÉN EXPULSAR?</h2>
+        <div id="vote-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px;"></div>
     </div>
 
     <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
-            <h2 id="result-status">-</h2>
-            <p style="font-size: 11px; opacity: 0.6; margin-top: 10px;">EL FALSO PROFETA ERA:</p>
-            <h1 id="reveal-impostor-name" style="color: var(--gold);">---</h1>
-            <button class="btn btn-gold" onclick="location.reload()">VOLVER AL INICIO</button>
+            <h2 id="res-status" style="margin-bottom: 10px;">-</h2>
+            <p style="font-size: 11px; opacity: 0.6;">EL FALSO PROFETA ERA:</p>
+            <h1 id="res-impostor" style="color: var(--gold); margin: 10px 0;">---</h1>
+            <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;"></div>
+            <button class="btn btn-gold" onclick="location.reload()">JUGAR OTRA VEZ</button>
         </div>
     </div>
 
     <footer>DISEÑADO POR - ROBERT PARACO</footer>
 
     <script>
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
              apiKey: "AIzaSyCc0dMjTppOlnGV_NuXCFUGhx7882qbZlE",
              authDomain: "falsoprofeta-6e682.firebaseapp.com",
@@ -233,30 +247,78 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // BASE DE DATOS DE 100 ELEMENTOS
+        const items = [
+            // PERSONAJES (40)
+            {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
+            {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"}, {w: "Abraham", q: "Sal de tu tierra (Génesis 12:1)"},
+            {w: "Isaac", q: "Dios proveerá (Génesis 22:8)"}, {w: "Jacob", q: "He visto a Dios cara a cara (Génesis 32:30)"},
+            {w: "José", q: "Dios lo encaminó a bien (Génesis 50:20)"}, {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
+            {w: "Aarón", q: "Será tu portavoz (Éxodo 4:16)"}, {w: "Josué", q: "Esfuérzate y sé valiente (Josué 1:9)"},
+            {w: "Débora", q: "Se levantó como madre en Israel (Jueces 5:7)"}, {w: "Gedeón", q: "Jehová está contigo (Jueces 6:12)"},
+            {w: "Sansón", q: "Comenzó a salvar a Israel (Jueces 13:5)"}, {w: "Rut", q: "Tu Dios será mi Dios (Rut 1:16)"},
+            {w: "Samuel", q: "Habla, porque tu siervo oye (1 Samuel 3:10)"}, {w: "Saúl", q: "Otro corazón le fue dado (1 Samuel 10:9)"},
+            {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"}, {w: "Salomón", q: "Dame sabiduría (1 Reyes 3:9)"},
+            {w: "Elías", q: "Vive Jehová (1 Reyes 17:1)"}, {w: "Eliseo", q: "Una doble porción de tu espíritu (2 Reyes 2:9)"},
+            {w: "Isaías", q: "Heme aquí, envíame a mí (Isaías 6:8)"}, {w: "Jeremías", q: "Antes que nacieses te conocí (Jeremías 1:5)"},
+            {w: "Ezequiel", q: "Hijo de hombre, ponte en pie (Ezequiel 2:1)"}, {w: "Daniel", q: "Dios cerró la boca de los leones (Daniel 6:22)"},
+            {w: "Ester", q: "Para esta hora has llegado (Ester 4:14)"}, {w: "Nehemías", q: "El gozo de Jehová es mi fuerza (Nehemías 8:10)"},
+            {w: "Job", q: "Yo sé que mi Redentor vive (Job 19:25)"}, {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
+            {w: "Zacarías", q: "No con ejército ni con fuerza (Zacarías 4:6)"}, {w: "Juan el Bautista", q: "Preparad el camino del Señor (Mateo 3:3)"},
+            {w: "María", q: "He aquí la sierva del Señor (Lucas 1:38)"}, {w: "José (Esposo)", q: "No temas recibir a María (Mateo 1:20)"},
+            {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"}, {w: "Juan", q: "El discípulo amado (Juan 13:23)"},
+            {w: "Marta", q: "Yo sé que resucitará (Juan 11:24)"}, {w: "María Magdalena", q: "He visto al Señor (Juan 20:18)"},
+            {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Bernabé", q: "Hijo de consolación (Hechos 4:36)"},
+            {w: "Timoteo", q: "Ninguno tenga en poco tu juventud (1 Timoteo 4:12)"}, {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"},
+            // HISTORIAS (20)
+            {w: "La creación", q: "Y vio Dios que era bueno (Génesis 1:31)"}, {w: "El diluvio", q: "Entró Noé en el arca (Génesis 7:7)"},
+            {w: "La torre de Babel", q: "Confundió Jehová el lenguaje (Génesis 11:9)"}, {w: "Sacrificio Isaac", q: "Jehová proveerá (Génesis 22:14)"},
+            {w: "José vendido", q: "Lo vendieron por plata (Génesis 37:28)"}, {w: "El éxodo", q: "Deja ir a mi pueblo (Éxodo 5:1)"},
+            {w: "El mar Rojo", q: "Las aguas se abrieron (Éxodo 14:21)"}, {w: "El maná", q: "Pan del cielo (Éxodo 16:4)"},
+            {w: "10 Mandamientos", q: "Escritos por el dedo de Dios (Éxodo 31:18)"}, {w: "Caída de Jericó", q: "El muro se derrumbó (Josué 6:20)"},
+            {w: "David y Goliat", q: "Jehová te entregará (1 Samuel 17:46)"}, {w: "Templo Salomón", q: "La gloria de Jehová llenó la casa (1 Reyes 8:11)"},
+            {w: "Elías en Carmelo", q: "Jehová es Dios (1 Reyes 18:39)"}, {w: "Jonás y el pez", q: "Jehová habló al pez (Jonás 2:10)"},
+            {w: "Horno de fuego", q: "No fueron quemados (Daniel 3:27)"}, {w: "Foso de leones", q: "Dios envió su ángel (Daniel 6:22)"},
+            {w: "Nacimiento Jesús", q: "Os ha nacido un Salvador (Lucas 2:11)"}, {w: "La cruz", q: "Consumado es (Juan 19:30)"},
+            {w: "La resurrección", q: "No está aquí, resucitó (Mateo 28:6)"}, {w: "Pentecostés", q: "Fueron llenos del Espíritu Santo (Hechos 2:4)"},
+            // LUGARES (20)
+            {w: "Edén", q: "Plantó Jehová Dios un huerto (Génesis 2:8)"}, {w: "Ararat", q: "Reposó el arca (Génesis 8:4)"},
+            {w: "Betel", q: "Casa de Dios (Génesis 28:19)"}, {w: "Egipto", q: "Lugar de esclavitud (Éxodo 1:14)"},
+            {w: "Sinaí", q: "Jehová descendió (Éxodo 19:20)"}, {w: "Jericó", q: "Ciudad fortificada (Josué 6:1)"},
+            {w: "Jerusalén", q: "Ciudad del gran Rey (Salmos 48:2)"}, {w: "Belén", q: "De ti me saldrá el Salvador (Miqueas 5:2)"},
+            {w: "Nazaret", q: "Será llamado nazareno (Mateo 2:23)"}, {w: "Galilea", q: "El pueblo vio gran luz (Mateo 4:16)"},
+            {w: "Capernaum", q: "Ciudad de Jesús (Mateo 9:1)"}, {w: "Samaria", q: "Campo de misión (Juan 4:4)"},
+            {w: "Getsemaní", q: "Oró con gran agonía (Lucas 22:44)"}, {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"},
+            {w: "Monte Olivos", q: "Ascendió al cielo (Hechos 1:9)"}, {w: "Damasco", q: "Camino de conversión (Hechos 9:3)"},
+            {w: "Antioquía", q: "Llamados cristianos (Hechos 11:26)"}, {w: "Éfeso", q: "Gran puerta abierta (1 Corintios 16:9)"},
+            {w: "Corinto", q: "Tengo mucho pueblo (Hechos 18:10)"}, {w: "Patmos", q: "Por causa de la palabra (Apocalipsis 1:9)"},
+            // PARÁBOLAS (20)
+            {w: "El sembrador", q: "El que oye la palabra (Mateo 13:23)"}, {w: "Trigo y cizaña", q: "Dejad crecer juntos (Mateo 13:30)"},
+            {w: "Grano mostaza", q: "La más pequeña (Mateo 13:32)"}, {w: "La levadura", q: "Leudó toda la masa (Mateo 13:33)"},
+            {w: "Tesoro escondido", q: "Vende todo lo que tiene (Mateo 13:44)"}, {w: "Perla gran precio", q: "Una perla preciosa (Mateo 13:46)"},
+            {w: "La red", q: "Separan a los malos (Mateo 13:49)"}, {w: "La oveja perdida", q: "Hasta hallarla (Lucas 15:4)"},
+            {w: "Moneda perdida", q: "Se goza cuando la halla (Lucas 15:9)"}, {w: "Hijo pródigo", q: "Estaba muerto y revivió (Lucas 15:24)"},
+            {w: "Buen samaritano", q: "Tuvo compasión (Lucas 10:33)"}, {w: "Amigo importuno", q: "Por su insistencia (Lucas 11:8)"},
+            {w: "Rico insensato", q: "Esta noche vienen por tu alma (Lucas 12:20)"}, {w: "Higuera estéril", q: "Dale otra oportunidad (Lucas 13:8)"},
+            {w: "Los invitados", q: "Muchos son llamados (Mateo 22:14)"}, {w: "Los talentos", q: "Bien, buen siervo fiel (Mateo 25:21)"},
+            {w: "Diez vírgenes", q: "Velad (Mateo 25:13)"}, {w: "Juicio final", q: "A uno de estos pequeños (Mateo 25:40)"},
+            {w: "Fariseo y Publicano", q: "Descendió justificado (Lucas 18:14)"}, {w: "Constructor sabio", q: "Sobre la roca (Mateo 7:24)"}
+        ];
+
         let currentUser = null;
         let currentRoomId = null;
         let isHost = false;
         let roomUnsub = null;
         let playersUnsub = null;
 
-        const phrases = [
-            {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"},
-            {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"},
-            {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
-            {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"},
-            {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
-            {w: "Sansón", q: "Su fuerza estaba en su fe (Jueces 16)"},
-            {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"}
-        ];
-
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function loginAnonymously() {
+        function login() {
             const name = document.getElementById('login-name').value.trim();
-            if (!name) return alert("Ingresa tu nombre");
+            if(!name) return;
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
                 showScreen('screen-menu');
@@ -264,213 +326,212 @@
         }
 
         async function createRoom() {
-            const roomId = Math.random().toString(36).substring(2, 7).toUpperCase();
-            currentRoomId = roomId;
+            const code = Math.random().toString(36).substring(2,7).toUpperCase();
+            currentRoomId = code;
             isHost = true;
-            await db.collection('rooms').doc(roomId).set({
+            await db.collection('rooms').doc(code).set({
                 hostId: currentUser.uid,
                 status: 'waiting',
                 turnIndex: 0,
-                playerOrder: []
+                playerOrder: [],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            document.getElementById('room-code-display').innerText = roomId;
-            joinRoomLogic(roomId);
+            document.getElementById('room-code-display').innerText = code;
+            joinLogic(code);
             showScreen('screen-create-room');
         }
 
-        async function joinRoom() {
+        function joinRoom() {
             const code = document.getElementById('join-code-input').value.trim().toUpperCase();
-            if (!code) return;
-            const doc = await db.collection('rooms').doc(code).get();
-            if (!doc.exists) return alert("Sala no encontrada");
-            currentRoomId = code;
-            isHost = false;
-            joinRoomLogic(code);
-            showScreen('screen-lobby-guest');
+            if(!code) return;
+            db.collection('rooms').doc(code).get().then(doc => {
+                if(!doc.exists) return alert("SALA NO EXISTE");
+                currentRoomId = code;
+                isHost = false;
+                joinLogic(code);
+                showScreen('screen-lobby-guest');
+            });
         }
 
-        function joinRoomLogic(roomId) {
-            db.collection('rooms').doc(roomId).collection('players').doc(currentUser.uid).set({
+        async function joinLogic(code) {
+            await db.collection('rooms').doc(code).collection('players').doc(currentUser.uid).set({
                 name: currentUser.name,
                 uid: currentUser.uid,
                 clue: "",
-                role: ""
+                vote: "",
+                role: "",
+                joinedAt: Date.now()
             });
-            listenToRoom(roomId);
+            listenRoom(code);
         }
 
-        function listenToRoom(roomId) {
-            roomUnsub = db.collection('rooms').doc(roomId).onSnapshot(doc => {
+        function listenRoom(code) {
+            roomUnsub = db.collection('rooms').doc(code).onSnapshot(doc => {
                 const data = doc.data();
-                if (!data) return;
-                
-                if (data.status === 'playing') setupPlayerRole(data);
-                if (data.status === 'clues') handleCluesTurn(data);
-                if (data.status === 'timer') {
-                    showScreen('screen-board');
-                    startLocalTimer(data.endTime);
-                }
-                if (data.status === 'voting') setupVoting();
-                if (data.status === 'result') showResults(data);
+                if(!data) return;
+                if(data.status === 'playing') setupRole(data);
+                if(data.status === 'clues') handleClues(data);
+                if(data.status === 'debate') { showScreen('screen-debate'); startDebateTimer(data.endTime); }
+                if(data.status === 'voting') setupVote();
+                if(data.status === 'result') showFinalResult(data);
             });
 
-            playersUnsub = db.collection('rooms').doc(roomId).collection('players').onSnapshot(snap => {
-                let html = "";
-                snap.forEach(pDoc => {
-                    html += `<div class="player-badge"><i class="fas fa-user"></i> ${pDoc.data().name}</div>`;
+            playersUnsub = db.collection('rooms').doc(code).collection('players').orderBy('joinedAt', 'asc').onSnapshot(snap => {
+                let listHtml = "";
+                let clueHtml = "";
+                snap.forEach(p => {
+                    const pd = p.data();
+                    listHtml += `<div class="player-badge">🔹 ${pd.name}</div>`;
+                    clueHtml += `
+                        <div class="clue-item" id="clue-box-${pd.uid}">
+                            <div style="font-size:9px; opacity:0.6;">${pd.name}</div>
+                            <div class="clue-text">${pd.clue || '...'}</div>
+                        </div>`;
                 });
-                document.getElementById('lobby-players-host').innerHTML = html;
-                document.getElementById('lobby-players-guest').innerHTML = html;
-                
-                // Actualizar pistas en pantallas 7 y 8
-                renderCluesGrid(snap, 'players-clues-grid');
-                renderCluesGrid(snap, 'clues-final-grid');
+                document.getElementById('lobby-players').innerHTML = listHtml;
+                document.getElementById('lobby-players-guest').innerHTML = listHtml;
+                document.getElementById('clues-grid').innerHTML = clueHtml;
+                document.getElementById('clues-final-grid').innerHTML = clueHtml;
             });
         }
 
-        async function hostStartGame() {
-            const snap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
-            if (snap.size < 3) return alert("Mínimo 3 jugadores");
+        async function startGame() {
+            const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').orderBy('joinedAt', 'asc').get();
+            if(pSnap.size < 3) return alert("FALTAN JUGADORES");
 
-            const ids = snap.docs.map(d => d.id);
-            const impId = ids[Math.floor(Math.random() * ids.length)];
-            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+            const ids = pSnap.docs.map(d => d.id);
+            const impostorId = ids[Math.floor(Math.random() * ids.length)];
+            const chosen = items[Math.floor(Math.random() * items.length)];
 
             await db.collection('rooms').doc(currentRoomId).update({
                 status: 'playing',
-                impostorId: impId,
-                phrase: phrase.w,
-                quote: phrase.q,
-                playerOrder: ids
+                impostorId: impostorId,
+                word: chosen.w,
+                quote: chosen.q,
+                playerOrder: ids,
+                turnIndex: 0
             });
 
-            snap.forEach(pDoc => {
-                pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'disciple' });
+            pSnap.forEach(pDoc => {
+                pDoc.ref.update({ role: pDoc.id === impostorId ? 'impostor' : 'disciple' });
             });
         }
 
-        async function setupPlayerRole(roomData) {
-            const pDoc = await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).get();
-            const role = pDoc.data().role;
-            const isImp = role === 'impostor';
-            
+        async function setupRole(data) {
+            const p = await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).get();
+            const isImp = p.data().role === 'impostor';
             document.getElementById('role-title').innerText = isImp ? "ERES EL FALSO PROFETA" : "ERES UN DISCÍPULO";
-            document.getElementById('secret-word').innerText = isImp ? "¡MÁNTENTE OCULTO!" : roomData.phrase;
-            document.getElementById('secret-quote').innerText = isImp ? "No conoces la palabra. Escucha pistas y finge." : roomData.quote;
+            document.getElementById('secret-word').innerText = isImp ? "¡MÁNTENTE OCULTO!" : data.word;
+            document.getElementById('secret-quote').innerText = isImp ? "No conoces el personaje. Escucha pistas y miente." : data.quote;
             showScreen('screen-reveal');
         }
 
         function confirmRole() {
-            if (isHost) {
-                db.collection('rooms').doc(currentRoomId).update({ status: 'clues' });
-            } else {
-                showScreen('screen-clues');
-            }
+            if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'clues' });
+            else showScreen('screen-clues');
         }
 
-        function handleCluesTurn(roomData) {
+        function handleClues(data) {
             showScreen('screen-clues');
-            const currentTurnUid = roomData.playerOrder[roomData.turnIndex];
+            const turnUid = data.playerOrder[data.turnIndex];
             
-            db.collection('rooms').doc(currentRoomId).collection('players').doc(currentTurnUid).get().then(doc => {
-                document.getElementById('turn-indicator').innerText = `Es el turno de: ${doc.data().name}`;
+            // Resaltar turno
+            document.querySelectorAll('.clue-item').forEach(el => el.classList.remove('active-turn'));
+            const activeBox = document.getElementById(`clue-box-${turnUid}`);
+            if(activeBox) activeBox.classList.add('active-turn');
+
+            db.collection('rooms').doc(currentRoomId).collection('players').doc(turnUid).get().then(d => {
+                document.getElementById('clue-turn-msg').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`;
             });
 
-            if (currentTurnUid === currentUser.uid) {
-                document.getElementById('my-turn-input').style.display = 'block';
-            } else {
-                document.getElementById('my-turn-input').style.display = 'none';
-            }
+            document.getElementById('my-clue-input-area').style.display = (turnUid === currentUser.uid) ? 'block' : 'none';
         }
 
-        async function sendClue() {
+        async function submitClue() {
             const val = document.getElementById('clue-input').value.trim();
-            const words = val.split(/\s+/);
-            if (!val || words.length > 2) return alert("Escribe máximo 2 palabras");
+            if(!val || val.split(/\s+/).length > 2) return alert("MÁXIMO 2 PALABRAS");
 
             await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ clue: val });
             
-            const roomSnap = await db.collection('rooms').doc(currentRoomId).get();
-            const nextIndex = roomSnap.data().turnIndex + 1;
+            const r = await db.collection('rooms').doc(currentRoomId).get();
+            const nextIdx = r.data().turnIndex + 1;
 
-            if (nextIndex >= roomSnap.data().playerOrder.length) {
-                // Todos terminaron, inicia debate (3 minutos)
+            if(nextIdx >= r.data().playerOrder.length) {
                 const endTime = Date.now() + (3 * 60 * 1000);
-                await db.collection('rooms').doc(currentRoomId).update({
-                    status: 'timer',
-                    endTime: endTime
-                });
+                db.collection('rooms').doc(currentRoomId).update({ status: 'debate', endTime: endTime });
             } else {
-                await db.collection('rooms').doc(currentRoomId).update({
-                    turnIndex: nextIndex
-                });
+                db.collection('rooms').doc(currentRoomId).update({ turnIndex: nextIdx });
             }
         }
 
-        function renderCluesGrid(snap, containerId) {
-            let html = "";
-            snap.forEach(doc => {
-                const p = doc.data();
-                html += `
-                    <div class="glass-card" style="padding:10px; border-color: ${p.clue ? 'var(--gold)' : 'rgba(255,255,255,0.1)'}">
-                        <div style="font-size:10px; opacity:0.6;">${p.name}</div>
-                        <div class="clue-box">${p.clue || '...'}</div>
-                    </div>`;
-            });
-            document.getElementById(containerId).innerHTML = html;
-        }
-
-        function startLocalTimer(endTime) {
-            const timerDiv = document.getElementById('timer');
-            const timerInt = setInterval(() => {
+        function startDebateTimer(endTime) {
+            const timerEl = document.getElementById('timer');
+            const intv = setInterval(() => {
                 const diff = endTime - Date.now();
-                if (diff <= 0) {
-                    clearInterval(timerInt);
-                    if (isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
+                if(diff <= 0) {
+                    clearInterval(intv);
+                    if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
                 }
                 const m = Math.floor(diff / 60000);
                 const s = Math.floor((diff % 60000) / 1000);
-                timerDiv.innerText = `${m}:${s < 10 ? '0'+s : s}`;
+                timerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
             }, 1000);
         }
 
-        async function setupVoting() {
-            const snap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+        async function setupVote() {
+            const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             let html = "";
-            snap.forEach(doc => {
-                if (doc.id !== currentUser.uid) {
-                    html += `<button class="btn btn-gold" onclick="castVote('${doc.id}')">${doc.data().name}</button>`;
+            pSnap.forEach(p => {
+                if(p.id !== currentUser.uid) {
+                    html += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`;
                 }
             });
-            document.getElementById('vote-list').innerHTML = html;
+            document.getElementById('vote-grid').innerHTML = html;
             showScreen('screen-vote');
         }
 
         async function castVote(targetId) {
             await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ vote: targetId });
-            if (isHost) {
+            if(isHost) {
                 setTimeout(async () => {
-                    const rSnap = await db.collection('rooms').doc(currentRoomId).get();
+                    const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
                     const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+                    
                     let votes = {};
-                    pSnap.forEach(p => { const v = p.data().vote; if(v) votes[v] = (votes[v] || 0) + 1; });
-                    let winnerId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+                    let summary = "";
+                    pSnap.forEach(p => {
+                        const d = p.data();
+                        const vName = pSnap.docs.find(x => x.id === d.vote)?.data().name || "Nadie";
+                        summary += `<div><b>${d.name}</b> votó a -> ${vName}</div>`;
+                        votes[d.vote] = (votes[d.vote] || 0) + 1;
+                    });
+
+                    let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+                    const win = mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR';
+
                     db.collection('rooms').doc(currentRoomId).update({
                         status: 'result',
-                        winner: winnerId === rSnap.data().impostorId ? 'DISCIPLES' : 'IMPOSTOR',
-                        impostorName: pSnap.docs.find(d => d.id === rSnap.data().impostorId).data().name
+                        winner: win,
+                        summary: summary,
+                        impostorName: pSnap.docs.find(x => x.id === rData.impostorId).data().name
                     });
                 }, 5000);
             }
         }
 
-        function showResults(data) {
-            document.getElementById('result-status').innerText = data.winner === 'DISCIPLES' ? "¡GANAN LOS DISCÍPULOS!" : "¡GANÓ EL FALSO PROFETA!";
-            document.getElementById('reveal-impostor-name').innerText = data.impostorName;
+        function showFinalResult(data) {
+            document.getElementById('res-status').innerText = data.winner === 'DISCIPLES' ? "¡LOGRARON EXPULSARLO!" : "¡EL PROFETA LOS ENGAÑÓ!";
+            document.getElementById('res-impostor').innerText = data.impostorName;
+            document.getElementById('vote-summary').innerHTML = data.summary;
             showScreen('screen-result');
         }
 
-        function logout() { auth.signOut().then(() => location.reload()); }
+        async function exitRoom() {
+            if(currentRoomId) {
+                await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).delete();
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
