@@ -31,6 +31,29 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
+        /* ANIMACIÓN DE SIGNOS DE INTERROGACIÓN */
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .q-mark {
+            position: absolute;
+            color: var(--gold);
+            opacity: 0.1;
+            font-weight: 900;
+            font-size: 3rem;
+            animation: float 8s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.1; }
+            80% { opacity: 0.1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
         .social-container {
             position: fixed;
             bottom: 45px;
@@ -59,6 +82,7 @@
             padding: 15px;
             text-align: center;
             position: absolute;
+            z-index: 10;
         }
         .active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -73,6 +97,16 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.8);
             max-height: 85vh;
             overflow-y: auto;
+        }
+
+        .login-img {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            background: rgba(0,0,0,0.5);
         }
 
         .btn {
@@ -129,14 +163,11 @@
         }
 
         footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; opacity: 0.4; }
-        #video-intro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.2; }
     </style>
 </head>
 <body>
 
-    <video id="video-intro" autoplay muted loop playsinline>
-        <source src="logo_animado.mp4" type="video/mp4">
-    </video>
+    <div class="bg-animation" id="bg-animation"></div>
 
     <div class="social-container">
         <a href="https://youtube.com/@robert_paraco" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
@@ -144,31 +175,37 @@
         <a href="https://tiktok.com/@robert_paraco" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
     </div>
 
-    <!-- PANTALLAS -->
+    <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="glass-card">
+            <!-- COLOCA TU IMAGEN AQUÍ -->
+            <img src="https://cdn-icons-png.flaticon.com/512/3750/3750019.png" class="login-img" alt="Logo">
             <h2 style="color:var(--gold); margin-bottom: 15px;">EL FALSO PROFETA</h2>
             <input type="text" id="login-name" placeholder="Tu nombre...">
-            <button class="btn btn-gold" onclick="login()">ENTRAR</button>
+            <button class="btn btn-gold" onclick="login()">ENTRAR AL TEMPLO</button>
         </div>
     </div>
 
+    <!-- 2. MENU -->
     <div id="screen-menu" class="screen">
         <div class="glass-card">
             <button class="btn btn-gold" onclick="createRoom()">CREAR SALA ONLINE</button>
             <button class="btn" onclick="showScreen('screen-join-room')">UNIRSE A SALA</button>
+            <button class="btn btn-exit" onclick="location.reload()">SALIR</button>
         </div>
     </div>
 
+    <!-- 3. LOBBY HOST -->
     <div id="screen-create-room" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
             <div id="lobby-players" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
             <button class="btn btn-gold" onclick="startPrep()">INICIAR PARTIDA</button>
-            <button class="btn btn-exit" onclick="location.reload()">SALIR</button>
+            <button class="btn btn-exit" onclick="location.reload()">CANCELAR</button>
         </div>
     </div>
 
+    <!-- 4. UNIRSE -->
     <div id="screen-join-room" class="screen">
         <div class="glass-card">
             <input type="text" id="join-code-input" placeholder="CÓDIGO DE SALA" style="text-transform: uppercase;">
@@ -177,29 +214,33 @@
         </div>
     </div>
 
+    <!-- 5. LOBBY GUEST -->
     <div id="screen-lobby-guest" class="screen">
         <div class="glass-card">
-            <h2 style="color:var(--gold)">ESPERANDO...</h2>
+            <h2 style="color:var(--gold)">ESPERANDO AL GUÍA...</h2>
             <div id="lobby-players-guest" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
         </div>
     </div>
 
+    <!-- 6. PREPARACIÓN -->
     <div id="screen-prep" class="screen">
         <div class="glass-card">
-            <h2 style="color:var(--gold)">PREPARANDO...</h2>
+            <h2 style="color:var(--gold)">ANALIZANDO ALMAS...</h2>
             <div id="prep-timer" style="font-size: 50px; font-weight: 900;">15</div>
         </div>
     </div>
 
+    <!-- 7. ROL -->
     <div id="screen-reveal" class="screen">
         <div class="glass-card">
             <h2 id="role-title">TU ROL</h2>
             <div id="secret-word" style="font-size: 24px; color: var(--gold); margin: 15px 0; font-weight: 900;">---</div>
             <p id="secret-quote" style="font-style: italic; font-size: 12px; opacity: 0.8;"></p>
-            <button class="btn btn-gold" style="margin-top: 15px;" onclick="confirmRole()">ENTENDIDO</button>
+            <button class="btn btn-gold" style="margin-top: 15px;" onclick="confirmRole()">IR AL DEBATE</button>
         </div>
     </div>
 
+    <!-- 8. CHAT DE PISTAS -->
     <div id="screen-clues" class="screen">
         <div id="timer">02:00</div>
         <div id="turn-indicator" style="font-size: 11px; color: var(--gold); margin-bottom: 5px;">CARGANDO...</div>
@@ -208,32 +249,32 @@
             <input type="text" id="clue-input" placeholder="2 PALABRAS MÁXIMO">
             <button class="btn btn-gold" onclick="sendClue()">ENVIAR PISTA</button>
         </div>
-        <p id="wait-turn-msg" style="font-size: 10px; opacity: 0.5;">Espera tu turno...</p>
+        <p id="wait-turn-msg" style="font-size: 10px; opacity: 0.5;">Observa las señales de los demás...</p>
     </div>
 
+    <!-- 9. VOTACIÓN -->
     <div id="screen-vote" class="screen">
         <div class="glass-card">
-            <h3 style="color: var(--accent); margin-bottom: 10px;">VOTACIÓN</h3>
-            <p style="font-size: 10px; margin-bottom: 10px;">¿Quién es el Falso Profeta?</p>
+            <h3 style="color: var(--accent); margin-bottom: 10px;">¿QUIÉN ES EL IMPOSTOR?</h3>
             <div id="vote-grid"></div>
-            <p id="vote-wait-msg" style="margin-top: 10px; font-size: 10px; color: var(--gold); display:none;">Esperando a los demás...</p>
+            <p id="vote-wait-msg" style="margin-top: 10px; font-size: 10px; color: var(--gold); display:none;">Esperando el veredicto de los demás...</p>
         </div>
     </div>
 
+    <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
             <h2 id="res-status">-</h2>
             <p style="font-size: 10px; opacity: 0.6; margin-top: 10px;">EL FALSO PROFETA ERA:</p>
             <h1 id="res-impostor" style="color: var(--gold); font-size: 24px;">---</h1>
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px;"></div>
-            <button class="btn btn-gold" onclick="location.reload()">JUGAR DE NUEVO</button>
+            <button class="btn btn-gold" onclick="location.reload()">VOLVER AL TEMPLO</button>
         </div>
     </div>
 
     <footer>DISEÑADO POR - ROBERT PARACO</footer>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
              apiKey: "AIzaSyCc0dMjTppOlnGV_NuXCFUGhx7882qbZlE",
              authDomain: "falsoprofeta-6e682.firebaseapp.com",
@@ -247,9 +288,8 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // 100 PERSONAJES, HISTORIAS, LUGARES Y PARÁBOLAS
         const biblicalItems = [
-            // PERSONAJES (40)
+            // PERSONAJES
             {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
             {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"}, {w: "Abraham", q: "Sal de tu tierra (Génesis 12:1)"},
             {w: "Isaac", q: "Dios proveerá (Génesis 22:8)"}, {w: "Jacob", q: "He visto a Dios cara a cara (Génesis 32:30)"},
@@ -270,8 +310,7 @@
             {w: "Marta", q: "Yo sé que resucitará (Juan 11:24)"}, {w: "María Magdalena", q: "He visto al Señor (Juan 20:18)"},
             {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Bernabé", q: "Hijo de consolación (Hechos 4:36)"},
             {w: "Timoteo", q: "Ninguno tenga en poco tu juventud (1 Timoteo 4:12)"}, {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"},
-            
-            // HISTORIAS (20)
+            // HISTORIAS
             {w: "La creación", q: "Y vio Dios que era bueno (Génesis 1:31)"}, {w: "El diluvio", q: "Entró Noé en el arca (Génesis 7:7)"},
             {w: "Torre de Babel", q: "Confundió Jehová el lenguaje (Génesis 11:9)"}, {w: "Sacrificio Isaac", q: "Jehová proveerá (Génesis 22:14)"},
             {w: "José vendido", q: "Lo vendieron por plata (Génesis 37:28)"}, {w: "El éxodo", q: "Deja ir a mi pueblo (Éxodo 5:1)"},
@@ -282,8 +321,7 @@
             {w: "Horno de fuego", q: "No fueron quemados (Daniel 3:27)"}, {w: "Foso de leones", q: "Dios envió su ángel (Daniel 6:22)"},
             {w: "Nacimiento Jesús", q: "Os ha nacido un Salvador (Lucas 2:11)"}, {w: "La cruz", q: "Consumado es (Juan 19:30)"},
             {w: "Resurrección", q: "No está aquí, resucitó (Mateo 28:6)"}, {w: "Pentecostés", q: "Fueron llenos del Espíritu Santo (Hechos 2:4)"},
-
-            // LUGARES (20)
+            // LUGARES
             {w: "Edén", q: "Plantó Jehová Dios un huerto (Génesis 2:8)"}, {w: "Ararat", q: "Reposó el arca (Génesis 8:4)"},
             {w: "Betel", q: "Casa de Dios (Génesis 28:19)"}, {w: "Egipto", q: "Lugar de esclavitud (Éxodo 1:14)"},
             {w: "Sinaí", q: "Jehová descendió (Éxodo 19:20)"}, {w: "Jericó", q: "Ciudad fortificada (Josué 6:1)"},
@@ -294,8 +332,7 @@
             {w: "Monte Olivos", q: "Ascendió al cielo (Hechos 1:9)"}, {w: "Damasco", q: "Camino de conversión (Hechos 9:3)"},
             {w: "Antioquía", q: "Llamados cristianos (Hechos 11:26)"}, {w: "Éfeso", q: "Gran puerta abierta (1 Corintios 16:9)"},
             {w: "Corinto", q: "Tengo mucho pueblo (Hechos 18:10)"}, {w: "Patmos", q: "Por causa de la palabra (Apocalipsis 1:9)"},
-
-            // PARÁBOLAS (20)
+            // PARÁBOLAS
             {w: "El sembrador", q: "El que oye la palabra (Mateo 13:23)"}, {w: "Trigo y cizaña", q: "Dejad crecer juntos (Mateo 13:30)"},
             {w: "Grano mostaza", q: "La más pequeña (Mateo 13:32)"}, {w: "La levadura", q: "Leudó toda la masa (Mateo 13:33)"},
             {w: "Tesoro escondido", q: "Vende todo lo que tiene (Mateo 13:44)"}, {w: "Perla gran precio", q: "Una perla preciosa (Mateo 13:46)"},
@@ -309,6 +346,19 @@
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
+
+        function initBg() {
+            const container = document.getElementById('bg-animation');
+            for(let i=0; i<15; i++) {
+                const mark = document.createElement('div');
+                mark.className = 'q-mark'; mark.innerText = '?';
+                mark.style.left = Math.random() * 100 + 'vw';
+                mark.style.animationDelay = Math.random() * 8 + 's';
+                mark.style.fontSize = (Math.random() * 3 + 1) + 'rem';
+                container.appendChild(mark);
+            }
+        }
+        initBg();
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -328,7 +378,7 @@
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
             await db.collection('rooms').doc(code).set({
-                hostId: currentUser.uid, status: 'waiting', turnIndex: 0, playerOrder: [], createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                hostId: currentUser.uid, status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('room-code-display').innerText = code;
             joinLogic(code); showScreen('screen-create-room');
@@ -401,21 +451,25 @@
         }
 
         async function startGameLogic() {
-            const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').orderBy('joinedAt', 'asc').get();
+            const roomRef = db.collection('rooms').doc(currentRoomId);
+            const rData = (await roomRef.get()).data();
+            const pSnap = await roomRef.collection('players').orderBy('joinedAt', 'asc').get();
             const ids = pSnap.docs.map(d => d.id);
-            const impId = ids[Math.floor(Math.random() * ids.length)];
+            
+            // ALEATORIO ANTI-REPETICIÓN
+            let possibleImps = ids.filter(id => id !== rData.lastImpostorId);
+            if(possibleImps.length === 0) possibleImps = ids;
+            const impId = possibleImps[Math.floor(Math.random() * possibleImps.length)];
+
             const chosen = biblicalItems[Math.floor(Math.random() * biblicalItems.length)];
-            // TIEMPO AJUSTADO A 2 MINUTOS
             const endTime = Date.now() + (2 * 60 * 1000);
 
-            await db.collection('rooms').doc(currentRoomId).update({
-                status: 'playing', impostorId: impId, word: chosen.w, quote: chosen.q,
+            await roomRef.update({
+                status: 'playing', impostorId: impId, lastImpostorId: impId, word: chosen.w, quote: chosen.q,
                 playerOrder: ids, turnIndex: 0, endTime: endTime
             });
 
-            pSnap.forEach(pDoc => {
-                pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'disciple' });
-            });
+            pSnap.forEach(pDoc => { pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'disciple', vote: "" }); });
         }
 
         async function setupRole(data) {
@@ -424,7 +478,7 @@
             const isImp = p.data().role === 'impostor';
             document.getElementById('role-title').innerText = isImp ? "FALSO PROFETA" : "DISCÍPULO";
             document.getElementById('secret-word').innerText = isImp ? "¡ESCÓNDETE!" : data.word;
-            document.getElementById('secret-quote').innerText = isImp ? "No sabes la palabra. Engaña a los demás." : data.quote;
+            document.getElementById('secret-quote').innerText = isImp ? "No sabes el secreto. ¡Miente bien!" : data.quote;
             showScreen('screen-reveal');
         }
 
@@ -436,14 +490,11 @@
         function handleClues(data) {
             showScreen('screen-clues');
             if(!timerInterval) startDebateTimer(data.endTime);
-
             const turnUid = data.playerOrder[data.turnIndex];
             const isMyTurn = (turnUid === currentUser.uid);
-
             db.collection('rooms').doc(currentRoomId).collection('players').doc(turnUid).get().then(d => {
                 if(d.exists) document.getElementById('turn-indicator').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`;
             });
-
             document.getElementById('clue-input-area').style.display = isMyTurn ? 'block' : 'none';
             document.getElementById('wait-turn-msg').style.display = isMyTurn ? 'none' : 'block';
             if(isMyTurn) document.getElementById('clue-input').focus();
@@ -453,16 +504,12 @@
             const input = document.getElementById('clue-input');
             const val = input.value.trim();
             if(!val || val.split(/\s+/).length > 2) return alert("MÁXIMO 2 PALABRAS");
-
             await db.collection('rooms').doc(currentRoomId).collection('chat').add({
                 name: currentUser.name, uid: currentUser.uid, text: val.toUpperCase(), time: Date.now()
             });
-
             input.value = "";
-            const rDoc = await db.collection('rooms').doc(currentRoomId).get();
-            const rData = rDoc.data();
+            const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
             let nextIdx = (rData.turnIndex + 1) % rData.playerOrder.length; // CICLO INFINITO
-
             db.collection('rooms').doc(currentRoomId).update({ turnIndex: nextIdx });
         }
 
@@ -471,8 +518,7 @@
             timerInterval = setInterval(() => {
                 const diff = endTime - Date.now();
                 if(diff <= 0) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
+                    clearInterval(timerInterval); timerInterval = null;
                     if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
                     return;
                 }
@@ -484,11 +530,7 @@
         async function setupVote() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             let html = "";
-            pSnap.forEach(p => {
-                if(p.id !== currentUser.uid) {
-                    html += `<button class="btn btn-gold" style="font-size:9px;" onclick="castVote('${p.id}')">${p.data().name}</button>`;
-                }
-            });
+            pSnap.forEach(p => { if(p.id !== currentUser.uid) html += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`; });
             document.getElementById('vote-grid').innerHTML = html;
             showScreen('screen-vote');
         }
@@ -497,36 +539,24 @@
             document.getElementById('vote-grid').style.pointerEvents = 'none';
             document.getElementById('vote-wait-msg').style.display = 'block';
             await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ vote: targetId });
-            
             if(isHost) checkAllVotes();
         }
 
         async function checkAllVotes() {
             const players = await db.collection('rooms').doc(currentRoomId).collection('players').get();
-            const allVoted = players.docs.every(d => d.data().vote !== "");
-            
-            if(allVoted) {
+            if(players.docs.every(d => d.data().vote !== "")) {
                 const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
-                let votesCount = {}, summary = "";
-                
+                let votes = {}, summary = "";
                 players.forEach(p => {
-                    const d = p.data();
-                    const votedTo = players.docs.find(x => x.id === d.vote)?.data().name || "---";
-                    summary += `<div><b>${d.name}</b> votó a: ${votedTo}</div>`;
-                    votesCount[d.vote] = (votesCount[d.vote] || 0) + 1;
+                    const d = p.data(); summary += `<div><b>${d.name}</b> votó a: ${players.docs.find(x => x.id === d.vote)?.data().name || "---"}</div>`;
+                    votes[d.vote] = (votes[d.vote] || 0) + 1;
                 });
-
-                // Encontrar el más votado
-                let mostVotedId = Object.keys(votesCount).reduce((a, b) => votesCount[a] > votesCount[b] ? a : b);
-                let winner = (mostVotedId === rData.impostorId) ? 'DISCIPLES' : 'IMPOSTOR';
-                let impName = players.docs.find(x => x.id === rData.impostorId).data().name;
-
+                let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
                 db.collection('rooms').doc(currentRoomId).update({
-                    status: 'result', winner: winner, summary: summary, impostorName: impName
+                    status: 'result', winner: mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR',
+                    summary: summary, impostorName: players.docs.find(x => x.id === rData.impostorId).data().name
                 });
-            } else {
-                setTimeout(checkAllVotes, 2000);
-            }
+            } else { setTimeout(checkAllVotes, 2000); }
         }
 
         function showFinalResult(data) {
