@@ -178,7 +178,6 @@
     <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="glass-card">
-            <!-- COLOCA TU IMAGEN AQUÍ -->
             <img src="https://cdn-icons-png.flaticon.com/512/3750/3750019.png" class="login-img" alt="Logo">
             <h2 style="color:var(--gold); margin-bottom: 15px;">EL FALSO PROFETA</h2>
             <input type="text" id="login-name" placeholder="Tu nombre...">
@@ -450,26 +449,46 @@
             }, 1000);
         }
 
+        // LÓGICA DE IMPOSTOR ALEATORIO QUE NO SE REPITE
         async function startGameLogic() {
             const roomRef = db.collection('rooms').doc(currentRoomId);
-            const rData = (await roomRef.get()).data();
-            const pSnap = await roomRef.collection('players').orderBy('joinedAt', 'asc').get();
+            const rSnap = await roomRef.get();
+            const rData = rSnap.data();
+            
+            const pSnap = await roomRef.collection('players').get();
             const ids = pSnap.docs.map(d => d.id);
             
-            // ALEATORIO ANTI-REPETICIÓN
-            let possibleImps = ids.filter(id => id !== rData.lastImpostorId);
-            if(possibleImps.length === 0) possibleImps = ids;
-            const impId = possibleImps[Math.floor(Math.random() * possibleImps.length)];
+            // Filtramos la lista para que el anterior NO sea elegible
+            let candidates = ids.filter(id => id !== rData.lastImpostorId);
+            
+            // Por seguridad, si solo hay 1 persona (imposible por el check de 3), usamos todos
+            if(candidates.length === 0) candidates = ids;
 
+            // Selección aleatoria del nuevo impostor de la lista filtrada
+            const impId = candidates[Math.floor(Math.random() * candidates.length)];
             const chosen = biblicalItems[Math.floor(Math.random() * biblicalItems.length)];
             const endTime = Date.now() + (2 * 60 * 1000);
 
+            // Aleatorizar el orden de los turnos para que no siempre sea el mismo
+            const randomOrder = [...ids].sort(() => Math.random() - 0.5);
+
             await roomRef.update({
-                status: 'playing', impostorId: impId, lastImpostorId: impId, word: chosen.w, quote: chosen.q,
-                playerOrder: ids, turnIndex: 0, endTime: endTime
+                status: 'playing', 
+                impostorId: impId, 
+                lastImpostorId: impId, // Guardamos al elegido para que no repita en la próxima
+                word: chosen.w, 
+                quote: chosen.q,
+                playerOrder: randomOrder, 
+                turnIndex: 0, 
+                endTime: endTime
             });
 
-            pSnap.forEach(pDoc => { pDoc.ref.update({ role: pDoc.id === impId ? 'impostor' : 'disciple', vote: "" }); });
+            pSnap.forEach(pDoc => { 
+                pDoc.ref.update({ 
+                    role: pDoc.id === impId ? 'impostor' : 'disciple', 
+                    vote: "" 
+                }); 
+            });
         }
 
         async function setupRole(data) {
@@ -509,7 +528,7 @@
             });
             input.value = "";
             const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
-            let nextIdx = (rData.turnIndex + 1) % rData.playerOrder.length; // CICLO INFINITO
+            let nextIdx = (rData.turnIndex + 1) % rData.playerOrder.length; 
             db.collection('rooms').doc(currentRoomId).update({ turnIndex: nextIdx });
         }
 
