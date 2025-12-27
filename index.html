@@ -32,7 +32,6 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* REDES SOCIALES ABAJO */
         .social-container {
             position: fixed;
             bottom: 45px;
@@ -102,7 +101,6 @@
             text-align: center; font-size: 16px;
         }
 
-        /* CHAT / PISTAS */
         .chat-box {
             width: 100%;
             max-height: 35vh;
@@ -138,7 +136,6 @@
         <source src="logo_animado.mp4" type="video/mp4">
     </video>
 
-    <!-- REDES SOCIALES -->
     <div class="social-container">
         <a href="https://youtube.com/@robert_paraco" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
         <a href="https://instagram.com/robert_paraco" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -191,7 +188,7 @@
         </div>
     </div>
 
-    <!-- 6. PREPARACIÓN (15s) -->
+    <!-- 6. PREPARACIÓN -->
     <div id="screen-prep" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">PREPARANDO...</h2>
@@ -210,7 +207,7 @@
         </div>
     </div>
 
-    <!-- 8. CHAT DE PISTAS (3 MINUTOS) -->
+    <!-- 8. CHAT DE PISTAS -->
     <div id="screen-clues" class="screen">
         <div id="timer">03:00</div>
         <div id="turn-indicator" style="font-size: 11px; color: var(--gold); margin-bottom: 5px;">TURNO DE: ...</div>
@@ -245,7 +242,6 @@
     <footer>DISEÑADO POR - ROBERT PARACO</footer>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
              apiKey: "AIzaSyCc0dMjTppOlnGV_NuXCFUGhx7882qbZlE",
              authDomain: "falsoprofeta-6e682.firebaseapp.com",
@@ -313,6 +309,7 @@
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, roomUnsub = null, playersUnsub = null, chatUnsub = null;
+        let timerDebate = null; // Para controlar el intervalo globalmente
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -371,7 +368,6 @@
                 document.getElementById('lobby-players-guest').innerHTML = listHtml;
             });
 
-            // Escuchar Chat
             chatUnsub = db.collection('rooms').doc(code).collection('chat').orderBy('time', 'asc').onSnapshot(snap => {
                 const box = document.getElementById('chat-area');
                 box.innerHTML = "";
@@ -436,43 +432,56 @@
             else showScreen('screen-clues');
         }
 
+        // LÓGICA DE TURNOS INFINITOS CORREGIDA
         function handleClues(data) {
             showScreen('screen-clues');
-            startDebateTimer(data.endTime);
+            
+            // Iniciar cronómetro solo si no existe ya
+            if(!timerDebate) startDebateTimer(data.endTime);
+
             const turnUid = data.playerOrder[data.turnIndex];
             
             db.collection('rooms').doc(currentRoomId).collection('players').doc(turnUid).get().then(d => {
-                document.getElementById('turn-indicator').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`;
+                if(d.exists) document.getElementById('turn-indicator').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`;
             });
 
             const isMyTurn = (turnUid === currentUser.uid);
             document.getElementById('clue-input-area').style.display = isMyTurn ? 'block' : 'none';
             document.getElementById('wait-turn-msg').style.display = isMyTurn ? 'none' : 'block';
+            
+            if(isMyTurn) document.getElementById('clue-input').focus();
         }
 
         async function sendClue() {
             const input = document.getElementById('clue-input');
             const val = input.value.trim();
-            if(!val || val.split(/\s+/).length > 2) return alert("MÁXIMO 2 PALABRAS");
+            if(!val) return;
+            if(val.split(/\s+/).length > 2) return alert("MÁXIMO 2 PALABRAS");
 
             await db.collection('rooms').doc(currentRoomId).collection('chat').add({
-                name: currentUser.name, uid: currentUser.uid, text: val, time: Date.now()
+                name: currentUser.name, uid: currentUser.uid, text: val.toUpperCase(), time: Date.now()
             });
 
             input.value = "";
             const r = await db.collection('rooms').doc(currentRoomId).get();
-            let nextIdx = r.data().turnIndex + 1;
-            if(nextIdx >= r.data().playerOrder.length) nextIdx = 0; // Reiniciar ronda de turnos
+            const rData = r.data();
+            
+            // Calcular el siguiente índice (vuelve a 0 si llega al final)
+            let nextIdx = rData.turnIndex + 1;
+            if(nextIdx >= rData.playerOrder.length) nextIdx = 0; 
 
             db.collection('rooms').doc(currentRoomId).update({ turnIndex: nextIdx });
         }
 
         function startDebateTimer(endTime) {
             const timerEl = document.getElementById('timer');
-            const intv = setInterval(() => {
+            if(timerDebate) clearInterval(timerDebate);
+
+            timerDebate = setInterval(() => {
                 const diff = endTime - Date.now();
                 if(diff <= 0) {
-                    clearInterval(intv);
+                    clearInterval(timerDebate);
+                    timerDebate = null;
                     if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
                 }
                 const m = Math.floor(diff / 60000), s = Math.floor((diff % 60000) / 1000);
