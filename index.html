@@ -54,6 +54,22 @@
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
+        /* CONTROL DE MÚSICA */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+
         .social-container {
             position: fixed;
             bottom: 45px;
@@ -167,12 +183,21 @@
 </head>
 <body>
 
+    <!-- ELEMENTO DE AUDIO -->
+    <audio id="bg-music" loop>
+        <source src="https://www.chosic.com/wp-content/uploads/2021/07/The-Grand-Final-Event.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" onclick="toggleMusic()">
+        <i id="music-icon" class="fas fa-volume-mute"></i>
+    </div>
+
     <div class="bg-animation" id="bg-animation"></div>
 
     <div class="social-container">
-        <a href="https://www.youtube.com/channel/UCjKTs1EPUXqaZ9_tBjwFQhQ" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
-        <a href="https://www.instagram.com/robert_paraco?igsh=MWx1NXdpZDIxdHdsMg==" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@robert_paraco?_r=1&_t=ZM-92YDqsdjjAZ" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
+        <a href="https://youtube.com/@robert_paraco" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://instagram.com/robert_paraco" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://tiktok.com/@robert_paraco" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
     </div>
 
     <!-- 1. LOGIN -->
@@ -287,30 +312,55 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // LISTA EXTENDIDA DE PERSONAJES Y LUGARES
         const biblicalItems = [
+            // PERSONAJES
             {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
-            {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"}, {w: "Abraham", q: "Sal de tu tierra (Génesis 12:1)"},
-            {w: "Isaac", q: "Dios proveerá (Génesis 22:8)"}, {w: "Jacob", q: "He visto a Dios cara a cara (Génesis 32:30)"},
-            {w: "José", q: "Dios lo encaminó a bien (Génesis 50:20)"}, {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
-            {w: "Aarón", q: "Será tu portavoz (Éxodo 4:16)"}, {w: "Josué", q: "Esfuérzate y sé valiente (Josué 1:9)"},
-            {w: "Débora", q: "Se levantó como madre en Israel (Jueces 5:7)"}, {w: "Gedeón", q: "Jehová está contigo (Jueces 6:12)"},
-            {w: "Sansón", q: "Comenzó a salvar a Israel (Jueces 13:5)"}, {w: "Rut", q: "Tu Dios será mi Dios (Rut 1:16)"},
-            {w: "Samuel", q: "Habla, porque tu siervo oye (1 Samuel 3:10)"}, {w: "Saúl", q: "Otro corazón le fue dado (1 Samuel 10:9)"},
-            {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"}, {w: "Salomón", q: "Dame sabiduría (1 Reyes 3:9)"},
-            {w: "Elías", q: "Vive Jehová (1 Reyes 17:1)"}, {w: "Eliseo", q: "Una doble porción de tu espíritu (2 Reyes 2:9)"},
-            {w: "Isaías", q: "Heme aquí, envíame a mí (Isaías 6:8)"}, {w: "Jeremías", q: "Antes que nacieses te conocí (Jeremías 1:5)"},
-            {w: "Ezequiel", q: "Hijo de hombre, ponte en pie (Ezequiel 2:1)"}, {w: "Daniel", q: "Dios cerró la boca de los leones (Daniel 6:22)"},
-            {w: "Ester", q: "Para esta hora has llegado (Ester 4:14)"}, {w: "Nehemías", q: "El gozo de Jehová es mi fuerza (Nehemías 8:10)"},
-            {w: "Job", q: "Yo sé que mi Redentor vive (Job 19:25)"}, {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
-            {w: "Zacarías", q: "No con ejército ni con fuerza (Zacarías 4:6)"}, {w: "Juan el Bautista", q: "Preparad el camino del Señor (Mateo 3:3)"},
-            {w: "María", q: "He aquí la sierva del Señor (Lucas 1:38)"}, {w: "José (Esposo)", q: "No temas recibir a María (Mateo 1:20)"},
-            {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"}, {w: "Juan", q: "El discípulo amado (Juan 13:23)"},
-            {w: "Marta", q: "Yo sé que resucitará (Juan 11:24)"}, {w: "María Magdalena", q: "He visto al Señor (Juan 20:18)"},
-            {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Bernabé", q: "Hijo de consolación (Hechos 4:36)"},
-            {w: "Timoteo", q: "Ninguno tenga en poco tu juventud (1 Timoteo 4:12)"}, {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"}
+            {w: "Caín", q: "¿Soy yo guarda de mi hermano? (Génesis 4:9)"}, {w: "Abel", q: "Ofreció un sacrificio más excelente (Hebreos 11:4)"},
+            {w: "Matusalén", q: "Vivió 969 años (Génesis 5:27)"}, {w: "Noé", q: "Hizo un arca de madera (Génesis 6:14)"},
+            {w: "Abraham", q: "Padre de muchas naciones (Génesis 17:5)"}, {w: "Isaac", q: "El hijo de la promesa (Génesis 21:3)"},
+            {w: "Jacob", q: "Luchó con un ángel (Génesis 32:24)"}, {w: "José", q: "El soñador de túnica de colores (Génesis 37:3)"},
+            {w: "Moisés", q: "Subió al monte Sinaí (Éxodo 19:20)"}, {w: "Aarón", q: "El primer sumo sacerdote (Levítico 8:12)"},
+            {w: "Josué", q: "Hizo que el sol se detuviera (Josué 10:12)"}, {w: "Sansón", q: "Su fuerza estaba en su cabello (Jueces 16:17)"},
+            {w: "Gedeón", q: "Venció con solo 300 hombres (Jueces 7:7)"}, {w: "David", q: "El rey conforme al corazón de Dios (1 Samuel 13:14)"},
+            {w: "Salomón", q: "El hombre más sabio (1 Reyes 3:12)"}, {w: "Elías", q: "Subió al cielo en un torbellino (2 Reyes 2:11)"},
+            {w: "Eliseo", q: "Pidió una doble porción de espíritu (2 Reyes 2:9)"}, {w: "Job", q: "Jehová dio, Jehová quitó (Job 1:21)"},
+            {w: "Daniel", q: "Sobrevivió al foso de leones (Daniel 6:22)"}, {w: "Ester", q: "Reina que salvó a su pueblo (Ester 7)"},
+            {w: "Jonás", q: "Estuvo en el vientre del gran pez (Jonás 1:17)"}, {w: "Juan el Bautista", q: "Bautizaba en el Jordán (Mateo 3:6)"},
+            {w: "Pedro", q: "Caminó sobre las aguas (Mateo 14:29)"}, {w: "Pablo", q: "Apóstol de los gentiles (Romanos 11:13)"},
+            {w: "Lázaro", q: "¡Sal fuera! (Juan 11:43)"}, {w: "Zaqueo", q: "Subió a un árbol sicómoro (Lucas 19:4)"},
+            {w: "Herodes", q: "Buscaba al niño para matarlo (Mateo 2:13)"}, {w: "Nabucodonosor", q: "Rey de Babilonia (Daniel 4:1)"},
+            {w: "María Magdalena", q: "Siete demonios salieron de ella (Lucas 8:2)"}, {w: "Esteban", q: "El primer mártir (Hechos 7:59)"},
+            
+            // LUGARES
+            {w: "Edén", q: "El huerto de la delicia (Génesis 2:8)"}, {w: "Babel", q: "Donde se confundieron las lenguas (Génesis 11:9)"},
+            {w: "Sodoma", q: "Ciudad destruida por fuego (Génesis 19:24)"}, {w: "Egipto", q: "De donde salieron con mano fuerte (Éxodo 13:3)"},
+            {w: "Jericó", q: "Sus muros cayeron con gritos (Josué 6:20)"}, {w: "Belén", q: "Donde nació el Rey de reyes (Mateo 2:1)"},
+            {w: "Nazaret", q: "¿De Nazaret puede salir algo bueno? (Juan 1:46)"}, {w: "Jerusalén", q: "La ciudad santa (Apocalipsis 21:2)"},
+            {w: "Getsemaní", q: "Donde Jesús oró con sudor de sangre (Lucas 22:44)"}, {w: "Gólgota", q: "El lugar de la calavera (Juan 19:17)"},
+            {w: "Nínive", q: "Ciudad a la que Jonás no quería ir (Jonás 1:2)"}, {w: "Monte Carmelo", q: "Donde Elías retó a los profetas de Baal (1 Reyes 18)"},
+            {w: "Mar Rojo", q: "Se abrió para que pasara el pueblo (Éxodo 14)"}, {w: "Río Jordán", q: "Donde fue bautizado el Señor (Mateo 3)"},
+            
+            // OBJETOS Y EVENTOS
+            {w: "El Arca del Pacto", q: "Contenía las tablas de la ley (Hebreos 9:4)"}, {w: "Maná", q: "Pan caído del cielo (Éxodo 16:31)"},
+            {w: "Pentecostés", q: "Lenguas como de fuego (Hechos 2:3)"}, {w: "El Diluvio", q: "Llovió 40 días y 40 noches (Génesis 7:12)"},
+            {w: "La Zarza Ardiendo", q: "Ardía y no se consumía (Éxodo 3:2)"}
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
+
+        // FUNCIÓN DE MÚSICA
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (music.paused) {
+                music.play();
+                icon.className = 'fas fa-volume-up';
+            } else {
+                music.pause();
+                icon.className = 'fas fa-volume-mute';
+            }
+        }
 
         function initBg() {
             const container = document.getElementById('bg-animation');
@@ -333,6 +383,12 @@
         function login() {
             const name = document.getElementById('login-name').value.trim();
             if(!name) return;
+            
+            // Activar música al entrar
+            const music = document.getElementById('bg-music');
+            music.play().catch(e => console.log("Audio bloqueado, esperando interacción"));
+            document.getElementById('music-icon').className = 'fas fa-volume-up';
+
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
                 showScreen('screen-menu');
@@ -423,7 +479,6 @@
             const pSnap = await roomRef.collection('players').get();
             const ids = pSnap.docs.map(d => d.id);
             
-            // Filtro para que no repita el impostor anterior
             let candidates = ids.filter(id => id !== rData.lastImpostorId);
             if(candidates.length === 0) candidates = ids;
 
@@ -432,7 +487,6 @@
             const endTime = Date.now() + (2 * 60 * 1000);
             const randomOrder = [...ids].sort(() => Math.random() - 0.5);
 
-            // Limpiar votos previos
             const batch = db.batch();
             pSnap.docs.forEach(d => batch.update(d.ref, { vote: "" }));
             await batch.commit();
@@ -450,7 +504,6 @@
         }
 
         async function setupRole(data) {
-            // El rol se decide comparando el UID actual con el impostorId de la sala
             const isImp = (data.impostorId === currentUser.uid);
             document.getElementById('role-title').innerText = isImp ? "FALSO PROFETA" : "DISCÍPULO";
             document.getElementById('secret-word').innerText = isImp ? "¡ESCÓNDETE!" : data.word;
