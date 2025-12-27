@@ -119,7 +119,6 @@
 
         #timer { font-size: 40px; font-weight: 900; color: var(--gold); }
         
-        /* Ajuste para muchos botones de voto */
         #vote-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -202,7 +201,7 @@
     </div>
 
     <div id="screen-clues" class="screen">
-        <div id="timer">03:00</div>
+        <div id="timer">02:00</div>
         <div id="turn-indicator" style="font-size: 11px; color: var(--gold); margin-bottom: 5px;">CARGANDO...</div>
         <div id="chat-area" class="chat-box"></div>
         <div id="clue-input-area" style="display:none; width: 100%; max-width: 340px;">
@@ -227,7 +226,7 @@
             <p style="font-size: 10px; opacity: 0.6; margin-top: 10px;">EL FALSO PROFETA ERA:</p>
             <h1 id="res-impostor" style="color: var(--gold); font-size: 24px;">---</h1>
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px;"></div>
-            <button class="btn btn-gold" onclick="location.reload()">REINTENTAR</button>
+            <button class="btn btn-gold" onclick="location.reload()">JUGAR DE NUEVO</button>
         </div>
     </div>
 
@@ -248,15 +247,65 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // 100 PERSONAJES, HISTORIAS, LUGARES Y PARÁBOLAS
         const biblicalItems = [
+            // PERSONAJES (40)
             {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
             {w: "Noé", q: "Varón justo… caminó con Dios (Génesis 6:9)"}, {w: "Abraham", q: "Sal de tu tierra (Génesis 12:1)"},
             {w: "Isaac", q: "Dios proveerá (Génesis 22:8)"}, {w: "Jacob", q: "He visto a Dios cara a cara (Génesis 32:30)"},
             {w: "José", q: "Dios lo encaminó a bien (Génesis 50:20)"}, {w: "Moisés", q: "Yo estaré contigo (Éxodo 3:12)"},
             {w: "Aarón", q: "Será tu portavoz (Éxodo 4:16)"}, {w: "Josué", q: "Esfuérzate y sé valiente (Josué 1:9)"},
+            {w: "Débora", q: "Se levantó como madre en Israel (Jueces 5:7)"}, {w: "Gedeón", q: "Jehová está contigo (Jueces 6:12)"},
+            {w: "Sansón", q: "Comenzó a salvar a Israel (Jueces 13:5)"}, {w: "Rut", q: "Tu Dios será mi Dios (Rut 1:16)"},
+            {w: "Samuel", q: "Habla, porque tu siervo oye (1 Samuel 3:10)"}, {w: "Saúl", q: "Otro corazón le fue dado (1 Samuel 10:9)"},
             {w: "David", q: "Jehová es mi pastor (Salmos 23:1)"}, {w: "Salomón", q: "Dame sabiduría (1 Reyes 3:9)"},
-            {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"}, {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"},
-            {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Ester", q: "Para esta hora has llegado (Ester 4:14)"}
+            {w: "Elías", q: "Vive Jehová (1 Reyes 17:1)"}, {w: "Eliseo", q: "Una doble porción de tu espíritu (2 Reyes 2:9)"},
+            {w: "Isaías", q: "Heme aquí, envíame a mí (Isaías 6:8)"}, {w: "Jeremías", q: "Antes que nacieses te conocí (Jeremías 1:5)"},
+            {w: "Ezequiel", q: "Hijo de hombre, ponte en pie (Ezequiel 2:1)"}, {w: "Daniel", q: "Dios cerró la boca de los leones (Daniel 6:22)"},
+            {w: "Ester", q: "Para esta hora has llegado (Ester 4:14)"}, {w: "Nehemías", q: "El gozo de Jehová es mi fuerza (Nehemías 8:10)"},
+            {w: "Job", q: "Yo sé que mi Redentor vive (Job 19:25)"}, {w: "Jonás", q: "La salvación es de Jehová (Jonás 2:9)"},
+            {w: "Zacarías", q: "No con ejército ni con fuerza (Zacarías 4:6)"}, {w: "Juan el Bautista", q: "Preparad el camino del Señor (Mateo 3:3)"},
+            {w: "María", q: "He aquí la sierva del Señor (Lucas 1:38)"}, {w: "José (Esposo)", q: "No temas recibir a María (Mateo 1:20)"},
+            {w: "Pedro", q: "Tú eres el Cristo (Mateo 16:16)"}, {w: "Juan", q: "El discípulo amado (Juan 13:23)"},
+            {w: "Marta", q: "Yo sé que resucitará (Juan 11:24)"}, {w: "María Magdalena", q: "He visto al Señor (Juan 20:18)"},
+            {w: "Pablo", q: "Todo lo puedo en Cristo (Filipenses 4:13)"}, {w: "Bernabé", q: "Hijo de consolación (Hechos 4:36)"},
+            {w: "Timoteo", q: "Ninguno tenga en poco tu juventud (1 Timoteo 4:12)"}, {w: "Jesús", q: "Yo soy el camino, la verdad y la vida (Juan 14:6)"},
+            
+            // HISTORIAS (20)
+            {w: "La creación", q: "Y vio Dios que era bueno (Génesis 1:31)"}, {w: "El diluvio", q: "Entró Noé en el arca (Génesis 7:7)"},
+            {w: "Torre de Babel", q: "Confundió Jehová el lenguaje (Génesis 11:9)"}, {w: "Sacrificio Isaac", q: "Jehová proveerá (Génesis 22:14)"},
+            {w: "José vendido", q: "Lo vendieron por plata (Génesis 37:28)"}, {w: "El éxodo", q: "Deja ir a mi pueblo (Éxodo 5:1)"},
+            {w: "Mar Rojo", q: "Las aguas se abrieron (Éxodo 14:21)"}, {w: "El maná", q: "Pan del cielo (Éxodo 16:4)"},
+            {w: "10 Mandamientos", q: "Escritos por el dedo de Dios (Éxodo 31:18)"}, {w: "Caída de Jericó", q: "El muro se derrumbó (Josué 6:20)"},
+            {w: "David y Goliat", q: "Jehová te entregará (1 Samuel 17:46)"}, {w: "Templo Salomón", q: "La gloria de Jehová llenó la casa (1 Reyes 8:11)"},
+            {w: "Elías en Carmelo", q: "Jehová es Dios (1 Reyes 18:39)"}, {w: "Jonás y el pez", q: "Jehová habló al pez (Jonás 2:10)"},
+            {w: "Horno de fuego", q: "No fueron quemados (Daniel 3:27)"}, {w: "Foso de leones", q: "Dios envió su ángel (Daniel 6:22)"},
+            {w: "Nacimiento Jesús", q: "Os ha nacido un Salvador (Lucas 2:11)"}, {w: "La cruz", q: "Consumado es (Juan 19:30)"},
+            {w: "Resurrección", q: "No está aquí, resucitó (Mateo 28:6)"}, {w: "Pentecostés", q: "Fueron llenos del Espíritu Santo (Hechos 2:4)"},
+
+            // LUGARES (20)
+            {w: "Edén", q: "Plantó Jehová Dios un huerto (Génesis 2:8)"}, {w: "Ararat", q: "Reposó el arca (Génesis 8:4)"},
+            {w: "Betel", q: "Casa de Dios (Génesis 28:19)"}, {w: "Egipto", q: "Lugar de esclavitud (Éxodo 1:14)"},
+            {w: "Sinaí", q: "Jehová descendió (Éxodo 19:20)"}, {w: "Jericó", q: "Ciudad fortificada (Josué 6:1)"},
+            {w: "Jerusalén", q: "Ciudad del gran Rey (Salmos 48:2)"}, {w: "Belén", q: "De ti me saldrá el Salvador (Miqueas 5:2)"},
+            {w: "Nazaret", q: "Será llamado nazareno (Mateo 2:23)"}, {w: "Galilea", q: "El pueblo vio gran luz (Mateo 4:16)"},
+            {w: "Capernaum", q: "Ciudad de Jesús (Mateo 9:1)"}, {w: "Samaria", q: "Campo de misión (Juan 4:4)"},
+            {w: "Getsemaní", q: "Oró con gran agonía (Lucas 22:44)"}, {w: "Gólgota", q: "Lugar de la calavera (Mateo 27:33)"},
+            {w: "Monte Olivos", q: "Ascendió al cielo (Hechos 1:9)"}, {w: "Damasco", q: "Camino de conversión (Hechos 9:3)"},
+            {w: "Antioquía", q: "Llamados cristianos (Hechos 11:26)"}, {w: "Éfeso", q: "Gran puerta abierta (1 Corintios 16:9)"},
+            {w: "Corinto", q: "Tengo mucho pueblo (Hechos 18:10)"}, {w: "Patmos", q: "Por causa de la palabra (Apocalipsis 1:9)"},
+
+            // PARÁBOLAS (20)
+            {w: "El sembrador", q: "El que oye la palabra (Mateo 13:23)"}, {w: "Trigo y cizaña", q: "Dejad crecer juntos (Mateo 13:30)"},
+            {w: "Grano mostaza", q: "La más pequeña (Mateo 13:32)"}, {w: "La levadura", q: "Leudó toda la masa (Mateo 13:33)"},
+            {w: "Tesoro escondido", q: "Vende todo lo que tiene (Mateo 13:44)"}, {w: "Perla gran precio", q: "Una perla preciosa (Mateo 13:46)"},
+            {w: "La red", q: "Separan a los malos (Mateo 13:49)"}, {w: "La oveja perdida", q: "Hasta hallarla (Lucas 15:4)"},
+            {w: "Moneda perdida", q: "Se goza cuando la halla (Lucas 15:9)"}, {w: "Hijo pródigo", q: "Estaba muerto y revivió (Lucas 15:24)"},
+            {w: "Buen samaritano", q: "Tuvo compasión (Lucas 10:33)"}, {w: "Amigo importuno", q: "Por su insistencia (Lucas 11:8)"},
+            {w: "Rico insensato", q: "Esta noche vienen por tu alma (Lucas 12:20)"}, {w: "Higuera estéril", q: "Dale otra oportunidad (Lucas 13:8)"},
+            {w: "Los invitados", q: "Muchos son llamados (Mateo 22:14)"}, {w: "Los talentos", q: "Bien, buen siervo fiel (Mateo 25:21)"},
+            {w: "Diez vírgenes", q: "Velad (Mateo 25:13)"}, {w: "Juicio final", q: "A uno de estos pequeños (Mateo 25:40)"},
+            {w: "Fariseo y Publicano", q: "Descendió justificado (Lucas 18:14)"}, {w: "Constructor sabio", q: "Sobre la roca (Mateo 7:24)"}
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
@@ -356,7 +405,8 @@
             const ids = pSnap.docs.map(d => d.id);
             const impId = ids[Math.floor(Math.random() * ids.length)];
             const chosen = biblicalItems[Math.floor(Math.random() * biblicalItems.length)];
-            const endTime = Date.now() + (3 * 60 * 1000);
+            // TIEMPO AJUSTADO A 2 MINUTOS
+            const endTime = Date.now() + (2 * 60 * 1000);
 
             await db.collection('rooms').doc(currentRoomId).update({
                 status: 'playing', impostorId: impId, word: chosen.w, quote: chosen.q,
@@ -374,7 +424,7 @@
             const isImp = p.data().role === 'impostor';
             document.getElementById('role-title').innerText = isImp ? "FALSO PROFETA" : "DISCÍPULO";
             document.getElementById('secret-word').innerText = isImp ? "¡ESCÓNDETE!" : data.word;
-            document.getElementById('secret-quote').innerText = isImp ? "Engaña a los demás." : data.quote;
+            document.getElementById('secret-quote').innerText = isImp ? "No sabes la palabra. Engaña a los demás." : data.quote;
             showScreen('screen-reveal');
         }
 
@@ -422,6 +472,7 @@
                 const diff = endTime - Date.now();
                 if(diff <= 0) {
                     clearInterval(timerInterval);
+                    timerInterval = null;
                     if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
                     return;
                 }
@@ -474,7 +525,6 @@
                     status: 'result', winner: winner, summary: summary, impostorName: impName
                 });
             } else {
-                // Re-revisar en 2 segundos si aún no votaron todos (solo host)
                 setTimeout(checkAllVotes, 2000);
             }
         }
