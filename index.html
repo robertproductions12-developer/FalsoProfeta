@@ -142,7 +142,7 @@
         .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: black; border: none; }
         .btn-exit { border-color: var(--accent); color: var(--accent); }
 
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.2);
             padding: 12px; border-radius: 12px;
@@ -178,6 +178,13 @@
             padding: 5px;
         }
 
+        .timer-setup {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px dashed var(--gold);
+            border-radius: 15px;
+        }
+
         footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; opacity: 0.4; }
     </style>
 </head>
@@ -195,7 +202,7 @@
     <div class="bg-animation" id="bg-animation"></div>
 
     <div class="social-container">
-        <a href="https://www.youtube.com/channel/UCjKTs1EPUXqaZ9_tBjwFQhQ" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="#" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
         <a href="https://www.instagram.com/robert_paraco?igsh=MWx1NXdpZDIxdHdsMg==" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://www.tiktok.com/@robert_paraco?_r=1&_t=ZM-92YDqsdjjAZ" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
     </div>
@@ -223,6 +230,13 @@
     <div id="screen-create-room" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
+            
+            <!-- NUEVO: CONFIGURACIÓN DE TIEMPO -->
+            <div class="timer-setup">
+                <p style="font-size: 10px; color: var(--gold); margin-bottom: 5px; font-weight: bold;">TIEMPO DE DEBATE (MINUTOS)</p>
+                <input type="number" id="setup-time" value="2" min="1" max="10" style="width: 80px; margin-bottom: 0;">
+            </div>
+
             <div id="lobby-players" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
             <button class="btn btn-gold" onclick="startPrep()">INICIAR PARTIDA</button>
             <button class="btn btn-exit" onclick="location.reload()">CANCELAR</button>
@@ -312,9 +326,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // LISTA EXTENDIDA DE PERSONAJES Y LUGARES
         const biblicalItems = [
-            // PERSONAJES
             {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
             {w: "Caín", q: "¿Soy yo guarda de mi hermano? (Génesis 4:9)"}, {w: "Abel", q: "Ofreció un sacrificio más excelente (Hebreos 11:4)"},
             {w: "Matusalén", q: "Vivió 969 años (Génesis 5:27)"}, {w: "Noé", q: "Hizo un arca de madera (Génesis 6:14)"},
@@ -331,8 +343,6 @@
             {w: "Lázaro", q: "¡Sal fuera! (Juan 11:43)"}, {w: "Zaqueo", q: "Subió a un árbol sicómoro (Lucas 19:4)"},
             {w: "Herodes", q: "Buscaba al niño para matarlo (Mateo 2:13)"}, {w: "Nabucodonosor", q: "Rey de Babilonia (Daniel 4:1)"},
             {w: "María Magdalena", q: "Siete demonios salieron de ella (Lucas 8:2)"}, {w: "Esteban", q: "El primer mártir (Hechos 7:59)"},
-            
-            // LUGARES
             {w: "Edén", q: "El huerto de la delicia (Génesis 2:8)"}, {w: "Babel", q: "Donde se confundieron las lenguas (Génesis 11:9)"},
             {w: "Sodoma", q: "Ciudad destruida por fuego (Génesis 19:24)"}, {w: "Egipto", q: "De donde salieron con mano fuerte (Éxodo 13:3)"},
             {w: "Jericó", q: "Sus muros cayeron con gritos (Josué 6:20)"}, {w: "Belén", q: "Donde nació el Rey de reyes (Mateo 2:1)"},
@@ -340,8 +350,6 @@
             {w: "Getsemaní", q: "Donde Jesús oró con sudor de sangre (Lucas 22:44)"}, {w: "Gólgota", q: "El lugar de la calavera (Juan 19:17)"},
             {w: "Nínive", q: "Ciudad a la que Jonás no quería ir (Jonás 1:2)"}, {w: "Monte Carmelo", q: "Donde Elías retó a los profetas de Baal (1 Reyes 18)"},
             {w: "Mar Rojo", q: "Se abrió para que pasara el pueblo (Éxodo 14)"}, {w: "Río Jordán", q: "Donde fue bautizado el Señor (Mateo 3)"},
-            
-            // OBJETOS Y EVENTOS
             {w: "El Arca del Pacto", q: "Contenía las tablas de la ley (Hebreos 9:4)"}, {w: "Maná", q: "Pan caído del cielo (Éxodo 16:31)"},
             {w: "Pentecostés", q: "Lenguas como de fuego (Hechos 2:3)"}, {w: "El Diluvio", q: "Llovió 40 días y 40 noches (Génesis 7:12)"},
             {w: "La Zarza Ardiendo", q: "Ardía y no se consumía (Éxodo 3:2)"}
@@ -349,7 +357,6 @@
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
 
-        // FUNCIÓN DE MÚSICA
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const icon = document.getElementById('music-icon');
@@ -383,12 +390,9 @@
         function login() {
             const name = document.getElementById('login-name').value.trim();
             if(!name) return;
-            
-            // Activar música al entrar
             const music = document.getElementById('bg-music');
-            music.play().catch(e => console.log("Audio bloqueado, esperando interacción"));
+            music.play().catch(e => console.log("Audio bloqueado"));
             document.getElementById('music-icon').className = 'fas fa-volume-up';
-
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
                 showScreen('screen-menu');
@@ -399,7 +403,9 @@
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
             await db.collection('rooms').doc(code).set({
-                hostId: currentUser.uid, status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                hostId: currentUser.uid, status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
+                chatDuration: 2, // Tiempo por defecto
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('room-code-display').innerText = code;
             joinLogic(code); showScreen('screen-create-room');
@@ -455,7 +461,15 @@
         async function startPrep() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             if(pSnap.size < 3) return alert("MÍNIMO 3 JUGADORES");
-            db.collection('rooms').doc(currentRoomId).update({ status: 'pre-start', prepEnd: Date.now() + 15000 });
+            
+            // Guardar el tiempo elegido por el host
+            const chatMinutes = parseInt(document.getElementById('setup-time').value) || 2;
+            
+            db.collection('rooms').doc(currentRoomId).update({ 
+                status: 'pre-start', 
+                prepEnd: Date.now() + 15000,
+                chatDuration: chatMinutes 
+            });
         }
 
         function handlePreStart(data) {
@@ -484,7 +498,11 @@
 
             const impId = candidates[Math.floor(Math.random() * candidates.length)];
             const chosen = biblicalItems[Math.floor(Math.random() * biblicalItems.length)];
-            const endTime = Date.now() + (2 * 60 * 1000);
+            
+            // Usar el tiempo guardado en la DB multiplicado por 60000 ms (1 minuto)
+            const chatDurationMs = (rData.chatDuration || 2) * 60 * 1000;
+            const endTime = Date.now() + chatDurationMs;
+            
             const randomOrder = [...ids].sort(() => Math.random() - 0.5);
 
             const batch = db.batch();
