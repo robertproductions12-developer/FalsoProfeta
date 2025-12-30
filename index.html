@@ -262,12 +262,6 @@
 
     <div class="bg-animation" id="bg-animation"></div>
 
-    <div class="social-container">
-        <a href="#" class="social-link" target="_blank"><i class="fab fa-youtube"></i></a>
-        <a href="https://www.instagram.com/robert_paraco?igsh=MWx1NXdpZDIxdHdsMg==" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@robert_paraco?_r=1&_t=ZM-92YDqsdjjAZ" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
-    </div>
-
     <div id="screen-login" class="screen active">
         <div class="glass-card">
             <img src="profeta.jpg" class="login-img" alt="Logo">
@@ -310,7 +304,7 @@
         <div class="glass-card">
             <h2 style="color:var(--gold)">ESPERANDO AL GUÍA...</h2>
             <div id="lobby-players-guest" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
-            <button class="btn btn-exit" onclick="showScreen('screen-menu')">SALIR DE SALA</button>
+            <button class="btn btn-exit" onclick="salirDeSala()">SALIR DE SALA</button>
         </div>
     </div>
 
@@ -357,9 +351,13 @@
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px;"></div>
             
             <div id="host-controls-end" style="display: none;">
-                <button class="btn btn-gold" onclick="borrarSala()">BORRAR Y CREAR OTRA</button>
+                <button class="btn btn-gold" onclick="repetirPartida()">REPETIR CON ESTE GRUPO</button>
+                <button class="btn btn-exit" onclick="borrarSala()">BORRAR SALA Y SALIR</button>
             </div>
-            <button class="btn btn-exit" onclick="location.reload()">VOLVER AL INICIO</button>
+            <div id="guest-controls-end" style="display: none;">
+                <p style="font-size: 10px; color: var(--gold); margin-bottom: 10px;">Esperando que el Guía decida...</p>
+                <button class="btn btn-exit" onclick="location.reload()">SALIR DEL TEMPLO</button>
+            </div>
         </div>
     </div>
 
@@ -426,9 +424,7 @@
             document.getElementById('side-panel').classList.toggle('open');
         }
 
-        // --- SISTEMA GLOBAL REPARADO (FILTRO EN CLIENTE PARA EVITAR ERROR DE ÍNDICES) ---
         function initGlobalStats() {
-            // Cargar salas: Quitamos el 'where' para evitar el error de índices de Firebase
             db.collection('rooms')
               .orderBy('createdAt', 'desc')
               .limit(15)
@@ -437,8 +433,8 @@
                 let html = "";
                 snap.forEach(doc => {
                     const data = doc.data();
-                    // Filtramos aquí manualmente en lugar de la consulta para que funcione SIEMPRE
-                    if (data.status === 'waiting') {
+                    // SE ELIMINAN LOS QUE SALEN UNDEFINED VALIDANDO DATA.HOSTNAME
+                    if (data.status === 'waiting' && data.hostName) {
                         html += `<div class="room-item">
                                     <div><span>Guía:</span><br><b>${data.hostName}</b></div>
                                     <div style="text-align:right"><span>Código:</span><br><b style="letter-spacing:1px">${doc.id}</b></div>
@@ -448,17 +444,48 @@
                 list.innerHTML = html || "<p style='font-size:10px; opacity:0.5'>No hay salas abiertas...</p>";
             });
 
-            // Contador real
             db.collection('presencia').onSnapshot(snap => {
                 const total = snap.size;
                 document.getElementById('global-online-count').innerText = `${total} ${total === 1 ? 'ALMA' : 'ALMAS'} EN LÍNEA`;
             });
         }
 
+        async function repetirPartida() {
+            if(!isHost) return;
+            // Limpiar chat anterior
+            const chatRef = db.collection('rooms').doc(currentRoomId).collection('chat');
+            const chatSnap = await chatRef.get();
+            const batch = db.batch();
+            chatSnap.docs.forEach(d => batch.delete(d.ref));
+            
+            // Resetear jugadores (votos)
+            const playersRef = db.collection('rooms').doc(currentRoomId).collection('players');
+            const playersSnap = await playersRef.get();
+            playersSnap.forEach(d => batch.update(d.ref, { vote: "" }));
+            
+            await batch.commit();
+
+            // Volver a estado waiting
+            await db.collection('rooms').doc(currentRoomId).update({
+                status: 'waiting',
+                turnIndex: 0,
+                playerOrder: []
+            });
+            showScreen('screen-create-room');
+        }
+
         async function borrarSala() {
             if(currentRoomId) {
                 await db.collection('rooms').doc(currentRoomId).delete();
                 location.reload();
+            }
+        }
+
+        async function salirDeSala() {
+            if(currentRoomId && currentUser) {
+                await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).delete();
+                currentRoomId = null;
+                showScreen('screen-menu');
             }
         }
 
@@ -503,19 +530,12 @@
         function login() {
             const name = document.getElementById('login-name').value.trim();
             if(!name) return;
-            
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
-                
-                db.collection('presencia').doc(currentUser.uid).set({
-                    nombre: name,
-                    active: true
-                });
-
+                db.collection('presencia').doc(currentUser.uid).set({ nombre: name, active: true });
                 const music = document.getElementById('bg-music');
                 music.play().catch(e => console.log("Audio bloqueado"));
                 document.getElementById('music-icon').className = 'fas fa-volume-up';
-                
                 hablarBienvenida(name);
                 showScreen('screen-menu');
             });
@@ -524,18 +544,12 @@
         async function createRoom() {
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
-            
             await db.collection('rooms').doc(code).set({
                 hostId: currentUser.uid, 
                 hostName: currentUser.name, 
-                status: 'waiting', 
-                turnIndex: 0, 
-                playerOrder: [], 
-                lastImpostorId: "", 
-                chatDuration: 2,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
+                chatDuration: 2, createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
             document.getElementById('room-code-display').innerText = code;
             joinLogic(code); 
             showScreen('screen-create-room');
@@ -561,12 +575,10 @@
             db.collection('rooms').doc(code).onSnapshot(doc => {
                 const data = doc.data(); 
                 if(!data) {
-                    if(!isHost) {
-                        alert("LA SALA FUE CERRADA POR EL GUÍA.");
-                        location.reload();
-                    }
+                    if(!isHost) { alert("SALA CERRADA"); location.reload(); }
                     return;
                 }
+                if(data.status === 'waiting' && !isHost) showScreen('screen-lobby-guest');
                 if(data.status === 'pre-start') handlePreStart(data);
                 if(data.status === 'playing') setupRole(data);
                 if(data.status === 'clues') handleClues(data);
@@ -598,14 +610,8 @@
         async function startPrep() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             if(pSnap.size < 3) return alert("MÍNIMO 3 JUGADORES");
-            
             const chatMinutes = parseInt(document.getElementById('setup-time').value) || 2;
-            
-            db.collection('rooms').doc(currentRoomId).update({ 
-                status: 'pre-start', 
-                prepEnd: Date.now() + 15000,
-                chatDuration: chatMinutes 
-            });
+            db.collection('rooms').doc(currentRoomId).update({ status: 'pre-start', prepEnd: Date.now() + 15000, chatDuration: chatMinutes });
         }
 
         function handlePreStart(data) {
@@ -614,10 +620,7 @@
             const intv = setInterval(() => {
                 const diff = Math.ceil((data.prepEnd - Date.now()) / 1000);
                 timerEl.innerText = diff > 0 ? diff : 0;
-                if(diff <= 0) {
-                    clearInterval(intv);
-                    if(isHost) startGameLogic();
-                }
+                if(diff <= 0) { clearInterval(intv); if(isHost) startGameLogic(); }
             }, 1000);
         }
 
@@ -637,11 +640,7 @@
             const batch = db.batch();
             pSnap.docs.forEach(d => batch.update(d.ref, { vote: "" }));
             await batch.commit();
-            await roomRef.update({
-                status: 'playing', impostorId: impId, lastImpostorId: impId,
-                word: chosen.w, quote: chosen.q, playerOrder: randomOrder, 
-                turnIndex: 0, endTime: endTime
-            });
+            await roomRef.update({ status: 'playing', impostorId: impId, lastImpostorId: impId, word: chosen.w, quote: chosen.q, playerOrder: randomOrder, turnIndex: 0, endTime: endTime });
         }
 
         async function setupRole(data) {
@@ -662,9 +661,7 @@
             if(!timerInterval) startDebateTimer(data.endTime);
             const turnUid = data.playerOrder[data.turnIndex];
             const isMyTurn = (turnUid === currentUser.uid);
-            db.collection('rooms').doc(currentRoomId).collection('players').doc(turnUid).get().then(d => {
-                if(d.exists) document.getElementById('turn-indicator').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`;
-            });
+            db.collection('rooms').doc(currentRoomId).collection('players').doc(turnUid).get().then(d => { if(d.exists) document.getElementById('turn-indicator').innerText = `TURNO DE: ${d.data().name.toUpperCase()}`; });
             document.getElementById('clue-input-area').style.display = isMyTurn ? 'block' : 'none';
             document.getElementById('wait-turn-msg').style.display = isMyTurn ? 'none' : 'block';
         }
@@ -673,9 +670,7 @@
             const input = document.getElementById('clue-input');
             const val = input.value.trim();
             if(!val || val.split(/\s+/).length > 2) return alert("MÁXIMO 2 PALABRAS");
-            await db.collection('rooms').doc(currentRoomId).collection('chat').add({
-                name: currentUser.name, uid: currentUser.uid, text: val.toUpperCase(), time: Date.now()
-            });
+            await db.collection('rooms').doc(currentRoomId).collection('chat').add({ name: currentUser.name, uid: currentUser.uid, text: val.toUpperCase(), time: Date.now() });
             input.value = "";
             const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
             let nextIdx = (rData.turnIndex + 1) % rData.playerOrder.length; 
@@ -686,11 +681,7 @@
             const timerEl = document.getElementById('timer');
             timerInterval = setInterval(() => {
                 const diff = endTime - Date.now();
-                if(diff <= 0) {
-                    clearInterval(timerInterval); timerInterval = null;
-                    if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
-                    return;
-                }
+                if(diff <= 0) { clearInterval(timerInterval); timerInterval = null; if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' }); return; }
                 const m = Math.floor(diff / 60000), s = Math.floor((diff % 60000) / 1000);
                 timerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
             }, 1000);
@@ -699,10 +690,7 @@
         async function setupVote() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             let html = "";
-            pSnap.forEach(p => { 
-                if(p.id !== currentUser.uid) 
-                    html += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`; 
-            });
+            pSnap.forEach(p => { if(p.id !== currentUser.uid) html += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`; });
             document.getElementById('vote-grid').innerHTML = html;
             document.getElementById('vote-grid').style.pointerEvents = 'auto';
             document.getElementById('vote-wait-msg').style.display = 'none';
@@ -723,32 +711,24 @@
                 const rSnap = await db.collection('rooms').doc(currentRoomId).get();
                 const rData = rSnap.data();
                 let votes = {}, summary = "";
-                players.forEach(p => {
-                    const d = p.data(); 
-                    const targetName = players.docs.find(x => x.id === d.vote)?.data().name || "---";
-                    summary += `<div><b>${d.name}</b> votó a: ${targetName}</div>`;
-                    votes[d.vote] = (votes[d.vote] || 0) + 1;
-                });
+                players.forEach(p => { const d = p.data(); const targetName = players.docs.find(x => x.id === d.vote)?.data().name || "---"; summary += `<div><b>${d.name}</b> votó a: ${targetName}</div>`; votes[d.vote] = (votes[d.vote] || 0) + 1; });
                 let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
                 const impostorDoc = players.docs.find(x => x.id === rData.impostorId);
-                db.collection('rooms').doc(currentRoomId).update({
-                    status: 'result', 
-                    winner: mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR',
-                    summary: summary, 
-                    impostorName: impostorDoc ? impostorDoc.data().name : "Desconocido"
-                });
+                db.collection('rooms').doc(currentRoomId).update({ status: 'result', winner: mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR', summary: summary, impostorName: impostorDoc ? impostorDoc.data().name : "Desconocido" });
             } else { setTimeout(checkAllVotes, 2000); }
         }
 
         function showFinalResult(data) {
-            const statusEl = document.getElementById('res-status');
-            statusEl.innerText = data.winner === 'DISCIPLES' ? "¡LOGRARON EXPULSARLO!" : "¡EL PROFETA LOS ENGAÑÓ!";
-            statusEl.style.color = data.winner === 'DISCIPLES' ? "var(--gold)" : "var(--accent)";
+            document.getElementById('res-status').innerText = data.winner === 'DISCIPLES' ? "¡LOGRARON EXPULSARLO!" : "¡EL PROFETA LOS ENGAÑÓ!";
             document.getElementById('res-impostor').innerText = data.impostorName;
             document.getElementById('vote-summary').innerHTML = data.summary;
-            
-            if(isHost) document.getElementById('host-controls-end').style.display = 'block';
-            
+            if(isHost) {
+                document.getElementById('host-controls-end').style.display = 'block';
+                document.getElementById('guest-controls-end').style.display = 'none';
+            } else {
+                document.getElementById('host-controls-end').style.display = 'none';
+                document.getElementById('guest-controls-end').style.display = 'block';
+            }
             showScreen('screen-result');
         }
     </script>
