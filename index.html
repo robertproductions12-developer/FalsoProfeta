@@ -282,7 +282,7 @@
         <div class="glass-card">
             <button class="btn btn-gold" onclick="createRoom()">CREAR SALA ONLINE</button>
             <button class="btn" onclick="showScreen('screen-join-room')">UNIRSE A SALA</button>
-            <button class="btn btn-exit" onclick="location.reload()">SALIR</button>
+            <button class="btn btn-exit" onclick="salirTotal()">SALIR</button>
         </div>
     </div>
 
@@ -295,7 +295,7 @@
             </div>
             <div id="lobby-players" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
             <button class="btn btn-gold" onclick="startPrep()">INICIAR PARTIDA</button>
-            <button class="btn btn-exit" onclick="location.reload()">CANCELAR</button>
+            <button class="btn btn-exit" onclick="borrarSala()">BORRAR SALA</button>
         </div>
     </div>
 
@@ -311,6 +311,7 @@
         <div class="glass-card">
             <h2 style="color:var(--gold)">ESPERANDO AL GUÍA...</h2>
             <div id="lobby-players-guest" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
+            <button class="btn btn-exit" onclick="showScreen('screen-menu')">SALIR DE SALA</button>
         </div>
     </div>
 
@@ -355,7 +356,11 @@
             <p style="font-size: 10px; opacity: 0.6; margin-top: 10px;">EL FALSO PROFETA ERA:</p>
             <h1 id="res-impostor" style="color: var(--gold); font-size: 24px;">---</h1>
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px;"></div>
-            <button class="btn btn-gold" onclick="location.reload()">VOLVER AL TEMPLO</button>
+            
+            <div id="host-controls-end" style="display: none;">
+                <button class="btn btn-gold" onclick="borrarSala()">BORRAR Y CREAR OTRA</button>
+            </div>
+            <button class="btn btn-exit" onclick="location.reload()">VOLVER AL INICIO</button>
         </div>
     </div>
 
@@ -422,42 +427,44 @@
             document.getElementById('side-panel').classList.toggle('open');
         }
 
-        // --- CONTADOR Y LISTA DE SALAS REALES ---
+        // --- SISTEMA GLOBAL ACTUALIZADO ---
         function initGlobalStats() {
-            // Salas reales en tiempo real
+            // Salas en tiempo real
             db.collection('rooms')
+              .where('status', '==', 'waiting')
               .orderBy('createdAt', 'desc')
-              .limit(10)
               .onSnapshot(snap => {
                 const list = document.getElementById('active-rooms-list');
                 let html = "";
-                let count = 0;
-                
                 snap.forEach(doc => {
                     const data = doc.data();
-                    if(data.status === 'waiting') {
-                        count++;
-                        html += `<div class="room-item">
-                                    <div>
-                                        <span>Guía:</span><br>
-                                        <b>${data.hostName || 'Anónimo'}</b>
-                                    </div>
-                                    <div style="text-align:right">
-                                        <span>Código:</span><br>
-                                        <b style="letter-spacing:1px">${doc.id}</b>
-                                    </div>
-                                 </div>`;
-                    }
+                    html += `<div class="room-item">
+                                <div><span>Guía:</span><br><b>${data.hostName}</b></div>
+                                <div style="text-align:right"><span>Código:</span><br><b style="letter-spacing:1px">${doc.id}</b></div>
+                             </div>`;
                 });
-                
-                list.innerHTML = count > 0 ? html : "<p style='font-size:10px; opacity:0.5'>No hay salas abiertas...</p>";
+                list.innerHTML = html || "<p style='font-size:10px; opacity:0.5'>No hay salas abiertas...</p>";
             });
 
-            // Contador de personas online real
+            // Contador real de almas activas
             db.collection('presencia').onSnapshot(snap => {
                 const total = snap.size;
                 document.getElementById('global-online-count').innerText = `${total} ${total === 1 ? 'ALMA' : 'ALMAS'} EN LÍNEA`;
             });
+        }
+
+        async function borrarSala() {
+            if(currentRoomId) {
+                await db.collection('rooms').doc(currentRoomId).delete();
+                location.reload();
+            }
+        }
+
+        async function salirTotal() {
+            if(currentUser) {
+                await db.collection('presencia').doc(currentUser.uid).delete();
+            }
+            location.reload();
         }
 
         function toggleMusic() {
@@ -498,10 +505,10 @@
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
                 
-                // Registrar presencia real
+                // Registrar presencia
                 db.collection('presencia').doc(currentUser.uid).set({
                     nombre: name,
-                    lastSeen: Date.now()
+                    active: true
                 });
 
                 const music = document.getElementById('bg-music');
@@ -551,7 +558,14 @@
 
         function listenRoom(code) {
             db.collection('rooms').doc(code).onSnapshot(doc => {
-                const data = doc.data(); if(!data) return;
+                const data = doc.data(); 
+                if(!data) {
+                    if(!isHost) {
+                        alert("LA SALA FUE CERRADA POR EL GUÍA.");
+                        location.reload();
+                    }
+                    return;
+                }
                 if(data.status === 'pre-start') handlePreStart(data);
                 if(data.status === 'playing') setupRole(data);
                 if(data.status === 'clues') handleClues(data);
@@ -731,15 +745,11 @@
             statusEl.style.color = data.winner === 'DISCIPLES' ? "var(--gold)" : "var(--accent)";
             document.getElementById('res-impostor').innerText = data.impostorName;
             document.getElementById('vote-summary').innerHTML = data.summary;
+            
+            if(isHost) document.getElementById('host-controls-end').style.display = 'block';
+            
             showScreen('screen-result');
         }
-
-        // Borrar presencia al cerrar pestaña (intento mejorado)
-        window.addEventListener('beforeunload', () => {
-            if(currentUser) {
-                db.collection('presencia').doc(currentUser.uid).delete();
-            }
-        });
     </script>
 </body>
 </html>
