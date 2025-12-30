@@ -195,7 +195,7 @@
         <h3 style="color:var(--gold); font-size:12px;">ESTADO DEL TEMPLO</h3>
         <p id="online-count" style="font-size:20px; font-weight:900;">...</p>
         <hr style="opacity:0.1; margin:15px 0;">
-        <button class="btn btn-gold" onclick="showGlobalChat(); toggleSidePanel();">CHAT LIBRE GLOBAL</button>
+        <button class="btn btn-gold" onclick="showGlobalChat(); toggleSidePanel();">JUNTA DISCUTAMOS UN RATO</button>
         <button class="btn btn-exit" onclick="location.reload()">SALIR DEL JUEGO</button>
     </div>
 
@@ -231,6 +231,7 @@
                 </div>
                 <input type="text" id="global-chat-input" placeholder="Mensaje para todos...">
                 <button class="btn btn-gold" onclick="sendGlobalMsg()">ENVIAR MENSAJE</button>
+                <button class="btn btn-exit" style="font-size: 9px; padding: 5px; margin-top: 10px;" onclick="clearGlobalChat()">BORRAR HISTORIAL</button>
             </div>
             <button class="btn" onclick="backFromGlobal()">VOLVER</button>
         </div>
@@ -316,7 +317,7 @@
     <div id="screen-result" class="screen">
         <div class="glass-card">
             <h2 id="res-title">---</h2>
-            <p style="font-size:10px; margin-top:10px;">EL IMPOSTOR ERA:</p>
+            <p style="font-size:10px; margin-top:10px;">EL FALSO PROFETA ERA:</p>
             <h1 id="res-name" style="color:var(--gold); margin-bottom: 15px;">---</h1>
             
             <div id="res-summary" style="margin-bottom:20px; text-align:left; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;"></div>
@@ -332,6 +333,7 @@
         </div>
     </div>
 
+    <audio id="bg-music" loop><source src="suspense-dramatic-248023.mp3" type="audio/mpeg"></audio>
     <footer>EL FALSO PROFETA v2.5 - BY ROBERT PARACO</footer>
 
     <script>
@@ -348,7 +350,6 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // ELEMENTOS DEL JUEGO
         const bibliaData = [
             {w:"Adán", q:"Formado del polvo de la tierra"}, {w:"Eva", q:"Madre de todos los vivientes"},
             {w:"Noé", q:"Varón justo… caminó con Dios"}, {w:"Abraham", q:"Sal de tu tierra"},
@@ -365,7 +366,6 @@
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInt = null;
 
-        // FONDO ANIMADO
         function createBg() {
             const container = document.getElementById('bg-animation');
             for(let i=0; i<20; i++) {
@@ -381,24 +381,31 @@
         }
         createBg();
 
-        // INTERFAZ BÁSICA
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
         function toggleSidePanel() { document.getElementById('side-panel').classList.toggle('open'); }
+        
+        // FUNCIÓN DE MÚSICA CORREGIDA
         function toggleMusic() {
             const m = document.getElementById('bg-music');
             const i = document.getElementById('music-icon');
-            if(m.paused) { m.play(); i.className = "fas fa-volume-up"; }
-            else { m.pause(); i.className = "fas fa-volume-mute"; }
+            if(m.paused) { 
+                m.play().then(() => {
+                    i.className = "fas fa-volume-up";
+                }).catch(e => console.log("Reproducción bloqueada por el navegador"));
+            } else { 
+                m.pause(); 
+                i.className = "fas fa-volume-mute"; 
+            }
         }
+
         function addEmoji(type, emoji) {
             const id = (type === 'g') ? 'global-chat-input' : 'clue-input';
             document.getElementById(id).value += emoji;
         }
 
-        // LOGIN
         async function login() {
             const name = document.getElementById('user-name').value.trim();
             if(!name) return;
@@ -406,10 +413,16 @@
             currentUser = { uid: cred.user.uid, name };
             db.collection('presencia').doc(currentUser.uid).set({ name, active: true });
             initGlobalChat();
+            
+            // Iniciar música si es posible al entrar
+            const m = document.getElementById('bg-music');
+            m.play().then(() => {
+                document.getElementById('music-icon').className = "fas fa-volume-up";
+            }).catch(() => {});
+            
             showScreen('screen-menu');
         }
 
-        // CHAT GLOBAL
         function initGlobalChat() {
             db.collection('global_chat').orderBy('time','desc').limit(20).onSnapshot(snap => {
                 const box = document.getElementById('global-chat-box');
@@ -424,13 +437,24 @@
                 document.getElementById('online-count').innerText = `${snap.size} ALMAS`;
             });
         }
+
         async function sendGlobalMsg() {
             const input = document.getElementById('global-chat-input');
             if(!input.value) return;
             await db.collection('global_chat').add({ name: currentUser.name, text: input.value, time: Date.now() });
             input.value = "";
         }
-        function showGlobalChat() { showScreen('screen-global-chat'); }
+
+        // FUNCIÓN PARA BORRAR CHAT GLOBAL
+        async function clearGlobalChat() {
+            if(confirm("¿Seguro que quieres borrar el historial del Concilio Global?")) {
+                const snap = await db.collection('global_chat').get();
+                const batch = db.batch();
+                snap.docs.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+            }
+        }
+
         function backFromGlobal() {
             if(currentRoomId) {
                 db.collection('rooms').doc(currentRoomId).get().then(doc => {
@@ -442,7 +466,8 @@
             } else showScreen('screen-menu');
         }
 
-        // SALAS
+        function showGlobalChat() { showScreen('screen-global-chat'); }
+
         async function createRoom() {
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
@@ -475,21 +500,18 @@
             db.collection('rooms').doc(code).onSnapshot(doc => {
                 const data = doc.data();
                 if(!data) { if(!isHost) location.reload(); return; }
-                
                 if(data.status === 'playing') setupGame(data);
                 if(data.status === 'debate') handleDebate(data);
                 if(data.status === 'voting') setupVoting();
                 if(data.status === 'result') showResult(data);
                 if(data.status === 'waiting' && !isHost) showScreen('screen-lobby-guest');
             });
-
             db.collection('rooms').doc(code).collection('players').onSnapshot(snap => {
                 let h = "";
                 snap.forEach(p => h += `<div>🔹 ${p.data().name}</div>`);
                 document.getElementById('player-list-host').innerHTML = h;
                 document.getElementById('player-list-guest').innerHTML = h;
             });
-
             db.collection('rooms').doc(code).collection('chat').orderBy('time','asc').onSnapshot(snap => {
                 const box = document.getElementById('debate-chat-box');
                 box.innerHTML = "";
@@ -501,16 +523,13 @@
             });
         }
 
-        // LÓGICA DE JUEGO
         async function startGame() {
             const time = parseInt(document.getElementById('setup-time').value);
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             const ids = pSnap.docs.map(d => d.id);
-            if(ids.length < 3) return alert("Se necesitan al menos 3 jugadores.");
-            
+            if(ids.length < 3) return alert("Mínimo 3 jugadores.");
             const item = bibliaData[Math.floor(Math.random()*bibliaData.length)];
             const impostor = ids[Math.floor(Math.random()*ids.length)];
-            
             await db.collection('rooms').doc(currentRoomId).update({
                 status: 'playing', impostorId: impostor, word: item.w, quote: item.q,
                 order: ids.sort(() => Math.random()-0.5), turn: 0,
@@ -522,7 +541,7 @@
             const isImp = data.impostorId === currentUser.uid;
             document.getElementById('role-name').innerText = isImp ? "ERES EL FALSO PROFETA" : "ERES UN DISCÍPULO";
             document.getElementById('game-word').innerText = isImp ? "¡INFÍLTRATE!" : data.word;
-            document.getElementById('game-quote').innerText = isImp ? "No conoces la palabra. ¡Engaña a todos!" : data.quote;
+            document.getElementById('game-quote').innerText = isImp ? "Engaña a todos para sobrevivir." : data.quote;
             showScreen('screen-reveal');
         }
 
@@ -535,11 +554,8 @@
             showScreen('screen-debate');
             const turnId = data.order[data.turn];
             document.getElementById('clue-input-area').style.display = (turnId === currentUser.uid) ? 'block' : 'none';
-            document.getElementById('turn-info').innerText = (turnId === currentUser.uid) ? "¡ES TU TURNO!" : `TURNO DE: ${turnId === currentUser.uid ? 'TI' : 'ALGUIEN MÁS'}`;
-            
-            // Mostrar botón borrar chat solo al host
+            document.getElementById('turn-info').innerText = (turnId === currentUser.uid) ? "¡ES TU TURNO!" : "ALGUIEN ESTÁ HABLANDO...";
             document.getElementById('host-clear-chat').style.display = isHost ? 'block' : 'none';
-
             if(!timerInt) {
                 timerInt = setInterval(() => {
                     const diff = data.endTime - Date.now();
@@ -574,14 +590,11 @@
             db.collection('rooms').doc(currentRoomId).update({ turn: next });
         }
 
-        // VOTACIÓN Y RESULTADOS
         async function setupVoting() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             let h = "";
             pSnap.forEach(p => {
-                if(p.id !== currentUser.uid) {
-                    h += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`;
-                }
+                if(p.id !== currentUser.uid) h += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`;
             });
             document.getElementById('vote-grid').innerHTML = h;
             document.getElementById('vote-grid').style.display = "grid";
@@ -600,31 +613,21 @@
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             const players = pSnap.docs.map(d => ({id: d.id, ...d.data()}));
             const allVoted = players.every(p => p.vote !== "");
-
             if(allVoted) {
                 const roomDoc = await db.collection('rooms').doc(currentRoomId).get();
                 const impostorId = roomDoc.data().impostorId;
                 const impName = players.find(p => p.id === impostorId).name;
-                
                 let summaryHtml = "";
                 let votesCount = {};
-
                 players.forEach(p => {
                     const votedFor = players.find(x => x.id === p.vote).name;
                     summaryHtml += `<div class="vote-item"><b>${p.name}</b> sospechó de: ${votedFor}</div>`;
                     votesCount[p.vote] = (votesCount[p.vote] || 0) + 1;
                 });
-
-                // Calcular más votado
                 let mostVotedId = Object.keys(votesCount).reduce((a, b) => votesCount[a] > votesCount[b] ? a : b);
                 const win = (mostVotedId === impostorId) ? 'DISCÍPULOS' : 'FALSO PROFETA';
-
-                await db.collection('rooms').doc(currentRoomId).update({
-                    status: 'result', winner: win, summary: summaryHtml, impName: impName
-                });
-            } else {
-                setTimeout(monitorVotes, 1500); // Re-revisar
-            }
+                await db.collection('rooms').doc(currentRoomId).update({ status: 'result', winner: win, summary: summaryHtml, impName: impName });
+            } else { setTimeout(monitorVotes, 1500); }
         }
 
         function showResult(data) {
@@ -632,7 +635,6 @@
             document.getElementById('res-title').style.color = (data.winner === 'DISCÍPULOS') ? "var(--gold)" : "var(--accent)";
             document.getElementById('res-name').innerText = data.impName;
             document.getElementById('res-summary').innerHTML = data.summary;
-
             if(isHost) {
                 document.getElementById('host-controls').style.display = "block";
                 document.getElementById('guest-controls').style.display = "none";
@@ -645,19 +647,17 @@
 
         async function resetGame() {
             if(!isHost) return;
-            // Limpiar chat y votos
             await clearDebateChat();
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             const batch = db.batch();
             pSnap.docs.forEach(d => batch.update(d.ref, { vote: "" }));
             await batch.commit();
-
             await db.collection('rooms').doc(currentRoomId).update({ status: 'waiting' });
             showScreen('screen-lobby-host');
         }
 
         async function deleteRoom() {
-            if(confirm("¿Cerrar el templo? Todos los jugadores saldrán.")) {
+            if(confirm("¿Cerrar el templo?")) {
                 await db.collection('rooms').doc(currentRoomId).delete();
                 location.reload();
             }
