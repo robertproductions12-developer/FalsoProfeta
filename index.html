@@ -32,7 +32,30 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* --- REDES SOCIALES ESTÁTICAS --- */
+        /* FONDO ANIMADO PROFESIONAL */
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .q-mark {
+            position: absolute;
+            color: var(--gold);
+            font-weight: 900;
+            user-select: none;
+            filter: blur(1px);
+            opacity: 0;
+            animation: float-rise linear infinite;
+        }
+        @keyframes float-rise {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.1; }
+            90% { opacity: 0.1; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* REDES SOCIALES */
         .social-bar {
             position: fixed;
             bottom: 20px;
@@ -40,54 +63,28 @@
             display: flex;
             justify-content: center;
             gap: 25px;
-            z-index: 5; /* Por detrás de las tarjetas pero visible */
+            z-index: 5;
         }
         .social-bar a {
-            color: white;
-            font-size: 22px;
-            opacity: 0.5;
-            transition: 0.3s;
-            text-decoration: none;
+            color: white; font-size: 22px; opacity: 0.5;
+            transition: 0.3s; text-decoration: none;
         }
         .social-bar a:hover { opacity: 1; transform: scale(1.2); }
         .fa-youtube:hover { color: #ff0000; }
         .fa-instagram:hover { color: #e1306c; }
         .fa-tiktok:hover { color: #00f2ea; }
 
-        .bg-animation {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .q-mark {
-            position: absolute;
-            color: var(--gold);
-            opacity: 0.05;
-            font-weight: 900;
-            animation: float 10s linear infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(110vh) rotate(0deg); }
-            100% { transform: translateY(-10vh) rotate(360deg); }
-        }
-
         .top-controls {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            z-index: 1100;
+            top: 15px; right: 15px;
+            display: flex; gap: 8px; z-index: 1100;
         }
 
         .icon-btn {
             background: rgba(0,0,0,0.6);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 10px;
-            border-radius: 50%;
+            padding: 10px; border-radius: 50%;
             width: 42px; height: 42px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
@@ -100,22 +97,15 @@
             background: var(--card);
             border-left: 1px solid var(--gold);
             z-index: 2000;
-            transition: 0.4s;
-            padding: 20px;
-            overflow-y: auto;
+            transition: 0.4s; padding: 20px;
         }
         #side-panel.open { right: 0; }
 
         .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%; width: 100%;
-            padding: 20px;
-            text-align: center;
-            position: absolute;
-            z-index: 10;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100%; width: 100%; padding: 20px;
+            text-align: center; position: absolute; z-index: 10;
         }
         .active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -125,32 +115,24 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
-            padding: 25px;
-            width: 100%; max-width: 380px;
+            padding: 25px; width: 100%; max-width: 380px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-height: 80vh;
-            overflow-y: auto;
+            max-height: 85vh; overflow-y: auto;
         }
 
         .btn {
             background: linear-gradient(135deg, #333 0%, #000 100%);
             border: 1px solid var(--gold-dark);
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            width: 100%;
-            margin: 6px 0;
+            color: white; padding: 12px; border-radius: 12px;
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; cursor: pointer;
+            width: 100%; margin: 6px 0;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: black; border: none; }
-        .btn-chat { border-color: var(--messenger); color: var(--messenger); }
         .btn-exit { border-color: var(--accent); color: var(--accent); }
 
-        input {
+        input, select {
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.2);
             padding: 12px; border-radius: 10px;
@@ -159,15 +141,11 @@
         }
 
         .chat-container {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border-radius: 15px;
-            padding: 10px;
-            margin: 10px 0;
+            width: 100%; background: rgba(0,0,0,0.4);
+            border-radius: 15px; padding: 10px; margin: 10px 0;
         }
         .chat-box {
-            height: 25vh;
-            overflow-y: auto;
+            height: 25vh; overflow-y: auto;
             display: flex; flex-direction: column; gap: 5px;
             margin-bottom: 10px;
         }
@@ -182,8 +160,14 @@
             padding: 5px; background: rgba(255,255,255,0.03);
             border-radius: 8px; margin-bottom: 5px;
         }
-        .emoji-row span { cursor: pointer; font-size: 18px; transition: 0.2s; }
-        .emoji-row span:hover { transform: scale(1.3); }
+        .emoji-row span { cursor: pointer; font-size: 18px; }
+
+        .vote-item {
+            background: rgba(226, 176, 74, 0.1);
+            padding: 8px; border-radius: 8px;
+            margin: 4px 0; font-size: 11px;
+            border: 1px solid rgba(226, 176, 74, 0.2);
+        }
 
         footer { position: fixed; bottom: 5px; width: 100%; text-align: center; font-size: 8px; opacity: 0.2; }
     </style>
@@ -192,7 +176,6 @@
 
     <div class="bg-animation" id="bg-animation"></div>
 
-    <!-- REDES SOCIALES -->
     <div class="social-bar">
         <a href="#"><i class="fab fa-youtube"></i></a>
         <a href="#"><i class="fab fa-instagram"></i></a>
@@ -201,7 +184,7 @@
 
     <div class="top-controls">
         <div class="icon-btn" onclick="toggleMusic()"><i id="music-icon" class="fas fa-volume-mute"></i></div>
-        <div class="icon-btn" onclick="showScreen('screen-global-chat')"><i class="fas fa-comments"></i></div>
+        <div class="icon-btn" onclick="showGlobalChat()"><i class="fas fa-comments"></i></div>
         <div class="icon-btn" onclick="toggleSidePanel()"><i class="fas fa-bars"></i></div>
     </div>
 
@@ -212,8 +195,8 @@
         <h3 style="color:var(--gold); font-size:12px;">ESTADO DEL TEMPLO</h3>
         <p id="online-count" style="font-size:20px; font-weight:900;">...</p>
         <hr style="opacity:0.1; margin:15px 0;">
-        <button class="btn btn-chat" onclick="showScreen('screen-global-chat'); toggleSidePanel();">CHAT LIBRE</button>
-        <button class="btn btn-exit" onclick="location.reload()">SALIR</button>
+        <button class="btn btn-gold" onclick="showGlobalChat(); toggleSidePanel();">CHAT LIBRE GLOBAL</button>
+        <button class="btn btn-exit" onclick="location.reload()">SALIR DEL JUEGO</button>
     </div>
 
     <!-- 1. LOGIN -->
@@ -231,14 +214,14 @@
         <div class="glass-card">
             <button class="btn btn-gold" onclick="createRoom()">CREAR NUEVA SALA</button>
             <button class="btn" onclick="showScreen('screen-join-room')">UNIRSE A SALA</button>
-            <button class="btn btn-chat" onclick="showScreen('screen-global-chat')">CHAT GLOBAL (TODOS)</button>
+            <button class="btn" onclick="showGlobalChat()" style="color:var(--messenger); border-color:var(--messenger);">CHAT GLOBAL</button>
         </div>
     </div>
 
     <!-- 3. CHAT GLOBAL -->
     <div id="screen-global-chat" class="screen">
         <div class="glass-card">
-            <h3 style="color:var(--gold)">CHAT LIBRE</h3>
+            <h3 style="color:var(--gold)">CONCILIO GLOBAL</h3>
             <div class="chat-container">
                 <div id="global-chat-box" class="chat-box"></div>
                 <div class="emoji-row">
@@ -246,8 +229,8 @@
                     <span onclick="addEmoji('g','📖')">📖</span><span onclick="addEmoji('g','🤫')">🤫</span>
                     <span onclick="addEmoji('g','🙌')">🙌</span>
                 </div>
-                <input type="text" id="global-chat-input" placeholder="Di algo a todos...">
-                <button class="btn btn-gold" onclick="sendGlobalMsg()">ENVIAR</button>
+                <input type="text" id="global-chat-input" placeholder="Mensaje para todos...">
+                <button class="btn btn-gold" onclick="sendGlobalMsg()">ENVIAR MENSAJE</button>
             </div>
             <button class="btn" onclick="backFromGlobal()">VOLVER</button>
         </div>
@@ -257,7 +240,16 @@
     <div id="screen-lobby-host" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
-            <div id="player-list-host" style="margin:20px 0; font-size:12px; text-align:left;"></div>
+            <div style="margin: 15px 0;">
+                <label style="font-size: 10px; color: var(--gold); display: block; margin-bottom: 5px;">DURACIÓN DEL DEBATE:</label>
+                <select id="setup-time">
+                    <option value="60000">1 MINUTO</option>
+                    <option value="120000" selected>2 MINUTOS</option>
+                    <option value="180000">3 MINUTOS</option>
+                    <option value="300000">5 MINUTOS</option>
+                </select>
+            </div>
+            <div id="player-list-host" style="margin:15px 0; font-size:12px; text-align:left; max-height: 100px; overflow-y: auto;"></div>
             <button class="btn btn-gold" onclick="startGame()">INICIAR PARTIDA</button>
             <button class="btn btn-exit" onclick="deleteRoom()">CERRAR SALA</button>
         </div>
@@ -287,32 +279,36 @@
             <h2 id="role-name">---</h2>
             <div id="game-word" style="font-size:30px; font-weight:900; color:var(--gold); margin:20px 0;">---</div>
             <p id="game-quote" style="font-style:italic; font-size:12px; opacity:0.8;"></p>
-            <button class="btn btn-gold" style="margin-top:20px;" onclick="goToDebate()">ENTENDIDO</button>
+            <button class="btn btn-gold" style="margin-top:20px;" onclick="goToDebate()">ENTRAR AL DEBATE</button>
         </div>
     </div>
 
     <!-- 8. DEBATE -->
     <div id="screen-debate" class="screen">
-        <div id="timer" style="font-size:30px; color:var(--gold); font-weight:900;">02:00</div>
-        <div id="turn-info" style="font-size:12px; margin:10px 0;"></div>
+        <div id="timer" style="font-size:30px; color:var(--gold); font-weight:900;">00:00</div>
+        <div id="turn-info" style="font-size:12px; margin:10px 0; color:var(--gold);">Cargando...</div>
         <div class="chat-container" style="max-width:380px;">
             <div id="debate-chat-box" class="chat-box"></div>
+            
             <div id="clue-input-area" style="display:none;">
                 <div class="emoji-row">
                     <span onclick="addEmoji('d','🧐')">🧐</span><span onclick="addEmoji('d','🐍')">🐍</span>
                     <span onclick="addEmoji('d','🛡️')">🛡️</span><span onclick="addEmoji('d','🕯️')">🕯️</span>
+                    <span onclick="addEmoji('d','📜')">📜</span>
                 </div>
-                <input type="text" id="clue-input" placeholder="Escribe tu pista...">
+                <input type="text" id="clue-input" placeholder="Tu pista (Máx 2 palabras)...">
                 <button class="btn btn-gold" onclick="sendClue()">ENVIAR PISTA</button>
             </div>
+            <button id="host-clear-chat" class="btn" style="display:none; font-size: 9px; padding: 5px;" onclick="clearDebateChat()">BORRAR CHAT (GUÍA)</button>
         </div>
     </div>
 
     <!-- 9. VOTACIÓN -->
     <div id="screen-vote" class="screen">
         <div class="glass-card">
-            <h3 style="color:var(--accent)">¿QUIÉN ES EL FALSO PROFETA?</h3>
-            <div id="vote-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;"></div>
+            <h3 style="color:var(--accent); margin-bottom: 15px;">¿QUIÉN ES EL FALSO PROFETA?</h3>
+            <div id="vote-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+            <p id="vote-wait-msg" style="display:none; font-size:10px; margin-top:15px; color:var(--gold);">Esperando a los demás...</p>
         </div>
     </div>
 
@@ -321,22 +317,22 @@
         <div class="glass-card">
             <h2 id="res-title">---</h2>
             <p style="font-size:10px; margin-top:10px;">EL IMPOSTOR ERA:</p>
-            <h1 id="res-name" style="color:var(--gold)">---</h1>
-            <div id="res-summary" style="margin:15px 0; font-size:10px; text-align:left; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;"></div>
+            <h1 id="res-name" style="color:var(--gold); margin-bottom: 15px;">---</h1>
+            
+            <div id="res-summary" style="margin-bottom:20px; text-align:left; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;"></div>
             
             <div id="host-controls" style="display:none;">
-                <button class="btn btn-gold" onclick="resetGame()">NUEVA PARTIDA (GUÍA)</button>
+                <button class="btn btn-gold" onclick="resetGame()">REPETIR CON ESTE GRUPO</button>
                 <button class="btn btn-exit" onclick="deleteRoom()">CERRAR SALA</button>
             </div>
             <div id="guest-controls" style="display:none;">
-                <p id="wait-msg" style="font-size:10px; color:var(--gold); margin-bottom:10px;">Esperando al Guía...</p>
+                <p style="font-size:10px; color:var(--gold); margin-bottom:10px;">Esperando al Guía...</p>
                 <button class="btn btn-exit" onclick="location.reload()">SALIR DEL TEMPLO</button>
             </div>
         </div>
     </div>
 
-    <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg"></audio>
-    <footer>EL FALSO PROFETA v2.0 - BY ROBERT PARACO</footer>
+    <footer>EL FALSO PROFETA v2.5 - BY ROBERT PARACO</footer>
 
     <script>
         // CONFIGURACIÓN FIREBASE
@@ -352,80 +348,51 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // CONTENIDO DEL JUEGO (100 ELEMENTOS)
+        // ELEMENTOS DEL JUEGO
         const bibliaData = [
-            // PERSONAJES (40)
             {w:"Adán", q:"Formado del polvo de la tierra"}, {w:"Eva", q:"Madre de todos los vivientes"},
             {w:"Noé", q:"Varón justo… caminó con Dios"}, {w:"Abraham", q:"Sal de tu tierra"},
             {w:"Isaac", q:"Dios proveerá"}, {w:"Jacob", q:"He visto a Dios cara a cara"},
             {w:"José", q:"Dios lo encaminó a bien"}, {w:"Moisés", q:"Yo estaré contigo"},
             {w:"Aarón", q:"Será tu portavoz"}, {w:"Josué", q:"Esfuérzate y sé valiente"},
-            {w:"Débora", q:"Se levantó como madre en Israel"}, {w:"Gedeón", q:"Jehová está contigo"},
-            {w:"Sansón", q:"Comenzó a salvar a Israel"}, {w:"Rut", q:"Tu Dios será mi Dios"},
-            {w:"Samuel", q:"Habla, porque tu siervo oye"}, {w:"Saúl", q:"Otro corazón le fue dado"},
             {w:"David", q:"Jehová es mi pastor"}, {w:"Salomón", q:"Dame sabiduría"},
-            {w:"Elías", q:"Vive Jehová"}, {w:"Eliseo", q:"Una doble porción de tu espíritu"},
-            {w:"Isaías", q:"Heme aquí, envíame a mí"}, {w:"Jeremías", q:"Antes que nacieses te conocí"},
-            {w:"Ezequiel", q:"Hijo de hombre, ponte en pie"}, {w:"Daniel", q:"Dios cerró la boca de los leones"},
-            {w:"Ester", q:"Para esta hora has llegado"}, {w:"Nehemías", q:"El gozo de Jehová es mi fuerza"},
-            {w:"Job", q:"Yo sé que mi Redentor vive"}, {w:"Jonás", q:"La salvación es de Jehová"},
-            {w:"Zacarías", q:"No con ejército ni con fuerza"}, {w:"Juan el Bautista", q:"Preparad el camino del Señor"},
-            {w:"María", q:"He aquí la sierva del Señor"}, {w:"José", q:"No temas recibir a María"},
-            {w:"Pedro", q:"Tú eres el Cristo"}, {w:"Juan", q:"El discípulo amado"},
-            {w:"Marta", q:"Yo sé que resucitará"}, {w:"María Magdalena", q:"He visto al Señor"},
-            {w:"Pablo", q:"Todo lo puedo en Cristo"}, {w:"Bernabé", q:"Hijo de consolación"},
-            {w:"Timoteo", q:"Ninguno tenga en poco tu juventud"}, {w:"Jesús", q:"Yo soy el camino, la verdad y la vida"},
-            // HISTORIAS (20)
+            {w:"Daniel", q:"Dios cerró la boca de los leones"}, {w:"Jonás", q:"La salvación es de Jehová"},
+            {w:"Pedro", q:"Tú eres el Cristo"}, {w:"Pablo", q:"Todo lo puedo en Cristo"},
             {w:"La creación", q:"Y vio Dios que era bueno"}, {w:"El diluvio", q:"Entró Noé en el arca"},
-            {w:"La torre de Babel", q:"Confundió Jehová el lenguaje"}, {w:"El sacrificio de Isaac", q:"Jehová proveerá"},
-            {w:"José vendido", q:"Lo vendieron por plata"}, {w:"El éxodo", q:"Deja ir a mi pueblo"},
-            {w:"El mar Rojo", q:"Las aguas se abrieron"}, {w:"El maná", q:"Pan del cielo"},
-            {w:"Diez Mandamientos", q:"Escritos por el dedo de Dios"}, {w:"Caída de Jericó", q:"El muro se derrumbó"},
-            {w:"David y Goliat", q:"Jehová te entregará"}, {w:"Templo de Salomón", q:"La gloria de Jehová llenó la casa"},
-            {w:"Elías en el Carmelo", q:"Jehová es Dios"}, {w:"Jonás y el pez", q:"Jehová habló al pez"},
-            {w:"El horno de fuego", q:"No fueron quemados"}, {w:"El foso de los leones", q:"Dios envió su ángel"},
-            {w:"Nacimiento de Jesús", q:"Os ha nacido un Salvador"}, {w:"La cruz", q:"Consumado es"},
-            {w:"La resurrección", q:"No está aquí, resucitó"}, {w:"Pentecostés", q:"Llenos del Espíritu Santo"},
-            // LUGARES (20)
-            {w:"Edén", q:"Plantó Jehová Dios un huerto"}, {w:"Ararat", q:"Reposó el arca"},
-            {w:"Betel", q:"Casa de Dios"}, {w:"Egipto", q:"Lugar de esclavitud"},
-            {w:"Sinaí", q:"Jehová descendió"}, {w:"Jericó", q:"Ciudad fortificada"},
-            {w:"Jerusalén", q:"Ciudad del gran Rey"}, {w:"Belén", q:"De ti me saldrá el Salvador"},
-            {w:"Nazaret", q:"Será llamado nazareno"}, {w:"Galilea", q:"El pueblo vio gran luz"},
-            {w:"Capernaum", q:"Ciudad de Jesús"}, {w:"Samaria", q:"Campo de misión"},
-            {w:"Getsemaní", q:"Oró con gran agonía"}, {w:"Gólgota", q:"Lugar de la calavera"},
-            {w:"Monte Olivos", q:"Ascendió al cielo"}, {w:"Damasco", q:"Camino de conversión"},
-            {w:"Antioquía", q:"Llamados cristianos"}, {w:"Éfeso", q:"Gran puerta abierta"},
-            {w:"Corinto", q:"Tengo mucho pueblo"}, {w:"Patmos", q:"Por causa de la palabra"},
-            // PARÁBOLAS (20)
-            {w:"El sembrador", q:"El que oye la palabra"}, {w:"Trigo y cizaña", q:"Dejad crecer juntos"},
-            {w:"Grano de mostaza", q:"La más pequeña"}, {w:"La levadura", q:"Leudó toda la masa"},
-            {w:"Tesoro escondido", q:"Vende todo lo que tiene"}, {w:"Perla de gran precio", q:"Una perla preciosa"},
-            {w:"La red", q:"Separan a los malos"}, {w:"La oveja perdida", q:"Hasta hallarla"},
-            {w:"Moneda perdida", q:"Se goza cuando la halla"}, {w:"El hijo pródigo", q:"Estaba muerto y revivió"},
-            {w:"Buen samaritano", q:"Tuvo compasión"}, {w:"Amigo importuno", q:"Por su insistencia"},
-            {w:"Rico insensato", q:"Vienen por tu alma"}, {w:"Higuera estéril", q:"Dale otra oportunidad"},
-            {w:"Los invitados", q:"Muchos son llamados"}, {w:"Los talentos", q:"Bien, buen siervo fiel"},
-            {w:"Diez vírgenes", q:"Velad"}, {w:"Juicio final", q:"A uno de estos pequeños"},
-            {w:"Fariseo y publicano", q:"Descendió justificado"}, {w:"Constructor sabio", q:"Sobre la roca"}
+            {w:"Mar Rojo", q:"Las aguas se abrieron"}, {w:"La cruz", q:"Consumado es"},
+            {w:"Jerusalén", q:"Ciudad del gran Rey"}, {w:"Belén", q:"De ti me saldrá el Salvador"}
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInt = null;
 
+        // FONDO ANIMADO
+        function createBg() {
+            const container = document.getElementById('bg-animation');
+            for(let i=0; i<20; i++) {
+                const q = document.createElement('div');
+                q.className = 'q-mark';
+                q.innerText = '?';
+                q.style.left = Math.random() * 100 + 'vw';
+                q.style.fontSize = (Math.random() * 40 + 20) + 'px';
+                q.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                q.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(q);
+            }
+        }
+        createBg();
+
+        // INTERFAZ BÁSICA
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
-
         function toggleSidePanel() { document.getElementById('side-panel').classList.toggle('open'); }
-
         function toggleMusic() {
             const m = document.getElementById('bg-music');
             const i = document.getElementById('music-icon');
             if(m.paused) { m.play(); i.className = "fas fa-volume-up"; }
             else { m.pause(); i.className = "fas fa-volume-mute"; }
         }
-
         function addEmoji(type, emoji) {
             const id = (type === 'g') ? 'global-chat-input' : 'clue-input';
             document.getElementById(id).value += emoji;
@@ -457,21 +424,20 @@
                 document.getElementById('online-count').innerText = `${snap.size} ALMAS`;
             });
         }
-
         async function sendGlobalMsg() {
             const input = document.getElementById('global-chat-input');
             if(!input.value) return;
             await db.collection('global_chat').add({ name: currentUser.name, text: input.value, time: Date.now() });
             input.value = "";
         }
-
+        function showGlobalChat() { showScreen('screen-global-chat'); }
         function backFromGlobal() {
             if(currentRoomId) {
-                // Si estaba en una sala, volver a la pantalla correspondiente
                 db.collection('rooms').doc(currentRoomId).get().then(doc => {
                     const s = doc.data().status;
                     if(s === 'waiting') showScreen(isHost ? 'screen-lobby-host' : 'screen-lobby-guest');
-                    else showScreen('screen-debate');
+                    else if(s === 'debate') showScreen('screen-debate');
+                    else showScreen('screen-menu');
                 });
             } else showScreen('screen-menu');
         }
@@ -480,14 +446,17 @@
         async function createRoom() {
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
-            await db.collection('rooms').doc(code).set({ hostId: currentUser.uid, status: 'waiting', createdAt: Date.now() });
+            await db.collection('rooms').doc(code).set({ 
+                hostId: currentUser.uid, status: 'waiting', 
+                createdAt: Date.now(), duration: 120000 
+            });
             document.getElementById('room-code-display').innerText = code;
             joinLogic(code);
             showScreen('screen-lobby-host');
         }
 
         async function joinRoom() {
-            const code = document.getElementById('join-code').value.toUpperCase();
+            const code = document.getElementById('join-code').value.toUpperCase().trim();
             const doc = await db.collection('rooms').doc(code).get();
             if(!doc.exists) return alert("SALA NO EXISTE");
             currentRoomId = code; isHost = false;
@@ -497,7 +466,7 @@
 
         async function joinLogic(code) {
             await db.collection('rooms').doc(code).collection('players').doc(currentUser.uid).set({
-                name: currentUser.name, uid: currentUser.uid, joinedAt: Date.now()
+                name: currentUser.name, uid: currentUser.uid, vote: ""
             });
             listenRoom(code);
         }
@@ -506,6 +475,7 @@
             db.collection('rooms').doc(code).onSnapshot(doc => {
                 const data = doc.data();
                 if(!data) { if(!isHost) location.reload(); return; }
+                
                 if(data.status === 'playing') setupGame(data);
                 if(data.status === 'debate') handleDebate(data);
                 if(data.status === 'voting') setupVoting();
@@ -531,11 +501,12 @@
             });
         }
 
-        // GAME FLOW
+        // LÓGICA DE JUEGO
         async function startGame() {
+            const time = parseInt(document.getElementById('setup-time').value);
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             const ids = pSnap.docs.map(d => d.id);
-            if(ids.length < 3) return alert("Mínimo 3 jugadores");
+            if(ids.length < 3) return alert("Se necesitan al menos 3 jugadores.");
             
             const item = bibliaData[Math.floor(Math.random()*bibliaData.length)];
             const impostor = ids[Math.floor(Math.random()*ids.length)];
@@ -543,15 +514,15 @@
             await db.collection('rooms').doc(currentRoomId).update({
                 status: 'playing', impostorId: impostor, word: item.w, quote: item.q,
                 order: ids.sort(() => Math.random()-0.5), turn: 0,
-                endTime: Date.now() + 120000
+                duration: time, endTime: Date.now() + time
             });
         }
 
         function setupGame(data) {
             const isImp = data.impostorId === currentUser.uid;
             document.getElementById('role-name').innerText = isImp ? "ERES EL FALSO PROFETA" : "ERES UN DISCÍPULO";
-            document.getElementById('game-word').innerText = isImp ? "¡ESCÓNDETE!" : data.word;
-            document.getElementById('game-quote').innerText = isImp ? "Miente para que no te descubran." : data.quote;
+            document.getElementById('game-word').innerText = isImp ? "¡INFÍLTRATE!" : data.word;
+            document.getElementById('game-quote').innerText = isImp ? "No conoces la palabra. ¡Engaña a todos!" : data.quote;
             showScreen('screen-reveal');
         }
 
@@ -564,8 +535,11 @@
             showScreen('screen-debate');
             const turnId = data.order[data.turn];
             document.getElementById('clue-input-area').style.display = (turnId === currentUser.uid) ? 'block' : 'none';
-            document.getElementById('turn-info').innerText = (turnId === currentUser.uid) ? "¡ES TU TURNO!" : "ESPERA SEÑALES...";
+            document.getElementById('turn-info').innerText = (turnId === currentUser.uid) ? "¡ES TU TURNO!" : `TURNO DE: ${turnId === currentUser.uid ? 'TI' : 'ALGUIEN MÁS'}`;
             
+            // Mostrar botón borrar chat solo al host
+            document.getElementById('host-clear-chat').style.display = isHost ? 'block' : 'none';
+
             if(!timerInt) {
                 timerInt = setInterval(() => {
                     const diff = data.endTime - Date.now();
@@ -580,76 +554,110 @@
             }
         }
 
+        async function clearDebateChat() {
+            if(!isHost) return;
+            const snap = await db.collection('rooms').doc(currentRoomId).collection('chat').get();
+            const batch = db.batch();
+            snap.docs.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+        }
+
         async function sendClue() {
-            const val = document.getElementById('clue-input').value;
-            if(!val) return;
-            await db.collection('rooms').doc(currentRoomId).collection('chat').add({ name: currentUser.name, text: val.toUpperCase(), time: Date.now() });
-            document.getElementById('clue-input').value = "";
+            const input = document.getElementById('clue-input');
+            if(!input.value.trim()) return;
+            await db.collection('rooms').doc(currentRoomId).collection('chat').add({ 
+                name: currentUser.name, text: input.value.toUpperCase(), time: Date.now() 
+            });
+            input.value = "";
             const doc = await db.collection('rooms').doc(currentRoomId).get();
             const next = (doc.data().turn + 1) % doc.data().order.length;
             db.collection('rooms').doc(currentRoomId).update({ turn: next });
         }
 
+        // VOTACIÓN Y RESULTADOS
         async function setupVoting() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             let h = "";
             pSnap.forEach(p => {
-                if(p.id !== currentUser.uid) h += `<button class="btn btn-gold" onclick="voteFor('${p.id}')">${p.data().name}</button>`;
+                if(p.id !== currentUser.uid) {
+                    h += `<button class="btn btn-gold" onclick="castVote('${p.id}')">${p.data().name}</button>`;
+                }
             });
             document.getElementById('vote-grid').innerHTML = h;
+            document.getElementById('vote-grid').style.display = "grid";
+            document.getElementById('vote-wait-msg').style.display = "none";
             showScreen('screen-vote');
         }
 
-        async function voteFor(id) {
-            document.getElementById('vote-grid').style.pointerEvents = 'none';
-            await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ vote: id });
-            if(isHost) checkVotes();
+        async function castVote(targetId) {
+            document.getElementById('vote-grid').style.display = "none";
+            document.getElementById('vote-wait-msg').style.display = "block";
+            await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).update({ vote: targetId });
+            if(isHost) monitorVotes();
         }
 
-        async function checkVotes() {
+        async function monitorVotes() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
-            const allVoted = pSnap.docs.every(d => d.data().vote);
+            const players = pSnap.docs.map(d => ({id: d.id, ...d.data()}));
+            const allVoted = players.every(p => p.vote !== "");
+
             if(allVoted) {
-                const rData = (await db.collection('rooms').doc(currentRoomId).get()).data();
-                let votes = {}, summary = "";
-                pSnap.forEach(p => {
-                    const v = p.data().vote;
-                    const targetName = pSnap.docs.find(x => x.id === v).data().name;
-                    summary += `<div>${p.data().name} votó a ${targetName}</div>`;
-                    votes[v] = (votes[v] || 0) + 1;
+                const roomDoc = await db.collection('rooms').doc(currentRoomId).get();
+                const impostorId = roomDoc.data().impostorId;
+                const impName = players.find(p => p.id === impostorId).name;
+                
+                let summaryHtml = "";
+                let votesCount = {};
+
+                players.forEach(p => {
+                    const votedFor = players.find(x => x.id === p.vote).name;
+                    summaryHtml += `<div class="vote-item"><b>${p.name}</b> sospechó de: ${votedFor}</div>`;
+                    votesCount[p.vote] = (votesCount[p.vote] || 0) + 1;
                 });
-                const expelledId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
-                const win = expelledId === rData.impostorId ? 'DISCÍPULOS' : 'FALSO PROFETA';
-                const impName = pSnap.docs.find(x => x.id === rData.impostorId).data().name;
-                db.collection('rooms').doc(currentRoomId).update({ status: 'result', winner: win, summary, impName });
+
+                // Calcular más votado
+                let mostVotedId = Object.keys(votesCount).reduce((a, b) => votesCount[a] > votesCount[b] ? a : b);
+                const win = (mostVotedId === impostorId) ? 'DISCÍPULOS' : 'FALSO PROFETA';
+
+                await db.collection('rooms').doc(currentRoomId).update({
+                    status: 'result', winner: win, summary: summaryHtml, impName: impName
+                });
+            } else {
+                setTimeout(monitorVotes, 1500); // Re-revisar
             }
         }
 
         function showResult(data) {
-            document.getElementById('res-title').innerText = data.winner === 'DISCÍPULOS' ? "¡LOGRARON EXPULSARLO!" : "¡EL PROFETA ESCAPÓ!";
+            document.getElementById('res-title').innerText = (data.winner === 'DISCÍPULOS') ? "¡LO HABÉIS LOGRADO!" : "¡FUISTEIS ENGAÑADOS!";
+            document.getElementById('res-title').style.color = (data.winner === 'DISCÍPULOS') ? "var(--gold)" : "var(--accent)";
             document.getElementById('res-name').innerText = data.impName;
             document.getElementById('res-summary').innerHTML = data.summary;
+
             if(isHost) {
-                document.getElementById('host-controls').style.display = 'block';
-                document.getElementById('guest-controls').style.display = 'none';
+                document.getElementById('host-controls').style.display = "block";
+                document.getElementById('guest-controls').style.display = "none";
             } else {
-                document.getElementById('host-controls').style.display = 'none';
-                document.getElementById('guest-controls').style.display = 'block';
+                document.getElementById('host-controls').style.display = "none";
+                document.getElementById('guest-controls').style.display = "block";
             }
             showScreen('screen-result');
         }
 
         async function resetGame() {
-            const chatSnap = await db.collection('rooms').doc(currentRoomId).collection('chat').get();
-            chatSnap.forEach(d => d.ref.delete());
+            if(!isHost) return;
+            // Limpiar chat y votos
+            await clearDebateChat();
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
-            pSnap.forEach(d => d.ref.update({ vote: firebase.firestore.FieldValue.delete() }));
-            db.collection('rooms').doc(currentRoomId).update({ status: 'waiting' });
+            const batch = db.batch();
+            pSnap.docs.forEach(d => batch.update(d.ref, { vote: "" }));
+            await batch.commit();
+
+            await db.collection('rooms').doc(currentRoomId).update({ status: 'waiting' });
             showScreen('screen-lobby-host');
         }
 
         async function deleteRoom() {
-            if(confirm("¿Cerrar sala?")) {
+            if(confirm("¿Cerrar el templo? Todos los jugadores saldrán.")) {
                 await db.collection('rooms').doc(currentRoomId).delete();
                 location.reload();
             }
