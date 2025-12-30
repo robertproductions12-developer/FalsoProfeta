@@ -54,7 +54,6 @@
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        /* CONTROLES SUPERIORES */
         .top-controls {
             position: fixed;
             top: 20px;
@@ -76,7 +75,6 @@
             box-shadow: 0 0 10px rgba(226, 176, 74, 0.2);
         }
 
-        /* SUB-MENU PANEL */
         #side-panel {
             position: fixed;
             top: 0; right: -300px;
@@ -95,7 +93,6 @@
         .panel-section h3 { color: var(--gold); font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid rgba(226, 176, 74, 0.3); padding-bottom: 5px; }
         .panel-section p, .panel-section li { font-size: 11px; line-height: 1.6; opacity: 0.8; margin-bottom: 5px; list-style: none; }
         
-        /* LISTA DE SALAS EN MENU */
         .room-item {
             background: rgba(255,255,255,0.05);
             padding: 10px; border-radius: 8px; margin-bottom: 8px;
@@ -229,7 +226,6 @@
         <source src="suspense-dramatic-248023.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- CONTROLES SUPERIORES -->
     <div class="top-controls">
         <div class="icon-btn" onclick="toggleMusic()">
             <i id="music-icon" class="fas fa-volume-mute"></i>
@@ -239,19 +235,18 @@
         </div>
     </div>
 
-    <!-- SUB MENU LATERAL -->
     <div id="side-panel">
         <div class="panel-close" onclick="toggleSidePanel()"><i class="fas fa-times"></i></div>
         <br><br>
         <div class="panel-section">
             <h3>JUGADORES EN LÍNEA</h3>
-            <p id="global-online-count" style="color: var(--gold); font-weight: bold; font-size: 18px;">Conectando...</p>
+            <p id="global-online-count" style="color: var(--gold); font-weight: bold; font-size: 18px;">Buscando almas...</p>
         </div>
 
         <div class="panel-section">
             <h3>SALAS DISPONIBLES</h3>
             <div id="active-rooms-list">
-                <p>No hay salas activas...</p>
+                <p style="font-size: 10px; opacity: 0.5;">Cargando templos...</p>
             </div>
         </div>
 
@@ -274,7 +269,6 @@
         <a href="https://www.tiktok.com/@robert_paraco?_r=1&_t=ZM-92YDqsdjjAZ" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
     </div>
 
-    <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="glass-card">
             <img src="profeta.jpg" class="login-img" alt="Logo">
@@ -284,7 +278,6 @@
         </div>
     </div>
 
-    <!-- 2. MENU -->
     <div id="screen-menu" class="screen">
         <div class="glass-card">
             <button class="btn btn-gold" onclick="createRoom()">CREAR SALA ONLINE</button>
@@ -293,23 +286,19 @@
         </div>
     </div>
 
-    <!-- 3. LOBBY HOST -->
     <div id="screen-create-room" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
-            
             <div class="timer-setup">
                 <p style="font-size: 10px; color: var(--gold); margin-bottom: 5px; font-weight: bold;">TIEMPO DE DEBATE (MINUTOS)</p>
                 <input type="number" id="setup-time" value="2" min="1" max="10" style="width: 80px; margin-bottom: 0;">
             </div>
-
             <div id="lobby-players" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
             <button class="btn btn-gold" onclick="startPrep()">INICIAR PARTIDA</button>
             <button class="btn btn-exit" onclick="location.reload()">CANCELAR</button>
         </div>
     </div>
 
-    <!-- 4. UNIRSE -->
     <div id="screen-join-room" class="screen">
         <div class="glass-card">
             <input type="text" id="join-code-input" placeholder="CÓDIGO DE SALA" style="text-transform: uppercase;">
@@ -318,7 +307,6 @@
         </div>
     </div>
 
-    <!-- 5. LOBBY GUEST -->
     <div id="screen-lobby-guest" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">ESPERANDO AL GUÍA...</h2>
@@ -326,7 +314,6 @@
         </div>
     </div>
 
-    <!-- 6. PREPARACIÓN -->
     <div id="screen-prep" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">ANALIZANDO ALMAS...</h2>
@@ -334,7 +321,6 @@
         </div>
     </div>
 
-    <!-- 7. ROL -->
     <div id="screen-reveal" class="screen">
         <div class="glass-card">
             <h2 id="role-title">TU ROL</h2>
@@ -344,7 +330,6 @@
         </div>
     </div>
 
-    <!-- 8. CHAT DE PISTAS -->
     <div id="screen-clues" class="screen">
         <div id="timer">02:00</div>
         <div id="turn-indicator" style="font-size: 11px; color: var(--gold); margin-bottom: 5px;">CARGANDO...</div>
@@ -356,7 +341,6 @@
         <p id="wait-turn-msg" style="font-size: 10px; opacity: 0.5;">Observa las señales de los demás...</p>
     </div>
 
-    <!-- 9. VOTACIÓN -->
     <div id="screen-vote" class="screen">
         <div class="glass-card">
             <h3 style="color: var(--accent); margin-bottom: 10px;">¿QUIÉN ES EL FALSO PROFETA?</h3>
@@ -365,7 +349,6 @@
         </div>
     </div>
 
-    <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
             <h2 id="res-status">-</h2>
@@ -423,9 +406,9 @@
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
 
-        // --- FUNCIÓN DE VOZ ---
         function hablarBienvenida(nombre) {
             if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
                 const mensaje = new SpeechSynthesisUtterance();
                 mensaje.text = `Bienvenido ${nombre}. ¿Eres un discípulo o un falso profeta?`;
                 mensaje.lang = 'es-ES';
@@ -439,35 +422,41 @@
             document.getElementById('side-panel').classList.toggle('open');
         }
 
+        // --- CONTADOR Y LISTA DE SALAS REALES ---
         function initGlobalStats() {
-            db.collection('rooms').where('status', '==', 'waiting').orderBy('createdAt', 'desc').limit(10).onSnapshot(snap => {
+            // Salas reales en tiempo real
+            db.collection('rooms')
+              .orderBy('createdAt', 'desc')
+              .limit(10)
+              .onSnapshot(snap => {
                 const list = document.getElementById('active-rooms-list');
-                if(snap.empty) {
-                    list.innerHTML = "<p style='font-size:10px; opacity:0.5'>No hay salas públicas...</p>";
-                    return;
-                }
                 let html = "";
+                let count = 0;
+                
                 snap.forEach(doc => {
                     const data = doc.data();
-                    // SE MUESTRA EL NOMBRE DEL CREADOR (hostName)
-                    html += `<div class="room-item">
-                                <div>
-                                    <span>Guía:</span><br>
-                                    <b>${data.hostName || 'Anónimo'}</b>
-                                </div>
-                                <div style="text-align:right">
-                                    <span>Código:</span><br>
-                                    <b style="letter-spacing:1px">${doc.id}</b>
-                                </div>
-                             </div>`;
+                    if(data.status === 'waiting') {
+                        count++;
+                        html += `<div class="room-item">
+                                    <div>
+                                        <span>Guía:</span><br>
+                                        <b>${data.hostName || 'Anónimo'}</b>
+                                    </div>
+                                    <div style="text-align:right">
+                                        <span>Código:</span><br>
+                                        <b style="letter-spacing:1px">${doc.id}</b>
+                                    </div>
+                                 </div>`;
+                    }
                 });
-                list.innerHTML = html;
+                
+                list.innerHTML = count > 0 ? html : "<p style='font-size:10px; opacity:0.5'>No hay salas abiertas...</p>";
             });
 
-            db.collection('rooms').onSnapshot(snap => {
-                let total = snap.size * 3;
-                if (total < 1) total = 1;
-                document.getElementById('global-online-count').innerText = `${total + Math.floor(Math.random()*5)} ALMAS`;
+            // Contador de personas online real
+            db.collection('presencia').onSnapshot(snap => {
+                const total = snap.size;
+                document.getElementById('global-online-count').innerText = `${total} ${total === 1 ? 'ALMA' : 'ALMAS'} EN LÍNEA`;
             });
         }
 
@@ -505,15 +494,21 @@
         function login() {
             const name = document.getElementById('login-name').value.trim();
             if(!name) return;
-            const music = document.getElementById('bg-music');
-            music.play().catch(e => console.log("Audio bloqueado"));
-            document.getElementById('music-icon').className = 'fas fa-volume-up';
+            
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
                 
-                // LLAMADA A LA FUNCIÓN DE VOZ AL LOGUEARSE
-                hablarBienvenida(name);
+                // Registrar presencia real
+                db.collection('presencia').doc(currentUser.uid).set({
+                    nombre: name,
+                    lastSeen: Date.now()
+                });
+
+                const music = document.getElementById('bg-music');
+                music.play().catch(e => console.log("Audio bloqueado"));
+                document.getElementById('music-icon').className = 'fas fa-volume-up';
                 
+                hablarBienvenida(name);
                 showScreen('screen-menu');
             });
         }
@@ -521,16 +516,21 @@
         async function createRoom() {
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
-            // SE GUARDA EL hostName PARA QUE SEA VISIBLE EN LA LISTA
+            
             await db.collection('rooms').doc(code).set({
                 hostId: currentUser.uid, 
                 hostName: currentUser.name, 
-                status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
+                status: 'waiting', 
+                turnIndex: 0, 
+                playerOrder: [], 
+                lastImpostorId: "", 
                 chatDuration: 2,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+            
             document.getElementById('room-code-display').innerText = code;
-            joinLogic(code); showScreen('screen-create-room');
+            joinLogic(code); 
+            showScreen('screen-create-room');
         }
 
         function joinRoom() {
@@ -733,6 +733,13 @@
             document.getElementById('vote-summary').innerHTML = data.summary;
             showScreen('screen-result');
         }
+
+        // Borrar presencia al cerrar pestaña (intento mejorado)
+        window.addEventListener('beforeunload', () => {
+            if(currentUser) {
+                db.collection('presencia').doc(currentUser.uid).delete();
+            }
+        });
     </script>
 </body>
 </html>
