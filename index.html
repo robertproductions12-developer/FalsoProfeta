@@ -262,6 +262,7 @@
 
     <div class="bg-animation" id="bg-animation"></div>
 
+    <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="glass-card">
             <img src="profeta.jpg" class="login-img" alt="Logo">
@@ -271,6 +272,7 @@
         </div>
     </div>
 
+    <!-- 2. MENU -->
     <div id="screen-menu" class="screen">
         <div class="glass-card">
             <button class="btn btn-gold" onclick="createRoom()">CREAR SALA ONLINE</button>
@@ -279,6 +281,7 @@
         </div>
     </div>
 
+    <!-- 3. LOBBY HOST -->
     <div id="screen-create-room" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
@@ -292,6 +295,7 @@
         </div>
     </div>
 
+    <!-- 4. UNIRSE -->
     <div id="screen-join-room" class="screen">
         <div class="glass-card">
             <input type="text" id="join-code-input" placeholder="CÓDIGO DE SALA" style="text-transform: uppercase;">
@@ -300,6 +304,7 @@
         </div>
     </div>
 
+    <!-- 5. LOBBY GUEST -->
     <div id="screen-lobby-guest" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">ESPERANDO AL GUÍA...</h2>
@@ -308,6 +313,7 @@
         </div>
     </div>
 
+    <!-- 6. PREPARACIÓN -->
     <div id="screen-prep" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">ANALIZANDO ALMAS...</h2>
@@ -315,6 +321,7 @@
         </div>
     </div>
 
+    <!-- 7. ROL -->
     <div id="screen-reveal" class="screen">
         <div class="glass-card">
             <h2 id="role-title">TU ROL</h2>
@@ -324,6 +331,7 @@
         </div>
     </div>
 
+    <!-- 8. DEBATE -->
     <div id="screen-clues" class="screen">
         <div id="timer">02:00</div>
         <div id="turn-indicator" style="font-size: 11px; color: var(--gold); margin-bottom: 5px;">CARGANDO...</div>
@@ -335,6 +343,7 @@
         <p id="wait-turn-msg" style="font-size: 10px; opacity: 0.5;">Observa las señales de los demás...</p>
     </div>
 
+    <!-- 9. VOTO -->
     <div id="screen-vote" class="screen">
         <div class="glass-card">
             <h3 style="color: var(--accent); margin-bottom: 10px;">¿QUIÉN ES EL FALSO PROFETA?</h3>
@@ -343,6 +352,7 @@
         </div>
     </div>
 
+    <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
             <h2 id="res-status">-</h2>
@@ -350,12 +360,14 @@
             <h1 id="res-impostor" style="color: var(--gold); font-size: 24px;">---</h1>
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px;"></div>
             
+            <!-- CONTROLES PARA EL HOST -->
             <div id="host-controls-end" style="display: none;">
                 <button class="btn btn-gold" onclick="repetirPartida()">REPETIR CON ESTE GRUPO</button>
                 <button class="btn btn-exit" onclick="borrarSala()">BORRAR SALA Y SALIR</button>
             </div>
+            <!-- CONTROLES PARA INVITADOS -->
             <div id="guest-controls-end" style="display: none;">
-                <p style="font-size: 10px; color: var(--gold); margin-bottom: 10px;">Esperando que el Guía decida...</p>
+                <p style="font-size: 10px; color: var(--gold); margin-bottom: 10px;">Esperando al Guía...</p>
                 <button class="btn btn-exit" onclick="location.reload()">SALIR DEL TEMPLO</button>
             </div>
         </div>
@@ -384,26 +396,13 @@
             {w: "Abraham", q: "Padre de muchas naciones (Génesis 17:5)"}, {w: "Isaac", q: "El hijo de la promesa (Génesis 21:3)"},
             {w: "Jacob", q: "Luchó con un ángel (Génesis 32:24)"}, {w: "José", q: "El soñador de túnica de colores (Génesis 37:3)"},
             {w: "Moisés", q: "Subió al monte Sinaí (Éxodo 19:20)"}, {w: "Aarón", q: "El primer sumo sacerdote (Levítico 8:12)"},
-            {w: "Josué", q: "Hizo que el sol se detuviera (Josué 10:12)"}, {w: "Sansón", q: "Su fuerza estaba en su cabello (Jueces 16:17)"},
-            {w: "Gedeón", q: "Venció con solo 300 hombres (Jueces 7:7)"}, {w: "David", q: "El rey conforme al corazón de Dios (1 Samuel 13:14)"},
-            {w: "Salomón", q: "El hombre más sabio (1 Reyes 3:12)"}, {w: "Elías", q: "Subió al cielo en un torbellino (2 Reyes 2:11)"},
-            {w: "Eliseo", q: "Pidió una doble porción de espíritu (2 Reyes 2:9)"}, {w: "Job", q: "Jehová dio, Jehová quitó (Job 1:21)"},
-            {w: "Daniel", q: "Sobrevivió al foso de leones (Daniel 6:22)"}, {w: "Ester", q: "Reina que salvó a su pueblo (Ester 7)"},
-            {w: "Jonás", q: "Estuvo en el vientre del gran pez (Jonás 1:17)"}, {w: "Juan el Bautista", q: "Bautizaba en el Jordán (Mateo 3:6)"},
-            {w: "Pedro", q: "Caminó sobre las aguas (Mateo 14:29)"}, {w: "Pablo", q: "Apóstol de los gentiles (Romanos 11:13)"},
-            {w: "Lázaro", q: "¡Sal fuera! (Juan 11:43)"}, {w: "Zaqueo", q: "Subió a un árbol sicómoro (Lucas 19:4)"},
-            {w: "Herodes", q: "Buscaba al niño para matarlo (Mateo 2:13)"}, {w: "Nabucodonosor", q: "Rey de Babilonia (Daniel 4:1)"},
-            {w: "María Magdalena", q: "Siete demonios salieron de ella (Lucas 8:2)"}, {w: "Esteban", q: "El primer mártir (Hechos 7:59)"},
-            {w: "Edén", q: "El huerto de la delicia (Génesis 2:8)"}, {w: "Babel", q: "Donde se confundieron las lenguas (Génesis 11:9)"},
-            {w: "Sodoma", q: "Ciudad destruida por fuego (Génesis 19:24)"}, {w: "Egipto", q: "De donde salieron con mano fuerte (Éxodo 13:3)"},
-            {w: "Jericó", q: "Sus muros cayeron con gritos (Josué 6:20)"}, {w: "Belén", q: "Donde nació el Rey de reyes (Mateo 2:1)"},
-            {w: "Nazaret", q: "¿De Nazaret puede salir algo bueno? (Juan 1:46)"}, {w: "Jerusalén", q: "La ciudad santa (Apocalipsis 21:2)"},
-            {w: "Getsemaní", q: "Donde Jesús oró con sudor de sangre (Lucas 22:44)"}, {w: "Gólgota", q: "El lugar de la calavera (Juan 19:17)"},
-            {w: "Nínive", q: "Ciudad a la que Jonás no quería ir (Jonás 1:2)"}, {w: "Monte Carmelo", q: "Donde Elías retó a los profetas de Baal (1 Reyes 18)"},
-            {w: "Mar Rojo", q: "Se abrió para que pasara el pueblo (Éxodo 14)"}, {w: "Río Jordán", q: "Donde fue bautizado el Señor (Mateo 3)"},
-            {w: "El Arca del Pacto", q: "Contenía las tablas de la ley (Hebreos 9:4)"}, {w: "Maná", q: "Pan caído del cielo (Éxodo 16:31)"},
-            {w: "Pentecostés", q: "Lenguas como de fuego (Hechos 2:3)"}, {w: "El Diluvio", q: "Llovió 40 días y 40 noches (Génesis 7:12)"},
-            {w: "La Zarza Ardiendo", q: "Ardía y no se consumía (Éxodo 3:2)"}
+            {w: "Josué", q: "Hizo que el sol se detuviera (Josué 10:12)"}, {w: "Sansón", q: "Su fuerza estaba en su cabello (Génesis 16:17)"},
+            {w: "David", q: "El rey conforme al corazón de Dios (1 Samuel 13:14)"}, {w: "Salomón", q: "El hombre más sabio (1 Reyes 3:12)"},
+            {w: "Elías", q: "Subió al cielo en un torbellino (2 Reyes 2:11)"}, {w: "Daniel", q: "Sobrevivió al foso de leones (Daniel 6:22)"},
+            {w: "Jonás", q: "Estuvo en el vientre del gran pez (Jonás 1:17)"}, {w: "Pedro", q: "Caminó sobre las aguas (Mateo 14:29)"},
+            {w: "Lázaro", q: "¡Sal fuera! (Juan 11:43)"}, {w: "Babel", q: "Donde se confundieron las lenguas (Génesis 11:9)"},
+            {w: "Jericó", q: "Sus muros cayeron con gritos (Josué 6:20)"}, {w: "Jerusalén", q: "La ciudad santa (Apocalipsis 21:2)"},
+            {w: "Maná", q: "Pan caído del cielo (Éxodo 16:31)"}, {w: "Pentecostés", q: "Lenguas como de fuego (Hechos 2:3)"}
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
@@ -433,8 +432,8 @@
                 let html = "";
                 snap.forEach(doc => {
                     const data = doc.data();
-                    // SE ELIMINAN LOS QUE SALEN UNDEFINED VALIDANDO DATA.HOSTNAME
-                    if (data.status === 'waiting' && data.hostName) {
+                    // SE QUITA EL UNDEFINED VALIDANDO QUE EXISTA EL NOMBRE
+                    if (data.status === 'waiting' && data.hostName && data.hostName !== "undefined") {
                         html += `<div class="room-item">
                                     <div><span>Guía:</span><br><b>${data.hostName}</b></div>
                                     <div style="text-align:right"><span>Código:</span><br><b style="letter-spacing:1px">${doc.id}</b></div>
@@ -452,25 +451,27 @@
 
         async function repetirPartida() {
             if(!isHost) return;
-            // Limpiar chat anterior
-            const chatRef = db.collection('rooms').doc(currentRoomId).collection('chat');
-            const chatSnap = await chatRef.get();
             const batch = db.batch();
-            chatSnap.docs.forEach(d => batch.delete(d.ref));
             
-            // Resetear jugadores (votos)
-            const playersRef = db.collection('rooms').doc(currentRoomId).collection('players');
-            const playersSnap = await playersRef.get();
+            // 1. Limpiar Chat
+            const chatSnap = await db.collection('rooms').doc(currentRoomId).collection('chat').get();
+            chatSnap.forEach(d => batch.delete(d.ref));
+            
+            // 2. Resetear Votos de Jugadores
+            const playersSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             playersSnap.forEach(d => batch.update(d.ref, { vote: "" }));
             
-            await batch.commit();
-
-            // Volver a estado waiting
-            await db.collection('rooms').doc(currentRoomId).update({
+            // 3. Volver Sala a estado Espera
+            batch.update(db.collection('rooms').doc(currentRoomId), {
                 status: 'waiting',
                 turnIndex: 0,
-                playerOrder: []
+                playerOrder: [],
+                impostorId: "",
+                word: "",
+                quote: ""
             });
+            
+            await batch.commit();
             showScreen('screen-create-room');
         }
 
@@ -499,13 +500,8 @@
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const icon = document.getElementById('music-icon');
-            if (music.paused) {
-                music.play();
-                icon.className = 'fas fa-volume-up';
-            } else {
-                music.pause();
-                icon.className = 'fas fa-volume-mute';
-            }
+            if (music.paused) { music.play(); icon.className = 'fas fa-volume-up'; } 
+            else { music.pause(); icon.className = 'fas fa-volume-mute'; }
         }
 
         function initBg() {
@@ -545,14 +541,12 @@
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
             await db.collection('rooms').doc(code).set({
-                hostId: currentUser.uid, 
-                hostName: currentUser.name, 
+                hostId: currentUser.uid, hostName: currentUser.name, 
                 status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
                 chatDuration: 2, createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('room-code-display').innerText = code;
-            joinLogic(code); 
-            showScreen('screen-create-room');
+            joinLogic(code); showScreen('screen-create-room');
         }
 
         function joinRoom() {
@@ -575,7 +569,7 @@
             db.collection('rooms').doc(code).onSnapshot(doc => {
                 const data = doc.data(); 
                 if(!data) {
-                    if(!isHost) { alert("SALA CERRADA"); location.reload(); }
+                    if(!isHost) { alert("SALA CERRADA POR EL GUÍA"); location.reload(); }
                     return;
                 }
                 if(data.status === 'waiting' && !isHost) showScreen('screen-lobby-guest');
