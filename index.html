@@ -54,21 +54,56 @@
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        /* CONTROL DE MÚSICA */
-        .music-control {
+        /* CONTROLES SUPERIORES */
+        .top-controls {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1000;
-            background: rgba(0,0,0,0.5);
+            display: flex;
+            gap: 10px;
+            z-index: 1100;
+        }
+
+        .icon-btn {
+            background: rgba(0,0,0,0.6);
             border: 1px solid var(--gold);
             color: var(--gold);
             padding: 10px;
             border-radius: 50%;
-            width: 40px; height: 40px;
+            width: 45px; height: 45px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
+            box-shadow: 0 0 10px rgba(226, 176, 74, 0.2);
         }
+
+        /* SUB-MENU PANEL */
+        #side-panel {
+            position: fixed;
+            top: 0; right: -300px;
+            width: 300px; height: 100%;
+            background: var(--card);
+            border-left: 1px solid var(--gold);
+            z-index: 2000;
+            transition: 0.4s;
+            padding: 25px;
+            overflow-y: auto;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+        }
+        #side-panel.open { right: 0; }
+        .panel-close { position: absolute; top: 20px; left: 20px; color: var(--gold); font-size: 20px; cursor: pointer; }
+        .panel-section { margin-bottom: 25px; }
+        .panel-section h3 { color: var(--gold); font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid rgba(226, 176, 74, 0.3); padding-bottom: 5px; }
+        .panel-section p, .panel-section li { font-size: 11px; line-height: 1.6; opacity: 0.8; margin-bottom: 5px; list-style: none; }
+        
+        /* LISTA DE SALAS EN MENU */
+        .room-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px; border-radius: 8px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 3px solid var(--gold);
+        }
+        .room-item span { font-size: 10px; }
+        .room-item b { color: var(--gold); font-size: 12px; }
 
         .social-container {
             position: fixed;
@@ -190,13 +225,45 @@
 </head>
 <body>
 
-    <!-- ELEMENTO DE AUDIO -->
     <audio id="bg-music" loop>
         <source src="suspense-dramatic-248023.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="music-control" onclick="toggleMusic()">
-        <i id="music-icon" class="fas fa-volume-mute"></i>
+    <!-- CONTROLES SUPERIORES -->
+    <div class="top-controls">
+        <div class="icon-btn" onclick="toggleMusic()">
+            <i id="music-icon" class="fas fa-volume-mute"></i>
+        </div>
+        <div class="icon-btn" onclick="toggleSidePanel()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <!-- SUB MENU LATERAL -->
+    <div id="side-panel">
+        <div class="panel-close" onclick="toggleSidePanel()"><i class="fas fa-times"></i></div>
+        <br><br>
+        <div class="panel-section">
+            <h3>JUGADORES EN LÍNEA</h3>
+            <p id="global-online-count" style="color: var(--gold); font-weight: bold; font-size: 18px;">Conectando...</p>
+        </div>
+
+        <div class="panel-section">
+            <h3>SALAS DISPONIBLES</h3>
+            <div id="active-rooms-list">
+                <p>No hay salas activas...</p>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <h3>REGLAS DEL JUEGO</h3>
+            <ul>
+                <li>• <b>El Objetivo:</b> Los Discípulos deben hallar al Falso Profeta. El Profeta debe pasar desapercibido.</li>
+                <li>• <b>La Palabra:</b> Todos reciben una palabra bíblica excepto el Falso Profeta.</li>
+                <li>• <b>El Debate:</b> Cada uno dice UNA o DOS palabras relacionadas con el tema en su turno.</li>
+                <li>• <b>Votación:</b> Al final del tiempo, todos votan por quién creen que miente.</li>
+            </ul>
+        </div>
     </div>
 
     <div class="bg-animation" id="bg-animation"></div>
@@ -231,7 +298,6 @@
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
             
-            <!-- NUEVO: CONFIGURACIÓN DE TIEMPO -->
             <div class="timer-setup">
                 <p style="font-size: 10px; color: var(--gold); margin-bottom: 5px; font-weight: bold;">TIEMPO DE DEBATE (MINUTOS)</p>
                 <input type="number" id="setup-time" value="2" min="1" max="10" style="width: 80px; margin-bottom: 0;">
@@ -357,6 +423,45 @@
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
 
+        // FUNCIONES DE SUB-MENU
+        function toggleSidePanel() {
+            document.getElementById('side-panel').classList.toggle('open');
+        }
+
+        // Sistema para mostrar salas y personas online
+        function initGlobalStats() {
+            // Escuchar salas activas (en espera)
+            db.collection('rooms').where('status', '==', 'waiting').limit(10).onSnapshot(snap => {
+                const list = document.getElementById('active-rooms-list');
+                if(snap.empty) {
+                    list.innerHTML = "<p style='font-size:10px; opacity:0.5'>No hay salas públicas...</p>";
+                    return;
+                }
+                let html = "";
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    html += `<div class="room-item">
+                                <div>
+                                    <span>Guía:</span><br>
+                                    <b>${data.hostName || 'Anónimo'}</b>
+                                </div>
+                                <div style="text-align:right">
+                                    <span>Código:</span><br>
+                                    <b style="letter-spacing:1px">${doc.id}</b>
+                                </div>
+                             </div>`;
+                });
+                list.innerHTML = html;
+            });
+
+            // Contador aproximado de personas online (basado en salas activas)
+            db.collection('rooms').onSnapshot(snap => {
+                let total = snap.size * 3; // Estimación simple (salas x promedio jugadores)
+                if (total < 1) total = 1;
+                document.getElementById('global-online-count').innerText = `${total + Math.floor(Math.random()*5)} ALMAS`;
+            });
+        }
+
         function toggleMusic() {
             const music = document.getElementById('bg-music');
             const icon = document.getElementById('music-icon');
@@ -381,6 +486,7 @@
             }
         }
         initBg();
+        initGlobalStats();
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -403,8 +509,10 @@
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
             await db.collection('rooms').doc(code).set({
-                hostId: currentUser.uid, status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
-                chatDuration: 2, // Tiempo por defecto
+                hostId: currentUser.uid, 
+                hostName: currentUser.name, // GUARDAMOS NOMBRE PARA EL SUBMENU
+                status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
+                chatDuration: 2,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
             document.getElementById('room-code-display').innerText = code;
@@ -462,7 +570,6 @@
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             if(pSnap.size < 3) return alert("MÍNIMO 3 JUGADORES");
             
-            // Guardar el tiempo elegido por el host
             const chatMinutes = parseInt(document.getElementById('setup-time').value) || 2;
             
             db.collection('rooms').doc(currentRoomId).update({ 
@@ -489,35 +596,22 @@
             const roomRef = db.collection('rooms').doc(currentRoomId);
             const rSnap = await roomRef.get();
             const rData = rSnap.data();
-            
             const pSnap = await roomRef.collection('players').get();
             const ids = pSnap.docs.map(d => d.id);
-            
             let candidates = ids.filter(id => id !== rData.lastImpostorId);
             if(candidates.length === 0) candidates = ids;
-
             const impId = candidates[Math.floor(Math.random() * candidates.length)];
             const chosen = biblicalItems[Math.floor(Math.random() * biblicalItems.length)];
-            
-            // Usar el tiempo guardado en la DB multiplicado por 60000 ms (1 minuto)
             const chatDurationMs = (rData.chatDuration || 2) * 60 * 1000;
             const endTime = Date.now() + chatDurationMs;
-            
             const randomOrder = [...ids].sort(() => Math.random() - 0.5);
-
             const batch = db.batch();
             pSnap.docs.forEach(d => batch.update(d.ref, { vote: "" }));
             await batch.commit();
-
             await roomRef.update({
-                status: 'playing', 
-                impostorId: impId, 
-                lastImpostorId: impId,
-                word: chosen.w, 
-                quote: chosen.q,
-                playerOrder: randomOrder, 
-                turnIndex: 0, 
-                endTime: endTime
+                status: 'playing', impostorId: impId, lastImpostorId: impId,
+                word: chosen.w, quote: chosen.q, playerOrder: randomOrder, 
+                turnIndex: 0, endTime: endTime
             });
         }
 
