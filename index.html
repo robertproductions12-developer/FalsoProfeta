@@ -423,15 +423,24 @@
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
 
-        // FUNCIONES DE SUB-MENU
+        // --- FUNCIÓN DE VOZ ---
+        function hablarBienvenida(nombre) {
+            if ('speechSynthesis' in window) {
+                const mensaje = new SpeechSynthesisUtterance();
+                mensaje.text = `Bienvenido ${nombre}. ¿Eres un discípulo o un falso profeta?`;
+                mensaje.lang = 'es-ES';
+                mensaje.rate = 0.8;
+                mensaje.pitch = 0.8;
+                window.speechSynthesis.speak(mensaje);
+            }
+        }
+
         function toggleSidePanel() {
             document.getElementById('side-panel').classList.toggle('open');
         }
 
-        // Sistema para mostrar salas y personas online
         function initGlobalStats() {
-            // Escuchar salas activas (en espera)
-            db.collection('rooms').where('status', '==', 'waiting').limit(10).onSnapshot(snap => {
+            db.collection('rooms').where('status', '==', 'waiting').orderBy('createdAt', 'desc').limit(10).onSnapshot(snap => {
                 const list = document.getElementById('active-rooms-list');
                 if(snap.empty) {
                     list.innerHTML = "<p style='font-size:10px; opacity:0.5'>No hay salas públicas...</p>";
@@ -440,6 +449,7 @@
                 let html = "";
                 snap.forEach(doc => {
                     const data = doc.data();
+                    // SE MUESTRA EL NOMBRE DEL CREADOR (hostName)
                     html += `<div class="room-item">
                                 <div>
                                     <span>Guía:</span><br>
@@ -454,9 +464,8 @@
                 list.innerHTML = html;
             });
 
-            // Contador aproximado de personas online (basado en salas activas)
             db.collection('rooms').onSnapshot(snap => {
-                let total = snap.size * 3; // Estimación simple (salas x promedio jugadores)
+                let total = snap.size * 3;
                 if (total < 1) total = 1;
                 document.getElementById('global-online-count').innerText = `${total + Math.floor(Math.random()*5)} ALMAS`;
             });
@@ -501,6 +510,10 @@
             document.getElementById('music-icon').className = 'fas fa-volume-up';
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
+                
+                // LLAMADA A LA FUNCIÓN DE VOZ AL LOGUEARSE
+                hablarBienvenida(name);
+                
                 showScreen('screen-menu');
             });
         }
@@ -508,9 +521,10 @@
         async function createRoom() {
             const code = Math.random().toString(36).substring(2,7).toUpperCase();
             currentRoomId = code; isHost = true;
+            // SE GUARDA EL hostName PARA QUE SEA VISIBLE EN LA LISTA
             await db.collection('rooms').doc(code).set({
                 hostId: currentUser.uid, 
-                hostName: currentUser.name, // GUARDAMOS NOMBRE PARA EL SUBMENU
+                hostName: currentUser.name, 
                 status: 'waiting', turnIndex: 0, playerOrder: [], lastImpostorId: "", 
                 chatDuration: 2,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
