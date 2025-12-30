@@ -31,7 +31,6 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* ANIMACIÓN DE SIGNOS DE INTERROGACIÓN */
         .bg-animation {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -99,7 +98,7 @@
             display: flex; justify-content: space-between; align-items: center;
             border-left: 3px solid var(--gold);
         }
-        .room-item span { font-size: 10px; }
+        .room-item span { font-size: 10px; opacity: 0.7; }
         .room-item b { color: var(--gold); font-size: 12px; }
 
         .social-container {
@@ -253,10 +252,10 @@
         <div class="panel-section">
             <h3>REGLAS DEL JUEGO</h3>
             <ul>
-                <li>• <b>El Objetivo:</b> Los Discípulos deben hallar al Falso Profeta. El Profeta debe pasar desapercibido.</li>
+                <li>• <b>El Objetivo:</b> Los Discípulos deben hallar al Falso Profeta.</li>
                 <li>• <b>La Palabra:</b> Todos reciben una palabra bíblica excepto el Falso Profeta.</li>
-                <li>• <b>El Debate:</b> Cada uno dice UNA o DOS palabras relacionadas con el tema en su turno.</li>
-                <li>• <b>Votación:</b> Al final del tiempo, todos votan por quién creen que miente.</li>
+                <li>• <b>El Debate:</b> Di una o dos palabras sobre el tema en tu turno.</li>
+                <li>• <b>Votación:</b> Al final, voten por quién creen que es el impostor.</li>
             </ul>
         </div>
     </div>
@@ -346,7 +345,7 @@
         <div class="glass-card">
             <h3 style="color: var(--accent); margin-bottom: 10px;">¿QUIÉN ES EL FALSO PROFETA?</h3>
             <div id="vote-grid"></div>
-            <p id="vote-wait-msg" style="margin-top: 10px; font-size: 10px; color: var(--gold); display:none;">Esperando el veredicto de los demás...</p>
+            <p id="vote-wait-msg" style="margin-top: 10px; font-size: 10px; color: var(--gold); display:none;">Esperando veredicto...</p>
         </div>
     </div>
 
@@ -427,26 +426,29 @@
             document.getElementById('side-panel').classList.toggle('open');
         }
 
-        // --- SISTEMA GLOBAL ACTUALIZADO ---
+        // --- SISTEMA GLOBAL REPARADO (FILTRO EN CLIENTE PARA EVITAR ERROR DE ÍNDICES) ---
         function initGlobalStats() {
-            // Salas en tiempo real
+            // Cargar salas: Quitamos el 'where' para evitar el error de índices de Firebase
             db.collection('rooms')
-              .where('status', '==', 'waiting')
               .orderBy('createdAt', 'desc')
+              .limit(15)
               .onSnapshot(snap => {
                 const list = document.getElementById('active-rooms-list');
                 let html = "";
                 snap.forEach(doc => {
                     const data = doc.data();
-                    html += `<div class="room-item">
-                                <div><span>Guía:</span><br><b>${data.hostName}</b></div>
-                                <div style="text-align:right"><span>Código:</span><br><b style="letter-spacing:1px">${doc.id}</b></div>
-                             </div>`;
+                    // Filtramos aquí manualmente en lugar de la consulta para que funcione SIEMPRE
+                    if (data.status === 'waiting') {
+                        html += `<div class="room-item">
+                                    <div><span>Guía:</span><br><b>${data.hostName}</b></div>
+                                    <div style="text-align:right"><span>Código:</span><br><b style="letter-spacing:1px">${doc.id}</b></div>
+                                 </div>`;
+                    }
                 });
                 list.innerHTML = html || "<p style='font-size:10px; opacity:0.5'>No hay salas abiertas...</p>";
             });
 
-            // Contador real de almas activas
+            // Contador real
             db.collection('presencia').onSnapshot(snap => {
                 const total = snap.size;
                 document.getElementById('global-online-count').innerText = `${total} ${total === 1 ? 'ALMA' : 'ALMAS'} EN LÍNEA`;
@@ -505,7 +507,6 @@
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
                 
-                // Registrar presencia
                 db.collection('presencia').doc(currentUser.uid).set({
                     nombre: name,
                     active: true
