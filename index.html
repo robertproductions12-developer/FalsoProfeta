@@ -18,7 +18,6 @@
             --bg: #050505;
             --card: rgba(15, 15, 15, 0.98);
             --accent: #ff3e3e;
-            --messenger: #1a1a1a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -33,12 +32,19 @@
         }
 
         .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; overflow: hidden;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
         }
         .q-mark {
-            position: absolute; color: var(--gold); opacity: 0.1;
-            font-weight: 900; font-size: 3rem; animation: float 8s linear infinite;
+            position: absolute;
+            color: var(--gold);
+            opacity: 0.1;
+            font-weight: 900;
+            font-size: 3rem;
+            animation: float 8s linear infinite;
         }
         @keyframes float {
             0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
@@ -48,90 +54,169 @@
         }
 
         .top-controls {
-            position: fixed; top: 20px; right: 20px;
-            display: flex; gap: 10px; z-index: 1100;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1100;
         }
 
         .icon-btn {
-            background: rgba(0,0,0,0.6); border: 1px solid var(--gold);
-            color: var(--gold); border-radius: 50%; width: 45px; height: 45px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px;
+            border-radius: 50%;
+            width: 45px; height: 45px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 0 10px rgba(226, 176, 74, 0.2);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(226, 176, 74, 0.2);
         }
 
         #side-panel {
-            position: fixed; top: 0; right: -300px;
-            width: 300px; height: 100%; background: var(--card);
-            border-left: 1px solid var(--gold); z-index: 2000;
-            transition: 0.4s; padding: 25px; overflow-y: auto;
+            position: fixed;
+            top: 0; right: -300px;
+            width: 300px; height: 100%;
+            background: var(--card);
+            border-left: 1px solid var(--gold);
+            z-index: 2000;
+            transition: 0.4s;
+            padding: 25px;
+            overflow-y: auto;
             box-shadow: -10px 0 30px rgba(0,0,0,0.8);
         }
         #side-panel.open { right: 0; }
         .panel-close { position: absolute; top: 20px; left: 20px; color: var(--gold); font-size: 20px; cursor: pointer; }
         .panel-section { margin-bottom: 25px; }
         .panel-section h3 { color: var(--gold); font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid rgba(226, 176, 74, 0.3); padding-bottom: 5px; }
-        .panel-section p, .panel-section li { font-size: 11px; line-height: 1.6; opacity: 0.8; margin-bottom: 5px; }
+        .panel-section p, .panel-section li { font-size: 11px; line-height: 1.6; opacity: 0.8; margin-bottom: 5px; list-style: none; }
         
         .room-item {
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--gold);
+            background: rgba(255,255,255,0.05);
+            padding: 10px; border-radius: 8px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 3px solid var(--gold);
+        }
+        .room-item span { font-size: 10px; opacity: 0.7; }
+        .room-item b { color: var(--gold); font-size: 12px; }
+
+        .social-container {
+            position: fixed;
+            bottom: 45px;
+            left: 0; width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            z-index: 100;
+        }
+        .social-link {
+            width: 35px; height: 35px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--gold-dark);
+            text-decoration: none;
         }
 
         .screen {
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; width: 100%; padding: 15px; text-align: center; position: absolute; z-index: 10;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%; width: 100%;
+            padding: 15px;
+            text-align: center;
+            position: absolute;
+            z-index: 10;
         }
         .active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .glass-card {
-            background: var(--card); backdrop-filter: blur(25px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 25px;
-            padding: 20px; width: 100%; max-width: 380px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto;
+            background: var(--card);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 20px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .login-img {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            background: rgba(0,0,0,0.5);
         }
 
         .btn {
             background: linear-gradient(135deg, #222 0%, #000 100%);
-            border: 1px solid var(--gold-dark); color: white; padding: 12px;
-            border-radius: 12px; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; cursor: pointer; width: 100%;
-            margin: 5px 0; display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: 1px solid var(--gold-dark);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .btn-gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: black; border: none; }
         .btn-exit { border-color: var(--accent); color: var(--accent); }
 
         input[type="text"], input[type="number"] {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px; border-radius: 12px; color: white; width: 100%; text-align: center; font-size: 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px; border-radius: 12px;
+            color: white; width: 100%; margin-bottom: 10px;
+            text-align: center; font-size: 16px;
         }
 
         .chat-box {
-            width: 100%; height: 35vh; overflow-y: auto; margin: 10px 0;
-            display: flex; flex-direction: column; gap: 8px; padding: 10px;
-            background: rgba(0,0,0,0.3); border-radius: 15px;
+            width: 100%; height: 30vh;
+            overflow-y: auto;
+            margin: 10px 0;
+            display: flex; flex-direction: column; gap: 5px;
+            padding: 10px; background: rgba(0,0,0,0.3);
+            border-radius: 15px;
         }
         .message {
-            font-size: 11px; padding: 8px 12px; border-radius: 12px; text-align: left;
-            background: rgba(255,255,255,0.05); border-left: 3px solid var(--gold);
-            max-width: 85%; align-self: flex-start;
+            font-size: 11px; padding: 6px 10px;
+            border-radius: 8px; text-align: left;
+            background: rgba(255,255,255,0.05);
+            border-left: 3px solid var(--gold);
         }
-        .message.my-message {
-            border-left: none; border-right: 3px solid #fff; background: rgba(255,255,255,0.1);
-            align-self: flex-end; text-align: right;
-        }
-        .message b { color: var(--gold); font-size: 9px; display: block; margin-bottom: 2px; }
-
-        .emoji-bar {
-            display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; width: 100%; justify-content: center;
-        }
-        .emoji-item {
-            font-size: 20px; cursor: pointer; transition: 0.2s;
-        }
-        .emoji-item:hover { transform: scale(1.3); }
+        .message.my-message { border-left-color: #fff; background: rgba(255,255,255,0.1); }
+        .message b { color: var(--gold); font-size: 9px; display: block; }
 
         #timer { font-size: 40px; font-weight: 900; color: var(--gold); }
-        footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; opacity: 0.4; pointer-events: none; }
+        
+        #vote-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            max-height: 40vh;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .timer-setup {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px dashed var(--gold);
+            border-radius: 15px;
+        }
+
+        footer { position: fixed; bottom: 10px; width: 100%; text-align: center; font-size: 8px; opacity: 0.4; }
     </style>
 </head>
 <body>
@@ -156,17 +241,22 @@
             <h3>JUGADORES EN LÍNEA</h3>
             <p id="global-online-count" style="color: var(--gold); font-weight: bold; font-size: 18px;">Buscando almas...</p>
         </div>
+
         <div class="panel-section">
             <h3>SALAS DISPONIBLES</h3>
             <div id="active-rooms-list">
                 <p style="font-size: 10px; opacity: 0.5;">Cargando templos...</p>
             </div>
         </div>
+
         <div class="panel-section">
             <h3>REGLAS DEL JUEGO</h3>
-            <p>• <b>Objetivo:</b> Los Discípulos deben hallar al Profeta Falso.</p>
-            <p>• <b>La Palabra:</b> Todos saben el secreto menos el Profeta.</p>
-            <p>• <b>La Junta:</b> Chat libre al final de cada ronda para discutir sospechas.</p>
+            <ul>
+                <li>• <b>El Objetivo:</b> Los Discípulos deben hallar al Falso Profeta.</li>
+                <li>• <b>La Palabra:</b> Todos reciben una palabra bíblica excepto el Falso Profeta.</li>
+                <li>• <b>El Debate:</b> Di una o dos palabras sobre el tema en tu turno.</li>
+                <li>• <b>Votación:</b> Al final, voten por quién creen que es el impostor.</li>
+            </ul>
         </div>
     </div>
 
@@ -175,9 +265,9 @@
     <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
         <div class="glass-card">
-            <img src="profeta.jpg" style="width:120px; border-radius:50%; border:2px solid var(--gold); margin-bottom:15px;">
+            <img src="profeta.jpg" class="login-img" alt="Logo">
             <h2 style="color:var(--gold); margin-bottom: 15px;">FALSO PROFETA</h2>
-            <input type="text" id="login-name" placeholder="Tu nombre o apodo...">
+            <input type="text" id="login-name" placeholder="Tu nombre...">
             <button class="btn btn-gold" onclick="login()">ENTRAR AL TEMPLO</button>
         </div>
     </div>
@@ -197,7 +287,7 @@
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
             <div class="timer-setup">
                 <p style="font-size: 10px; color: var(--gold); margin-bottom: 5px; font-weight: bold;">TIEMPO DE DEBATE (MINUTOS)</p>
-                <input type="number" id="setup-time" value="2" min="1" max="10">
+                <input type="number" id="setup-time" value="2" min="1" max="10" style="width: 80px; margin-bottom: 0;">
             </div>
             <div id="lobby-players" style="margin: 15px 0; text-align: left; font-size: 12px;"></div>
             <button class="btn btn-gold" onclick="startPrep()">INICIAR PARTIDA</button>
@@ -241,7 +331,7 @@
         </div>
     </div>
 
-    <!-- 8. DEBATE POR TURNOS -->
+    <!-- 8. DEBATE -->
     <div id="screen-clues" class="screen">
         <div id="timer">02:00</div>
         <div id="turn-indicator" style="font-size: 11px; color: var(--gold); margin-bottom: 5px;">CARGANDO...</div>
@@ -253,36 +343,7 @@
         <p id="wait-turn-msg" style="font-size: 10px; opacity: 0.5;">Observa las señales de los demás...</p>
     </div>
 
-    <!-- 9. LA JUNTA (CHAT LIBRE) -->
-    <div id="screen-junta" class="screen">
-        <div class="glass-card" style="max-width: 450px;">
-            <h3 style="color: var(--gold); margin-bottom: 5px;">🏛️ LA JUNTA LIBRE</h3>
-            <p style="font-size: 9px; opacity: 0.7; margin-bottom: 10px;">Debate libremente antes del juicio final</p>
-            <div id="junta-chat-area" class="chat-box"></div>
-            
-            <div class="emoji-bar">
-                <span class="emoji-item" onclick="addEmoji('🔥')">🔥</span>
-                <span class="emoji-item" onclick="addEmoji('🙏')">🙏</span>
-                <span class="emoji-item" onclick="addEmoji('🕊️')">🕊️</span>
-                <span class="emoji-item" onclick="addEmoji('🧐')">🧐</span>
-                <span class="emoji-item" onclick="addEmoji('🤫')">🤫</span>
-                <span class="emoji-item" onclick="addEmoji('✝️')">✝️</span>
-                <span class="emoji-item" onclick="addEmoji('🐑')">🐑</span>
-                <span class="emoji-item" onclick="addEmoji('🐍')">🐍</span>
-            </div>
-
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="junta-input" placeholder="Escribe (máx 10 palabras)...">
-                <button class="btn btn-gold" style="width: 60px; margin:0;" onclick="sendJuntaMsg()"><i class="fas fa-paper-plane"></i></button>
-            </div>
-
-            <div id="host-junta-controls" style="display: none; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-                <button class="btn btn-gold" onclick="cerrarJunta()">CERRAR REUNIÓN Y JUZGAR</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 10. VOTO -->
+    <!-- 9. VOTO -->
     <div id="screen-vote" class="screen">
         <div class="glass-card">
             <h3 style="color: var(--accent); margin-bottom: 10px;">¿QUIÉN ES EL FALSO PROFETA?</h3>
@@ -291,7 +352,7 @@
         </div>
     </div>
 
-    <!-- 11. RESULTADO -->
+    <!-- 10. RESULTADO -->
     <div id="screen-result" class="screen">
         <div class="glass-card">
             <h2 id="res-status">-</h2>
@@ -299,19 +360,20 @@
             <h1 id="res-impostor" style="color: var(--gold); font-size: 24px;">---</h1>
             <div id="vote-summary" style="font-size: 10px; margin: 15px 0; text-align: left; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px;"></div>
             
+            <!-- CONTROLES PARA EL HOST -->
             <div id="host-controls-end" style="display: none;">
-                <button class="btn btn-gold" onclick="iniciarJunta()">ABRIR LA JUNTA (CHAT LIBRE)</button>
-                <button class="btn" style="border-color: var(--gold);" onclick="repetirPartida()">REPETIR JUEGO</button>
+                <button class="btn btn-gold" onclick="repetirPartida()">REPETIR CON ESTE GRUPO</button>
                 <button class="btn btn-exit" onclick="borrarSala()">BORRAR SALA Y SALIR</button>
             </div>
+            <!-- CONTROLES PARA INVITADOS -->
             <div id="guest-controls-end" style="display: none;">
-                <p style="font-size: 10px; color: var(--gold); margin-bottom: 10px;">Esperando la decisión del Guía...</p>
+                <p style="font-size: 10px; color: var(--gold); margin-bottom: 10px;">Esperando al Guía...</p>
                 <button class="btn btn-exit" onclick="location.reload()">SALIR DEL TEMPLO</button>
             </div>
         </div>
     </div>
 
-    <footer>DESARROLLADO POR ROBERT PARACO - 2025</footer>
+    <footer>DESARROLLADO POR - ROBERT PARACO</footer>
 
     <script>
         const firebaseConfig = {
@@ -328,63 +390,19 @@
         const auth = firebase.auth();
 
         const biblicalItems = [
-            // PERSONAJES
-            {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"},
-            {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
-            {w: "Caín", q: "¿Soy yo guarda de mi hermano? (Génesis 4:9)"},
-            {w: "Abel", q: "Ofreció un sacrificio más excelente (Hebreos 11:4)"},
-            {w: "Noé", q: "Hizo un arca para salvar a su familia (Génesis 6)"},
-            {w: "Abraham", q: "Padre de la fe y de muchas naciones (Génesis 17)"},
-            {w: "Sara", q: "Se rió al saber que sería madre a los 90 (Génesis 18)"},
-            {w: "Isaac", q: "El hijo de la promesa, cargó la leña (Génesis 22)"},
-            {w: "Jacob", q: "Luchó con un ángel y cambió su nombre (Génesis 32)"},
-            {w: "José", q: "Vendido por sus hermanos, gobernador en Egipto (Génesis 41)"},
-            {w: "Moisés", q: "Sacó al pueblo de Egipto por el Mar Rojo (Éxodo 14)"},
-            {w: "Aarón", q: "Su vara floreció milagrosamente (Números 17)"},
-            {w: "Josué", q: "Las murallas de Jericó cayeron ante él (Josué 6)"},
-            {w: "Sansón", q: "Su fuerza estaba en su nazareato (Jueces 16)"},
-            {w: "Dalila", q: "Traicionó al hombre más fuerte por plata (Jueces 16)"},
-            {w: "Rut", q: "Donde quiera que tú fueres, iré yo (Rut 1:16)"},
-            {w: "Samuel", q: "Habló Jehová, porque tu siervo oye (1 Samuel 3)"},
-            {w: "Saúl", q: "El primer rey, alto y hermoso (1 Samuel 9)"},
-            {w: "David", q: "Derrotó al gigante con una honda (1 Samuel 17)"},
-            {w: "Goliat", q: "El gigante filisteo de Gat (1 Samuel 17)"},
-            {w: "Salomón", q: "Pidió sabiduría para juzgar al pueblo (1 Reyes 3)"},
-            {w: "Ezequiel", q: "Vio un valle de huesos secos vivir (Ezequiel 37)"},
-            {w: "Daniel", q: "No dejó de orar y fue al foso de leones (Daniel 6)"},
-            {w: "Jonás", q: "Tres días en el vientre de un gran pez (Jonás 1)"},
-            {w: "Ester", q: "Reina que arriesgó su vida por su pueblo (Ester 4)"},
-            {w: "Job", q: "Jehová dio, Jehová quitó (Job 1:21)"},
-            {w: "Juan el Bautista", q: "Voz que clama en el desierto (Mateo 3)"},
-            {w: "Pedro", q: "Caminó sobre las aguas hacia Jesús (Mateo 14)"},
-            {w: "Pablo", q: "De perseguidor a apóstol de gentiles (Hechos 9)"},
-            {w: "Lázaro", q: "Estuvo cuatro días muerto y revivió (Juan 11)"},
-            {w: "Zaqueo", q: "Pequeño de estatura, subió a un sicómoro (Lucas 19)"},
-            {w: "María Magdalena", q: "Siete demonios salieron de ella (Lucas 8)"},
-            {w: "Matusalén", q: "El hombre más longevo: 969 años (Génesis 5)"},
-            {w: "Gedeón", q: "Venció con solo 300 hombres (Jueces 7)"},
-            
-            // LUGARES Y EVENTOS
-            {w: "El Edén", q: "Huerto plantado por Dios al oriente (Génesis 2)"},
-            {w: "Torre de Babel", q: "Donde se confundieron las lenguas (Génesis 11)"},
-            {w: "Arca del Pacto", q: "Contenía las tablas de la ley (Hebreos 9)"},
-            {w: "Maná", q: "Pan caído del cielo cada mañana (Éxodo 16)"},
-            {w: "Zarza Ardiendo", q: "Ardía y no se consumía (Éxodo 3)"},
-            {w: "Monte Sinaí", q: "Donde se entregaron los Mandamientos (Éxodo 19)"},
-            {w: "Pentecostés", q: "Lenguas de fuego sobre los apóstoles (Hechos 2)"},
-            {w: "Sodoma", q: "Destruida por fuego y azufre (Génesis 19)"},
-            {w: "Belén", q: "Lugar del nacimiento del Mesías (Mateo 2)"},
-            {w: "Jerusalén", q: "La ciudad del gran Rey (Salmos 48)"},
-            {w: "Río Jordán", q: "Donde Jesús fue bautizado (Mateo 3)"},
-            {w: "Gólgota", q: "Lugar de la Calavera, el sacrificio (Juan 19)"},
-            {w: "Diluvio", q: "Cuarenta días de lluvia sobre la tierra (Génesis 7)"},
-            
-            // PARÁBOLAS Y MILAGROS
-            {w: "Buen Samaritano", q: "Ayudó al caído mientras otros pasaban (Lucas 10)"},
-            {w: "Hijo Pródigo", q: "Volvió a casa y el padre hizo fiesta (Lucas 15)"},
-            {w: "Oveja Perdida", q: "Dejó las 99 por buscar a una (Mateo 18)"},
-            {w: "Bodas de Caná", q: "Donde el agua se convirtió en vino (Juan 2)"},
-            {w: "Cinco Panes", q: "Alimentaron a más de cinco mil (Mateo 14)"}
+            {w: "Adán", q: "Formado del polvo de la tierra (Génesis 2:7)"}, {w: "Eva", q: "Madre de todos los vivientes (Génesis 3:20)"},
+            {w: "Caín", q: "¿Soy yo guarda de mi hermano? (Génesis 4:9)"}, {w: "Abel", q: "Ofreció un sacrificio más excelente (Hebreos 11:4)"},
+            {w: "Matusalén", q: "Vivió 969 años (Génesis 5:27)"}, {w: "Noé", q: "Hizo un arca de madera (Génesis 6:14)"},
+            {w: "Abraham", q: "Padre de muchas naciones (Génesis 17:5)"}, {w: "Isaac", q: "El hijo de la promesa (Génesis 21:3)"},
+            {w: "Jacob", q: "Luchó con un ángel (Génesis 32:24)"}, {w: "José", q: "El soñador de túnica de colores (Génesis 37:3)"},
+            {w: "Moisés", q: "Subió al monte Sinaí (Éxodo 19:20)"}, {w: "Aarón", q: "El primer sumo sacerdote (Levítico 8:12)"},
+            {w: "Josué", q: "Hizo que el sol se detuviera (Josué 10:12)"}, {w: "Sansón", q: "Su fuerza estaba en su cabello (Génesis 16:17)"},
+            {w: "David", q: "El rey conforme al corazón de Dios (1 Samuel 13:14)"}, {w: "Salomón", q: "El hombre más sabio (1 Reyes 3:12)"},
+            {w: "Elías", q: "Subió al cielo en un torbellino (2 Reyes 2:11)"}, {w: "Daniel", q: "Sobrevivió al foso de leones (Daniel 6:22)"},
+            {w: "Jonás", q: "Estuvo en el vientre del gran pez (Jonás 1:17)"}, {w: "Pedro", q: "Caminó sobre las aguas (Mateo 14:29)"},
+            {w: "Lázaro", q: "¡Sal fuera! (Juan 11:43)"}, {w: "Babel", q: "Donde se confundieron las lenguas (Génesis 11:9)"},
+            {w: "Jericó", q: "Sus muros cayeron con gritos (Josué 6:20)"}, {w: "Jerusalén", q: "La ciudad santa (Apocalipsis 21:2)"},
+            {w: "Maná", q: "Pan caído del cielo (Éxodo 16:31)"}, {w: "Pentecostés", q: "Lenguas como de fuego (Hechos 2:3)"}
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInterval = null;
@@ -394,20 +412,28 @@
                 window.speechSynthesis.cancel();
                 const mensaje = new SpeechSynthesisUtterance();
                 mensaje.text = `Bienvenido ${nombre}. ¿Eres un discípulo o un falso profeta?`;
-                mensaje.lang = 'es-ES'; mensaje.rate = 0.8; mensaje.pitch = 0.8;
+                mensaje.lang = 'es-ES';
+                mensaje.rate = 0.8;
+                mensaje.pitch = 0.8;
                 window.speechSynthesis.speak(mensaje);
             }
         }
 
-        function toggleSidePanel() { document.getElementById('side-panel').classList.toggle('open'); }
+        function toggleSidePanel() {
+            document.getElementById('side-panel').classList.toggle('open');
+        }
 
         function initGlobalStats() {
-            db.collection('rooms').orderBy('createdAt', 'desc').limit(15).onSnapshot(snap => {
+            db.collection('rooms')
+              .orderBy('createdAt', 'desc')
+              .limit(15)
+              .onSnapshot(snap => {
                 const list = document.getElementById('active-rooms-list');
                 let html = "";
                 snap.forEach(doc => {
                     const data = doc.data();
-                    if (data.status === 'waiting' && data.hostName) {
+                    // SE QUITA EL UNDEFINED VALIDANDO QUE EXISTA EL NOMBRE
+                    if (data.status === 'waiting' && data.hostName && data.hostName !== "undefined") {
                         html += `<div class="room-item">
                                     <div><span>Guía:</span><br><b>${data.hostName}</b></div>
                                     <div style="text-align:right"><span>Código:</span><br><b style="letter-spacing:1px">${doc.id}</b></div>
@@ -423,14 +449,89 @@
             });
         }
 
+        async function repetirPartida() {
+            if(!isHost) return;
+            const batch = db.batch();
+            
+            // 1. Limpiar Chat
+            const chatSnap = await db.collection('rooms').doc(currentRoomId).collection('chat').get();
+            chatSnap.forEach(d => batch.delete(d.ref));
+            
+            // 2. Resetear Votos de Jugadores
+            const playersSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
+            playersSnap.forEach(d => batch.update(d.ref, { vote: "" }));
+            
+            // 3. Volver Sala a estado Espera
+            batch.update(db.collection('rooms').doc(currentRoomId), {
+                status: 'waiting',
+                turnIndex: 0,
+                playerOrder: [],
+                impostorId: "",
+                word: "",
+                quote: ""
+            });
+            
+            await batch.commit();
+            showScreen('screen-create-room');
+        }
+
+        async function borrarSala() {
+            if(currentRoomId) {
+                await db.collection('rooms').doc(currentRoomId).delete();
+                location.reload();
+            }
+        }
+
+        async function salirDeSala() {
+            if(currentRoomId && currentUser) {
+                await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).delete();
+                currentRoomId = null;
+                showScreen('screen-menu');
+            }
+        }
+
+        async function salirTotal() {
+            if(currentUser) {
+                await db.collection('presencia').doc(currentUser.uid).delete();
+            }
+            location.reload();
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (music.paused) { music.play(); icon.className = 'fas fa-volume-up'; } 
+            else { music.pause(); icon.className = 'fas fa-volume-mute'; }
+        }
+
+        function initBg() {
+            const container = document.getElementById('bg-animation');
+            for(let i=0; i<15; i++) {
+                const mark = document.createElement('div');
+                mark.className = 'q-mark'; mark.innerText = '?';
+                mark.style.left = Math.random() * 100 + 'vw';
+                mark.style.animationDelay = Math.random() * 8 + 's';
+                mark.style.fontSize = (Math.random() * 3 + 1) + 'rem';
+                container.appendChild(mark);
+            }
+        }
+        initBg();
+        initGlobalStats();
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
         function login() {
             const name = document.getElementById('login-name').value.trim();
             if(!name) return;
             auth.signInAnonymously().then(cred => {
                 currentUser = { uid: cred.user.uid, name: name };
-                db.collection('presencia').doc(currentUser.uid).set({ nombre: name, lastSeen: Date.now() });
+                db.collection('presencia').doc(currentUser.uid).set({ nombre: name, active: true });
                 const music = document.getElementById('bg-music');
                 music.play().catch(e => console.log("Audio bloqueado"));
+                document.getElementById('music-icon').className = 'fas fa-volume-up';
                 hablarBienvenida(name);
                 showScreen('screen-menu');
             });
@@ -467,21 +568,25 @@
         function listenRoom(code) {
             db.collection('rooms').doc(code).onSnapshot(doc => {
                 const data = doc.data(); 
-                if(!data) { if(!isHost) { alert("SALA CERRADA"); location.reload(); } return; }
-                
-                if(data.status === 'waiting') {
-                    if(isHost) showScreen('screen-create-room');
-                    else showScreen('screen-lobby-guest');
+                if(!data) {
+                    if(!isHost) { alert("SALA CERRADA POR EL GUÍA"); location.reload(); }
+                    return;
                 }
+                if(data.status === 'waiting' && !isHost) showScreen('screen-lobby-guest');
                 if(data.status === 'pre-start') handlePreStart(data);
                 if(data.status === 'playing') setupRole(data);
                 if(data.status === 'clues') handleClues(data);
-                if(data.status === 'junta') handleJuntaScreen(data);
                 if(data.status === 'voting') setupVote();
                 if(data.status === 'result') showFinalResult(data);
             });
 
-            // Listeners de Chat (Turnos)
+            db.collection('rooms').doc(code).collection('players').orderBy('joinedAt', 'asc').onSnapshot(snap => {
+                let listHtml = "";
+                snap.forEach(p => { listHtml += `<div>🔹 ${p.data().name}</div>`; });
+                document.getElementById('lobby-players').innerHTML = listHtml;
+                document.getElementById('lobby-players-guest').innerHTML = listHtml;
+            });
+
             db.collection('rooms').doc(code).collection('chat').orderBy('time', 'asc').onSnapshot(snap => {
                 const box = document.getElementById('chat-area');
                 box.innerHTML = "";
@@ -494,68 +599,13 @@
                 });
                 box.scrollTop = box.scrollHeight;
             });
-
-            // Listener de La Junta (Chat Libre)
-            db.collection('rooms').doc(code).collection('juntaChat').orderBy('time', 'asc').onSnapshot(snap => {
-                const box = document.getElementById('junta-chat-area');
-                box.innerHTML = "";
-                snap.forEach(m => {
-                    const md = m.data();
-                    const div = document.createElement('div');
-                    div.className = `message ${md.uid === currentUser.uid ? 'my-message' : ''}`;
-                    div.innerHTML = `<b>${md.name}</b> ${md.text}`;
-                    box.appendChild(div);
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-
-            db.collection('rooms').doc(code).collection('players').orderBy('joinedAt', 'asc').onSnapshot(snap => {
-                let listHtml = "";
-                snap.forEach(p => { listHtml += `<div>🔹 ${p.data().name}</div>`; });
-                document.getElementById('lobby-players').innerHTML = listHtml;
-                document.getElementById('lobby-players-guest').innerHTML = listHtml;
-            });
         }
 
-        // --- LA JUNTA ---
-        function iniciarJunta() {
-            db.collection('rooms').doc(currentRoomId).update({ status: 'junta' });
-        }
-
-        function handleJuntaScreen(data) {
-            showScreen('screen-junta');
-            document.getElementById('host-junta-controls').style.display = isHost ? 'block' : 'none';
-        }
-
-        function addEmoji(emoji) {
-            document.getElementById('junta-input').value += emoji;
-        }
-
-        async function sendJuntaMsg() {
-            const input = document.getElementById('junta-input');
-            const val = input.value.trim();
-            if(!val) return;
-            const words = val.split(/\s+/).length;
-            if(words > 10) return alert("MÁXIMO 10 PALABRAS POR MENSAJE");
-            
-            await db.collection('rooms').doc(currentRoomId).collection('juntaChat').add({
-                name: currentUser.name, uid: currentUser.uid, text: val, time: Date.now()
-            });
-            input.value = "";
-        }
-
-        function cerrarJunta() {
-            db.collection('rooms').doc(currentRoomId).update({ status: 'voting' });
-        }
-
-        // --- LÓGICA DE JUEGO ---
         async function startPrep() {
             const pSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
             if(pSnap.size < 3) return alert("MÍNIMO 3 JUGADORES");
             const chatMinutes = parseInt(document.getElementById('setup-time').value) || 2;
-            db.collection('rooms').doc(currentRoomId).update({ 
-                status: 'pre-start', prepEnd: Date.now() + 15000, chatDuration: chatMinutes 
-            });
+            db.collection('rooms').doc(currentRoomId).update({ status: 'pre-start', prepEnd: Date.now() + 15000, chatDuration: chatMinutes });
         }
 
         function handlePreStart(data) {
@@ -584,17 +634,14 @@
             const batch = db.batch();
             pSnap.docs.forEach(d => batch.update(d.ref, { vote: "" }));
             await batch.commit();
-            await roomRef.update({ 
-                status: 'playing', impostorId: impId, lastImpostorId: impId, 
-                word: chosen.w, quote: chosen.q, playerOrder: randomOrder, turnIndex: 0, endTime: endTime 
-            });
+            await roomRef.update({ status: 'playing', impostorId: impId, lastImpostorId: impId, word: chosen.w, quote: chosen.q, playerOrder: randomOrder, turnIndex: 0, endTime: endTime });
         }
 
         async function setupRole(data) {
             const isImp = (data.impostorId === currentUser.uid);
             document.getElementById('role-title').innerText = isImp ? "FALSO PROFETA" : "DISCÍPULO";
             document.getElementById('secret-word').innerText = isImp ? "¡ESCÓNDETE!" : data.word;
-            document.getElementById('secret-quote').innerText = isImp ? "No sabes el secreto. ¡Miente con cautela!" : data.quote;
+            document.getElementById('secret-quote').innerText = isImp ? "No sabes el secreto. ¡Miente bien!" : data.quote;
             showScreen('screen-reveal');
         }
 
@@ -628,11 +675,7 @@
             const timerEl = document.getElementById('timer');
             timerInterval = setInterval(() => {
                 const diff = endTime - Date.now();
-                if(diff <= 0) { 
-                    clearInterval(timerInterval); timerInterval = null; 
-                    if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' }); 
-                    return; 
-                }
+                if(diff <= 0) { clearInterval(timerInterval); timerInterval = null; if(isHost) db.collection('rooms').doc(currentRoomId).update({ status: 'voting' }); return; }
                 const m = Math.floor(diff / 60000), s = Math.floor((diff % 60000) / 1000);
                 timerEl.innerText = `${m}:${s < 10 ? '0'+s : s}`;
             }, 1000);
@@ -665,10 +708,7 @@
                 players.forEach(p => { const d = p.data(); const targetName = players.docs.find(x => x.id === d.vote)?.data().name || "---"; summary += `<div><b>${d.name}</b> votó a: ${targetName}</div>`; votes[d.vote] = (votes[d.vote] || 0) + 1; });
                 let mostVotedId = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
                 const impostorDoc = players.docs.find(x => x.id === rData.impostorId);
-                db.collection('rooms').doc(currentRoomId).update({ 
-                    status: 'result', winner: mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR', 
-                    summary: summary, impostorName: impostorDoc ? impostorDoc.data().name : "Desconocido" 
-                });
+                db.collection('rooms').doc(currentRoomId).update({ status: 'result', winner: mostVotedId === rData.impostorId ? 'DISCIPLES' : 'IMPOSTOR', summary: summary, impostorName: impostorDoc ? impostorDoc.data().name : "Desconocido" });
             } else { setTimeout(checkAllVotes, 2000); }
         }
 
@@ -676,7 +716,6 @@
             document.getElementById('res-status').innerText = data.winner === 'DISCIPLES' ? "¡LOGRARON EXPULSARLO!" : "¡EL PROFETA LOS ENGAÑÓ!";
             document.getElementById('res-impostor').innerText = data.impostorName;
             document.getElementById('vote-summary').innerHTML = data.summary;
-            
             if(isHost) {
                 document.getElementById('host-controls-end').style.display = 'block';
                 document.getElementById('guest-controls-end').style.display = 'none';
@@ -686,41 +725,6 @@
             }
             showScreen('screen-result');
         }
-
-        // --- SISTEMA DE LIMPIEZA ---
-        async function repetirPartida() {
-            const batch = db.batch();
-            const chatSnap = await db.collection('rooms').doc(currentRoomId).collection('chat').get();
-            chatSnap.forEach(d => batch.delete(d.ref));
-            const juntaSnap = await db.collection('rooms').doc(currentRoomId).collection('juntaChat').get();
-            juntaSnap.forEach(d => batch.delete(d.ref));
-            const playersSnap = await db.collection('rooms').doc(currentRoomId).collection('players').get();
-            playersSnap.forEach(d => batch.update(d.ref, { vote: "" }));
-            batch.update(db.collection('rooms').doc(currentRoomId), { status: 'waiting', turnIndex: 0, playerOrder: [] });
-            await batch.commit();
-        }
-
-        async function borrarSala() { if(currentRoomId) { await db.collection('rooms').doc(currentRoomId).delete(); location.reload(); } }
-        async function salirTotal() { if(currentUser) { await db.collection('presencia').doc(currentUser.uid).delete(); } location.reload(); }
-        async function salirDeSala() { if(currentRoomId && currentUser) { await db.collection('rooms').doc(currentRoomId).collection('players').doc(currentUser.uid).delete(); location.reload(); } }
-
-        function toggleMusic() {
-            const m = document.getElementById('bg-music');
-            if (m.paused) { m.play(); document.getElementById('music-icon').className = 'fas fa-volume-up'; }
-            else { m.pause(); document.getElementById('music-icon').className = 'fas fa-volume-mute'; }
-        }
-
-        function initBg() {
-            const container = document.getElementById('bg-animation');
-            for(let i=0; i<15; i++) {
-                const mark = document.createElement('div'); mark.className = 'q-mark'; mark.innerText = '?';
-                mark.style.left = Math.random() * 100 + 'vw'; mark.style.animationDelay = Math.random() * 8 + 's';
-                container.appendChild(mark);
-            }
-        }
-
-        initBg();
-        initGlobalStats();
     </script>
 </body>
 </html>
