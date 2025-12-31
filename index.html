@@ -287,7 +287,7 @@
     <!-- 8. DEBATE -->
     <div id="screen-debate" class="screen">
         <div id="timer" style="font-size:30px; color:var(--gold); font-weight:900;">00:00</div>
-        <div id="turn-info" style="font-size:12px; margin:10px 0; color:var(--gold);">Cargando...</div>
+        <div id="turn-info" style="font-size:12px; margin:10px 0; color:var(--gold); font-weight: bold;">Cargando...</div>
         <div class="chat-container" style="max-width:380px;">
             <div id="debate-chat-box" class="chat-box"></div>
             
@@ -350,6 +350,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
+        // LISTA EXTENDIDA DE PERSONAJES
         const bibliaData = [
             {w:"Adán", q:"Formado del polvo de la tierra"}, {w:"Eva", q:"Madre de todos los vivientes"},
             {w:"Noé", q:"Varón justo… caminó con Dios"}, {w:"Abraham", q:"Sal de tu tierra"},
@@ -359,12 +360,18 @@
             {w:"David", q:"Jehová es mi pastor"}, {w:"Salomón", q:"Dame sabiduría"},
             {w:"Daniel", q:"Dios cerró la boca de los leones"}, {w:"Jonás", q:"La salvación es de Jehová"},
             {w:"Pedro", q:"Tú eres el Cristo"}, {w:"Pablo", q:"Todo lo puedo en Cristo"},
-            {w:"La creación", q:"Y vio Dios que era bueno"}, {w:"El diluvio", q:"Entró Noé en el arca"},
-            {w:"Mar Rojo", q:"Las aguas se abrieron"}, {w:"La cruz", q:"Consumado es"},
+            {w:"Ester", q:"Si perezco, que perezca"}, {w:"Rut", q:"Tu pueblo será mi pueblo"},
+            {w:"Débora", q:"Jueza bajo la palmera"}, {w:"Sansón", q:"Fuerza en mi cabello"},
+            {w:"Gedeón", q:"Venció con solo 300 hombres"}, {w:"Elías", q:"Subió al cielo en un torbellino"},
+            {w:"Nehemías", q:"Reconstruyó las murallas"}, {w:"Zaqueo", q:"Subió a un sicómoro"},
+            {w:"Esteban", q:"Primer mártir del camino"}, {w:"Juan Bautista", q:"Voz que clama en el desierto"},
+            {w:"Sara", q:"Se rió de la promesa"}, {w:"Miriam", q:"Tocó el pandero frente al mar"},
+            {w:"Matusalén", q:"El hombre que más vivió"}, {w:"Lázaro", q:"Amigo, sal fuera"},
             {w:"Jerusalén", q:"Ciudad del gran Rey"}, {w:"Belén", q:"De ti me saldrá el Salvador"}
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInt = null;
+        let playerNamesMap = {}; // Para guardar nombres por UID
 
         function createBg() {
             const container = document.getElementById('bg-animation');
@@ -387,14 +394,13 @@
         }
         function toggleSidePanel() { document.getElementById('side-panel').classList.toggle('open'); }
         
-        // FUNCIÓN DE MÚSICA CORREGIDA
         function toggleMusic() {
             const m = document.getElementById('bg-music');
             const i = document.getElementById('music-icon');
             if(m.paused) { 
                 m.play().then(() => {
                     i.className = "fas fa-volume-up";
-                }).catch(e => console.log("Reproducción bloqueada por el navegador"));
+                }).catch(e => console.log("Reproducción bloqueada"));
             } else { 
                 m.pause(); 
                 i.className = "fas fa-volume-mute"; 
@@ -414,7 +420,6 @@
             db.collection('presencia').doc(currentUser.uid).set({ name, active: true });
             initGlobalChat();
             
-            // Iniciar música si es posible al entrar
             const m = document.getElementById('bg-music');
             m.play().then(() => {
                 document.getElementById('music-icon').className = "fas fa-volume-up";
@@ -445,9 +450,8 @@
             input.value = "";
         }
 
-        // FUNCIÓN PARA BORRAR CHAT GLOBAL
         async function clearGlobalChat() {
-            if(confirm("¿Seguro que quieres borrar el historial del Concilio Global?")) {
+            if(confirm("¿Seguro que quieres borrar el historial?")) {
                 const snap = await db.collection('global_chat').get();
                 const batch = db.batch();
                 snap.docs.forEach(d => batch.delete(d.ref));
@@ -508,7 +512,10 @@
             });
             db.collection('rooms').doc(code).collection('players').onSnapshot(snap => {
                 let h = "";
-                snap.forEach(p => h += `<div>🔹 ${p.data().name}</div>`);
+                snap.forEach(p => {
+                    h += `<div>🔹 ${p.data().name}</div>`;
+                    playerNamesMap[p.id] = p.data().name; // Mapeo de UIDs a Nombres
+                });
                 document.getElementById('player-list-host').innerHTML = h;
                 document.getElementById('player-list-guest').innerHTML = h;
             });
@@ -553,8 +560,17 @@
         function handleDebate(data) {
             showScreen('screen-debate');
             const turnId = data.order[data.turn];
+            const turnName = playerNamesMap[turnId] || "Alguien";
+            
             document.getElementById('clue-input-area').style.display = (turnId === currentUser.uid) ? 'block' : 'none';
-            document.getElementById('turn-info').innerText = (turnId === currentUser.uid) ? "¡ES TU TURNO!" : "ALGUIEN ESTÁ HABLANDO...";
+            
+            // ACTUALIZACIÓN: Muestra el nombre del usuario a quien le toca
+            if(turnId === currentUser.uid) {
+                document.getElementById('turn-info').innerHTML = `<span style="color:var(--accent)">¡TU TURNO!</span> DA UNA PISTA`;
+            } else {
+                document.getElementById('turn-info').innerHTML = `ESPERANDO PISTA DE: <span style="color:white; text-decoration: underline;">${turnName.toUpperCase()}</span>`;
+            }
+
             document.getElementById('host-clear-chat').style.display = isHost ? 'block' : 'none';
             if(!timerInt) {
                 timerInt = setInterval(() => {
