@@ -32,7 +32,7 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* --- NUEVO: VIDEO DE FONDO FULL SCREEN --- */
+        /* --- VIDEO DE FONDO FULL SCREEN --- */
         .video-background {
             position: fixed;
             top: 0; left: 0;
@@ -42,22 +42,22 @@
         }
         .video-background video {
             width: 100%; height: 100%;
-            object-fit: cover; /* Evita que se vea por la mitad */
+            object-fit: cover;
         }
 
-        /* --- NUEVO: ALERTA DE BIENVENIDA FULL IMAGE --- */
+        /* --- ALERTA DE BIENVENIDA FULL IMAGE --- */
         #welcome-alert {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             background: black;
             z-index: 5000;
-            display: none; /* Se activa por JS */
+            display: none; 
             flex-direction: column;
         }
         #welcome-alert img {
             width: 100%; height: 100%;
-            object-fit: cover; /* O 'contain' si prefieres ver la imagen completa sin recortes */
+            object-fit: cover;
         }
         .btn-close-welcome {
             position: absolute;
@@ -68,6 +68,32 @@
             max-width: 300px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
+
+        /* --- SECCIÓN REGLAS ESTILO LANDING --- */
+        #screen-rules {
+            overflow-y: auto;
+            display: none;
+            background: rgba(0,0,0,0.9);
+            padding: 40px 20px;
+            z-index: 100;
+        }
+        #screen-rules.active { display: block; }
+
+        .rules-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .rule-item {
+            background: var(--card);
+            border-left: 3px solid var(--gold);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+            border-radius: 0 15px 15px 0;
+        }
+        .rule-item h3 { color: var(--gold); margin-bottom: 10px; text-transform: uppercase; font-size: 14px; }
+        .rule-item p { font-size: 12px; line-height: 1.6; opacity: 0.9; }
 
         /* FONDO ANIMADO PROFESIONAL */
         .bg-animation {
@@ -92,7 +118,6 @@
             100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
         }
 
-        /* REDES SOCIALES */
         .social-bar {
             position: fixed;
             bottom: 20px;
@@ -213,16 +238,14 @@
 
     <!-- VIDEO DE FONDO -->
     <div class="video-background">
-        <!-- REEMPLAZA ESTE LINK POR EL DE TU VIDEO -->
         <video autoplay muted loop playsinline>
-            <source src="#" type="video/mp4">
+            <source src="TU_VIDEO_AQUI.mp4" type="video/mp4">
         </video>
     </div>
 
     <!-- ALERTA DE BIENVENIDA -->
     <div id="welcome-alert">
-        <!-- REEMPLAZA ESTE LINK POR EL DE TU IMAGEN -->
-        <img src="img2.png" alt="Bienvenida">
+        <img src="TU_IMAGEN_DE_BIENVENIDA_AQUI.jpg" alt="Bienvenida">
         <button class="btn btn-gold btn-close-welcome" onclick="closeWelcome()">CONTINUAR AL TEMPLO</button>
     </div>
 
@@ -255,7 +278,7 @@
     <div id="screen-login" class="screen active">
         <div class="glass-card">
             <h1 style="color:var(--gold); font-weight:900; letter-spacing: -1px;">FALSO PROFETA</h1>
-            <p style="font-size:10px; opacity:0.6; margin-bottom:20px;">¿LEÍSTE LA BIBLIA?</p>
+            <p style="font-size:10px; opacity:0.6; margin-bottom:20px;">EDICIÓN BÍBLICA ONLINE</p>
             <input type="text" id="user-name" placeholder="Escribe tu nombre...">
             <button class="btn btn-gold" onclick="login()">ENTRAR AL TEMPLO</button>
         </div>
@@ -266,14 +289,45 @@
         <div class="glass-card">
             <button class="btn btn-gold" onclick="createRoom()">CREAR NUEVA SALA</button>
             <button class="btn" onclick="showScreen('screen-join-room')">UNIRSE A SALA</button>
+            <button class="btn" onclick="showScreen('screen-rules')" style="border-color: var(--gold); color: var(--gold);"><i class="fas fa-scroll"></i> REGLAS DEL JUEGO</button>
             <button class="btn" onclick="showGlobalChat()" style="color:var(--messenger); border-color:var(--messenger);">CHAT GLOBAL</button>
+        </div>
+    </div>
+
+    <!-- SECCIÓN REGLAS (LANDING PAGE STYLE) -->
+    <div id="screen-rules" class="screen">
+        <div class="rules-container">
+            <h1 style="color:var(--gold); font-weight:900; margin-bottom: 30px;">REGLAS SAGRADAS</h1>
+            
+            <div class="rule-item">
+                <h3>📜 El Objetivo</h3>
+                <p>Un Falso Profeta se ha infiltrado. Los discípulos deben identificarlo dando pistas de la Palabra Sagrada sin revelarla del todo.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3>👥 Los Roles</h3>
+                <p><b>Discípulos:</b> Conocen la palabra y deben demostrarlo con cautela.<br>
+                <b>Falso Profeta:</b> No sabe la palabra y debe mentir para pasar desapercibido.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3>🗣️ El Concilio (Debate)</h3>
+                <p>Cada uno dará una pista de máximo 2 palabras. Si eres muy obvio, el Profeta adivinará. Si eres muy vago, sospecharán de ti.</p>
+            </div>
+
+            <div class="rule-item">
+                <h3>⚖️ El Juicio (Votación)</h3>
+                <p>Al final del tiempo, todos votarán. Si el Profeta es descubierto, pierde. Si engaña a la mayoría, la victoria es suya.</p>
+            </div>
+
+            <button class="btn btn-gold" onclick="showScreen('screen-menu')" style="margin-top: 20px;">VOLVER AL MENÚ</button>
         </div>
     </div>
 
     <!-- 3. CHAT GLOBAL -->
     <div id="screen-global-chat" class="screen">
         <div class="glass-card">
-            <h3 style="color:var(--gold)">JUNTA GLOBAL</h3>
+            <h3 style="color:var(--gold)">CONCILIO GLOBAL</h3>
             <div class="chat-container">
                 <div id="global-chat-box" class="chat-box"></div>
                 <div class="emoji-row">
@@ -389,7 +443,7 @@
     </div>
 
     <audio id="bg-music" loop><source src="suspense-dramatic-248023.mp3" type="audio/mpeg"></audio>
-    <footer>EL FALSO PROFETA - POR ROBERT PARACO</footer>
+    <footer>EL FALSO PROFETA v2.5 - BY ROBERT PARACO</footer>
 
     <script>
         // CONFIGURACIÓN FIREBASE
@@ -405,7 +459,6 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // LISTA EXTENDIDA DE PERSONAJES
         const bibliaData = [
             {w:"Adán", q:"Formado del polvo de la tierra"}, {w:"Eva", q:"Madre de todos los vivientes"},
             {w:"Noé", q:"Varón justo… caminó con Dios"}, {w:"Abraham", q:"Sal de tu tierra"},
@@ -426,7 +479,7 @@
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInt = null;
-        let playerNamesMap = {}; // Para guardar nombres por UID
+        let playerNamesMap = {};
 
         function createBg() {
             const container = document.getElementById('bg-animation');
@@ -448,7 +501,6 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // FUNCIONES DE BIENVENIDA
         function closeWelcome() {
             document.getElementById('welcome-alert').style.display = 'none';
             showScreen('screen-menu');
@@ -487,7 +539,6 @@
                 document.getElementById('music-icon').className = "fas fa-volume-up";
             }).catch(() => {});
             
-            // Mostrar imagen de bienvenida en lugar de pasar directo al menu
             document.getElementById('welcome-alert').style.display = 'flex';
         }
 
@@ -577,7 +628,7 @@
                 let h = "";
                 snap.forEach(p => {
                     h += `<div>🔹 ${p.data().name}</div>`;
-                    playerNamesMap[p.id] = p.data().name; // Mapeo de UIDs a Nombres
+                    playerNamesMap[p.id] = p.data().name;
                 });
                 document.getElementById('player-list-host').innerHTML = h;
                 document.getElementById('player-list-guest').innerHTML = h;
@@ -624,16 +675,12 @@
             showScreen('screen-debate');
             const turnId = data.order[data.turn];
             const turnName = playerNamesMap[turnId] || "Alguien";
-            
             document.getElementById('clue-input-area').style.display = (turnId === currentUser.uid) ? 'block' : 'none';
-            
-            // ACTUALIZACIÓN: Muestra el nombre del usuario a quien le toca
             if(turnId === currentUser.uid) {
                 document.getElementById('turn-info').innerHTML = `<span style="color:var(--accent)">¡TU TURNO!</span> DA UNA PISTA`;
             } else {
                 document.getElementById('turn-info').innerHTML = `ESPERANDO PISTA DE: <span style="color:white; text-decoration: underline;">${turnName.toUpperCase()}</span>`;
             }
-
             document.getElementById('host-clear-chat').style.display = isHost ? 'block' : 'none';
             if(!timerInt) {
                 timerInt = setInterval(() => {
