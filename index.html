@@ -32,42 +32,41 @@
             background: radial-gradient(circle at center, #1a150a 0%, #050505 100%);
         }
 
-        /* --- NUEVO: ESTILOS SLIDER LOGIN --- */
-        .slider-container {
-            position: absolute;
+        /* --- NUEVO: VIDEO DE FONDO FULL SCREEN --- */
+        .video-background {
+            position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: -1;
             overflow: hidden;
         }
-        .slide {
-            position: absolute;
+        .video-background video {
             width: 100%; height: 100%;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            object-fit: cover;
+            object-fit: cover; /* Evita que se vea por la mitad */
         }
-        .slide.active-slide { opacity: 1; }
-        
-        /* --- NUEVO: ALERTA BIENVENIDA --- */
+
+        /* --- NUEVO: ALERTA DE BIENVENIDA FULL IMAGE --- */
         #welcome-alert {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: black;
+            z-index: 5000;
             display: none; /* Se activa por JS */
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 20px;
         }
         #welcome-alert img {
-            max-width: 100%;
-            max-height: 80vh;
-            border-radius: 15px;
-            box-shadow: 0 0 30px var(--gold);
-            object-fit: contain;
+            width: 100%; height: 100%;
+            object-fit: cover; /* O 'contain' si prefieres ver la imagen completa sin recortes */
+        }
+        .btn-close-welcome {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80% !important;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         /* FONDO ANIMADO PROFESIONAL */
@@ -212,11 +211,19 @@
 </head>
 <body>
 
-    <!-- NUEVO: ALERTA DE BIENVENIDA -->
+    <!-- VIDEO DE FONDO -->
+    <div class="video-background">
+        <!-- REEMPLAZA ESTE LINK POR EL DE TU VIDEO -->
+        <video autoplay muted loop playsinline>
+            <source src="TU_VIDEO_AQUI.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- ALERTA DE BIENVENIDA -->
     <div id="welcome-alert">
-        <!-- REEMPLAZAR URL DE IMAGEN DE BIENVENIDA AQUÍ -->
-        <img src="https://via.placeholder.com/800x1200?text=BIENVENIDO+AL+TEMPLO" alt="Bienvenida">
-        <button class="btn btn-gold" style="max-width:200px; margin-top:20px;" onclick="closeWelcome()">EMPEZAR</button>
+        <!-- REEMPLAZA ESTE LINK POR EL DE TU IMAGEN -->
+        <img src="TU_IMAGEN_DE_BIENVENIDA_AQUI.jpg" alt="Bienvenida">
+        <button class="btn btn-gold btn-close-welcome" onclick="closeWelcome()">CONTINUAR AL TEMPLO</button>
     </div>
 
     <div class="bg-animation" id="bg-animation"></div>
@@ -244,18 +251,8 @@
         <button class="btn btn-exit" onclick="location.reload()">SALIR DEL JUEGO</button>
     </div>
 
-    <!-- 1. LOGIN (MODIFICADO CON SLIDER) -->
+    <!-- 1. LOGIN -->
     <div id="screen-login" class="screen active">
-        <!-- SLIDER FONDO -->
-        <div class="slider-container">
-            <!-- REEMPLAZAR URLS DE VIDEO E IMAGENES AQUÍ -->
-            <video class="slide active-slide" autoplay muted loop playsinline>
-                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            </video>
-            <img class="slide" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1000&q=80">
-            <img class="slide" src="https://images.unsplash.com/photo-1519810755548-39cd217da494?auto=format&fit=crop&w=1000&q=80">
-        </div>
-
         <div class="glass-card">
             <h1 style="color:var(--gold); font-weight:900; letter-spacing: -1px;">FALSO PROFETA</h1>
             <p style="font-size:10px; opacity:0.6; margin-bottom:20px;">EDICIÓN BÍBLICA ONLINE</p>
@@ -292,7 +289,7 @@
         </div>
     </div>
 
-    <!-- 4. LOBBY HOST (TIEMPOS EXTENDIDOS) -->
+    <!-- 4. LOBBY HOST -->
     <div id="screen-lobby-host" class="screen">
         <div class="glass-card">
             <h2 style="color:var(--gold)">CÓDIGO: <span id="room-code-display">---</span></h2>
@@ -303,9 +300,9 @@
                     <option value="120000" selected>2 MINUTOS</option>
                     <option value="180000">3 MINUTOS</option>
                     <option value="300000">5 MINUTOS</option>
-                    <option value="600000">10 MINUTOS</option> <!-- NUEVO -->
-                    <option value="900000">15 MINUTOS</option> <!-- NUEVO -->
-                    <option value="1200000">20 MINUTOS</option> <!-- NUEVO -->
+                    <option value="600000">10 MINUTOS</option>
+                    <option value="900000">15 MINUTOS</option>
+                    <option value="1200000">20 MINUTOS</option>
                 </select>
             </div>
             <div id="player-list-host" style="margin:15px 0; font-size:12px; text-align:left; max-height: 100px; overflow-y: auto;"></div>
@@ -395,7 +392,7 @@
     <footer>EL FALSO PROFETA v2.5 - BY ROBERT PARACO</footer>
 
     <script>
-        // CONFIGURACIÓN FIREBASE (Mantenida)
+        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = {
              apiKey: "AIzaSyCc0dMjTppOlnGV_NuXCFUGhx7882qbZlE",
              authDomain: "falsoprofeta-6e682.firebaseapp.com",
@@ -408,23 +405,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // --- LÓGICA SLIDER ---
-        let currentSlide = 0;
-        function initSlider() {
-            setInterval(() => {
-                const slides = document.querySelectorAll('.slide');
-                slides[currentSlide].classList.remove('active-slide');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active-slide');
-            }, 5000); // Cambia cada 5 segundos
-        }
-        initSlider();
-
-        function closeWelcome() {
-            document.getElementById('welcome-alert').style.display = 'none';
-        }
-
-        // LISTA EXTENDIDA DE PERSONAJES (Mantenida)
+        // LISTA EXTENDIDA DE PERSONAJES
         const bibliaData = [
             {w:"Adán", q:"Formado del polvo de la tierra"}, {w:"Eva", q:"Madre de todos los vivientes"},
             {w:"Noé", q:"Varón justo… caminó con Dios"}, {w:"Abraham", q:"Sal de tu tierra"},
@@ -445,7 +426,7 @@
         ];
 
         let currentUser = null, currentRoomId = null, isHost = false, timerInt = null;
-        let playerNamesMap = {};
+        let playerNamesMap = {}; // Para guardar nombres por UID
 
         function createBg() {
             const container = document.getElementById('bg-animation');
@@ -466,6 +447,13 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
+
+        // FUNCIONES DE BIENVENIDA
+        function closeWelcome() {
+            document.getElementById('welcome-alert').style.display = 'none';
+            showScreen('screen-menu');
+        }
+
         function toggleSidePanel() { document.getElementById('side-panel').classList.toggle('open'); }
         
         function toggleMusic() {
@@ -499,9 +487,8 @@
                 document.getElementById('music-icon').className = "fas fa-volume-up";
             }).catch(() => {});
             
-            // MOSTRAR ALERTA DE BIENVENIDA Y LUEGO EL MENU
+            // Mostrar imagen de bienvenida en lugar de pasar directo al menu
             document.getElementById('welcome-alert').style.display = 'flex';
-            showScreen('screen-menu');
         }
 
         function initGlobalChat() {
@@ -590,7 +577,7 @@
                 let h = "";
                 snap.forEach(p => {
                     h += `<div>🔹 ${p.data().name}</div>`;
-                    playerNamesMap[p.id] = p.data().name; 
+                    playerNamesMap[p.id] = p.data().name; // Mapeo de UIDs a Nombres
                 });
                 document.getElementById('player-list-host').innerHTML = h;
                 document.getElementById('player-list-guest').innerHTML = h;
@@ -637,12 +624,16 @@
             showScreen('screen-debate');
             const turnId = data.order[data.turn];
             const turnName = playerNamesMap[turnId] || "Alguien";
+            
             document.getElementById('clue-input-area').style.display = (turnId === currentUser.uid) ? 'block' : 'none';
+            
+            // ACTUALIZACIÓN: Muestra el nombre del usuario a quien le toca
             if(turnId === currentUser.uid) {
                 document.getElementById('turn-info').innerHTML = `<span style="color:var(--accent)">¡TU TURNO!</span> DA UNA PISTA`;
             } else {
                 document.getElementById('turn-info').innerHTML = `ESPERANDO PISTA DE: <span style="color:white; text-decoration: underline;">${turnName.toUpperCase()}</span>`;
             }
+
             document.getElementById('host-clear-chat').style.display = isHost ? 'block' : 'none';
             if(!timerInt) {
                 timerInt = setInterval(() => {
